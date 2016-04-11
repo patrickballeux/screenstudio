@@ -121,6 +121,7 @@ public class Targets {
     public String panelTextContent = "";
     public String shortcutKey = "control shift R";
     public String doNotHide = "false";
+    public String webcamLocation = "Top";
 // </editor-fold>
 
     public void saveDefault(File config) throws IOException {

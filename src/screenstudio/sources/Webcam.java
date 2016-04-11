@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import screenstudio.gui.overlays.PanelWebcam;
 
 /**
  *
@@ -64,6 +65,7 @@ public class Webcam {
     private String description = "";
     private String id = "";
     private double offset = 0;
+    private PanelWebcam.WebcamLocation location = PanelWebcam.WebcamLocation.Top;
 
 
     private Webcam(String dev, String id, String desc) {
@@ -72,6 +74,12 @@ public class Webcam {
         this.id = id;
     }
 
+    public void setLocation (PanelWebcam.WebcamLocation l){
+        location = l;
+    }
+    public PanelWebcam.WebcamLocation getLocation(){
+        return location;
+    }
     public static Webcam[] getSources() throws IOException, InterruptedException {
         java.util.ArrayList<Webcam> list = new java.util.ArrayList<Webcam>();
         System.out.println("Webcam List:");

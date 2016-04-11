@@ -93,7 +93,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         }
         initControls();
         updateCurrentConfigurationStatus();
-        this.pack();
 
         isLoading = false;
         new Thread(new Runnable() {
@@ -106,6 +105,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             }
         }).start();
         this.setLocationByPlatform(true);
+        this.pack();
     }
 
     private void initControls() {
@@ -160,6 +160,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     o.setHeight(Integer.parseInt(target.webcamHeight));
                     o.setOffset(Double.parseDouble(target.webcamOffset));
                 }
+                o.setLocation(PanelWebcam.WebcamLocation.valueOf(target.webcamLocation));
             }
 
         } catch (IOException | InterruptedException ex) {
@@ -673,7 +674,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                             .addComponent(lblProfiles))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panCaptureLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cboProfiles, 0, 292, Short.MAX_VALUE)
+                            .addComponent(cboProfiles, 0, 308, Short.MAX_VALUE)
                             .addComponent(cboTargets, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panCaptureLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -826,7 +827,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(cboShortcutKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(btnShortcutApply, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addComponent(btnShortcutApply, javax.swing.GroupLayout.DEFAULT_SIZE, 66, Short.MAX_VALUE))
                                     .addComponent(cboAudiosMicrophone, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(cboAudiosInternal, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(cboDisplays, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -944,12 +945,12 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             .addGroup(panPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(scrollPanelContentText, javax.swing.GroupLayout.DEFAULT_SIZE, 381, Short.MAX_VALUE)
+                    .addComponent(scrollPanelContentText, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
                     .addGroup(panPanelLayout.createSequentialGroup()
-                        .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 80, Short.MAX_VALUE)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 99, Short.MAX_VALUE)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panPanelLayout.createSequentialGroup()
@@ -1059,6 +1060,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         dlg.setLocationRelativeTo(this);
         dlg.setVisible(true);
         dlg.dispose();
+        target.webcamLocation = ((Webcam) cboWebcams.getSelectedItem()).getLocation().name();
         updateCurrentConfigurationStatus();
     }//GEN-LAST:event_btnSetWebcamActionPerformed
 

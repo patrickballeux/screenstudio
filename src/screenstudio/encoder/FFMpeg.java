@@ -177,7 +177,7 @@ public class FFMpeg {
             case FLV:
                 muxer = "flv";
                 videoEncoder = "libx264";
-                audioEncoder = "aac";
+                audioEncoder = "libmp3lame";
                 output = new File(defaultCaptureFolder, generateRandomName() + ".flv").getAbsolutePath();
                 break;
             case MP4:

@@ -30,7 +30,7 @@ import screenstudio.sources.WebcamViewer;
  *
  * @author patrick
  */
-public class PanelWebcam extends javax.swing.JPanel implements TextContent {
+public final class PanelWebcam extends javax.swing.JPanel implements TextContent {
 
     private final WebcamViewer mViewer;
     private final long startingTime;
@@ -38,6 +38,10 @@ public class PanelWebcam extends javax.swing.JPanel implements TextContent {
     private boolean mIsUpdating = false;
     private boolean mStopMe = false;
     private String mText = "";
+    public enum WebcamLocation{
+        Top,
+        Bottom,
+    }
 
     /**
      * Creates new form PanelWebcam
@@ -46,6 +50,7 @@ public class PanelWebcam extends javax.swing.JPanel implements TextContent {
      * @param width
      * @param height
      * @param showDuration
+     * @param webcamTitle
      */
     public PanelWebcam(screenstudio.sources.Webcam webcam, int width, int height, int showDuration, String webcamTitle) {
         initComponents();
@@ -56,6 +61,7 @@ public class PanelWebcam extends javax.swing.JPanel implements TextContent {
             mViewer.setOpaque(true);
             panWebcam.setOpaque(true);
             panWebcam.add(mViewer, BorderLayout.CENTER);
+            setWebcamLocation(webcam.getLocation());
             new Thread(mViewer).start();
             System.out.println("Started webcam viewer");
         } else {
@@ -77,6 +83,22 @@ public class PanelWebcam extends javax.swing.JPanel implements TextContent {
 
     }
 
+    public void setWebcamLocation(WebcamLocation location){
+        if (mViewer !=null){
+            this.remove(panWebcam);
+            switch(location){
+                case Top:
+                    this.add(panWebcam, BorderLayout.NORTH);
+                    break;
+                case Bottom:
+                    this.add(panWebcam, BorderLayout.SOUTH);
+                    break;
+                default:
+                    this.add(panWebcam, BorderLayout.NORTH);
+                    break;
+            }
+        }
+    }
     public boolean IsUpdating() {
         return mIsUpdating;
     }
@@ -151,17 +173,18 @@ public class PanelWebcam extends javax.swing.JPanel implements TextContent {
         setLayout(new java.awt.BorderLayout());
 
         panWebcam.setBackground(new java.awt.Color(102, 102, 102));
+        panWebcam.setBorder(null);
         panWebcam.setForeground(java.awt.Color.white);
         panWebcam.setPreferredSize(new java.awt.Dimension(320, 240));
         panWebcam.setLayout(new java.awt.BorderLayout());
-        add(panWebcam, java.awt.BorderLayout.NORTH);
+        add(panWebcam, java.awt.BorderLayout.SOUTH);
 
         lblText.setBackground(java.awt.Color.black);
         lblText.setForeground(new java.awt.Color(19, 219, 19));
         lblText.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         lblText.setText("<html>ScreenStudio</html>");
         lblText.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        lblText.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        lblText.setBorder(null);
         lblText.setOpaque(true);
         lblText.setPreferredSize(new java.awt.Dimension(320, 24));
         add(lblText, java.awt.BorderLayout.CENTER);
