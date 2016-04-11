@@ -39,30 +39,33 @@ public class Overlay implements Runnable {
     private final PanelWebcam htmlRenderer;
     private final int mFPS;
     private boolean stopME = false;
-    private OverlayTCPIP mOutput = null;
+    private OverlayUnix mOutput = null;
 
-    public Overlay(File content, int width, int height, int fps,screenstudio.sources.Webcam webcam,int showDurationTime,String userTextContent,String webcamTitle) throws IOException, InterruptedException {
+    public Overlay(File content, int width, int height, int fps, screenstudio.sources.Webcam webcam, int showDurationTime, String userTextContent, String webcamTitle) throws IOException, InterruptedException {
         mContent = content;
         mUserTextContent = userTextContent;
-        htmlRenderer = new PanelWebcam(webcam, width, height,showDurationTime,webcamTitle);
+        htmlRenderer = new PanelWebcam(webcam, width, height, showDurationTime, webcamTitle);
         htmlRenderer.setVisible(true);
         htmlRenderer.setSize(width, height);
         htmlRenderer.setOpaque(true);
         htmlRenderer.repaint();
         mFPS = fps;
         new Thread(this).start();
-        mOutput = new OverlayTCPIP(htmlRenderer, mFPS);
+        mOutput = new OverlayUnix(htmlRenderer, mFPS);
     }
 
-    public boolean isRunning(){
+    public boolean isRunning() {
         return mOutput.isRunning();
     }
-    public void setUserTextContent(String text){
+
+    public void setUserTextContent(String text) {
         mUserTextContent = text;
     }
-    public void setContent(File content){
+
+    public void setContent(File content) {
         mContent = content;
     }
+
     public void stop() {
         stopME = true;
     }
@@ -75,34 +78,34 @@ public class Overlay implements Runnable {
         if (mOutput == null) {
             return "";
         } else {
-            return "tcp://127.0.0.1:" + mOutput.getPort();
+            return mOutput.getOutput().getAbsolutePath();
         }
     }
 
     public static ArrayList<File> getOverlays() throws IOException {
 
         File home = new FFMpeg().getHome();
-        File overlayFolder = new File(home,"Overlays");
+        File overlayFolder = new File(home, "Overlays");
         if (!overlayFolder.exists()) {
             overlayFolder.mkdir();
         }
         File[] list = overlayFolder.listFiles((File folder, String filename) -> filename.endsWith("html") || filename.endsWith("txt") || filename.endsWith("url"));
         ArrayList<File> newList = new ArrayList();
         newList.add(new ComboBoxFile("None"));
-        
+
         for (File f : list) {
             newList.add(new ComboBoxFile(f.getAbsolutePath()));
         }
-        if (list.length == 0){
+        if (list.length == 0) {
             //No template found, add a default one...
             byte[] buffer = new byte[65000];
             java.io.InputStream in = Overlay.class.getResource("/screenstudio/sources/Default.html").openStream();
             int count = in.read(buffer);
             in.close();
-            FileWriter out = new FileWriter(new File(overlayFolder,"Default.html"));
-            out.write(new String(buffer,0,count));
+            FileWriter out = new FileWriter(new File(overlayFolder, "Default.html"));
+            out.write(new String(buffer, 0, count));
             out.close();
-            newList.add(new ComboBoxFile(new File(overlayFolder,"Default.html").getAbsolutePath()));
+            newList.add(new ComboBoxFile(new File(overlayFolder, "Default.html").getAbsolutePath()));
         }
         return newList;
     }
@@ -113,7 +116,7 @@ public class Overlay implements Runnable {
     public void run() {
         stopME = false;
         try {
-            htmlRenderer.setText("<html></html>","");
+            htmlRenderer.setText("<html></html>", "");
             htmlRenderer.repaint();
             while (!stopME) {
                 // Read content into renderer...
@@ -122,7 +125,7 @@ public class Overlay implements Runnable {
                 in.read(data);
                 if (mContent.getName().endsWith("html")) {
                     //Reading content from a local html file
-                    htmlRenderer.setText(new String(data),mUserTextContent);
+                    htmlRenderer.setText(new String(data), mUserTextContent);
                 } else if (mContent.getName().endsWith("url")) {
                     //Reading content from a webpage...
                     data = new byte[65536];
@@ -135,10 +138,10 @@ public class Overlay implements Runnable {
                         html.append(new String(data, 0, count));
                         count = in.read(data);
                     }
-                    htmlRenderer.setText(html.toString(),mUserTextContent);
+                    htmlRenderer.setText(html.toString(), mUserTextContent);
                 } else {
                     //Reading raw content from a text file
-                    htmlRenderer.setText("<html>" + new String(data).replaceAll("\n", "<br>") + "</html>",mUserTextContent);
+                    htmlRenderer.setText("<html>" + new String(data).replaceAll("\n", "<br>") + "</html>", mUserTextContent);
                 }
                 htmlRenderer.repaint();
                 in.close();
