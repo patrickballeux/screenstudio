@@ -57,9 +57,10 @@ public class OverlayTCPIP implements Runnable {
 
     }
 
-    public boolean isRunning(){
+    public boolean isRunning() {
         return mIsRunning;
     }
+
     @Override
     public void run() {
         mIsRunning = true;
@@ -76,7 +77,7 @@ public class OverlayTCPIP implements Runnable {
                     System.out.println("Waiting for connection...");
                     Socket s = server.accept();
                     System.out.println("Got connection...");
-                    s.setSendBufferSize(img.getWidth()*img.getHeight()*3);
+                    s.setSendBufferSize(img.getWidth() * img.getHeight() * 3);
                     out = new DataOutputStream(s.getOutputStream());
                 } catch (java.net.SocketTimeoutException ex) {
                     //do nothing...
@@ -85,7 +86,8 @@ public class OverlayTCPIP implements Runnable {
             mPanel.doLayout();
             Graphics g = img.getGraphics();
             byte[] imageBytes = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
-            long nextPTS = System.currentTimeMillis() + (1000/mFPS);
+            long frameTime = (1000000000 / mFPS);
+            long nextPTS = System.nanoTime() + frameTime;
             while (!stopMe && out != null) {
                 try {
                     if (!mPanel.IsUpdating()) {
@@ -96,15 +98,17 @@ public class OverlayTCPIP implements Runnable {
                     System.err.println("Error painting overlay..." + e.getMessage());
                 }
                 out.write(imageBytes);
-                long delta = nextPTS - System.currentTimeMillis();
-                if (delta > 0){
-                    try {
-                        Thread.sleep(delta-1);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(OverlayTCPIP.class.getName()).log(Level.SEVERE, null, ex);
+                while (nextPTS - System.nanoTime() > 0) {
+                    long wait = nextPTS - System.nanoTime();
+                    if (wait > 0) {
+                        try {
+                            Thread.sleep(wait / 1000000, (int) (wait % 1000000));
+                        } catch (Exception ex) {
+                            System.err.println("Error: Thread.sleep(" + (wait / 1000000) + "," + ((int) (wait % 1000000)) + ")");
+                        }
                     }
                 }
-                nextPTS += (1000 / mFPS);
+                nextPTS += frameTime;
             }
             g.dispose();
             if (out != null) {
@@ -129,7 +133,7 @@ public class OverlayTCPIP implements Runnable {
         }
         mIsRunning = false;
     }
-    
+
     public void stop() {
         stopMe = true;
     }
