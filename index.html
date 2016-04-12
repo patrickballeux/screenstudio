@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Screenstudio by patrickballeux</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Screenstudio</h1>
+          <h2>Streaming, made easy!</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/patrickballeux/screenstudio/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/patrickballeux/screenstudio/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/patrickballeux/screenstudio" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h1>
+<a id="screenstudio" class="anchor" href="#screenstudio" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>screenstudio</h1>
+
+<p>Streaming, made easy!</p>
+
+<h2>
+<a id="screenstudio-2" class="anchor" href="#screenstudio-2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>ScreenStudio 2</h2>
+
+<p>INSTALLATION:</p>
+
+<ul>
+<li>Copy the content of the archive into any folder</li>
+<li>Execute the script "createDesktopIcon.sh" to create a shortcut on your desktop</li>
+<li>Make sure that Java JRE 8 is installed</li>
+<li>Make sure that "FFMPEG" is installed (ffmpeg version 2.7.6-0ubuntu0.15.10.1)</li>
+<li>Make sure that Pulseaudio is installed as it is required for audio mixing.</li>
+</ul>
+
+<p>To install dependencies on Ubuntu:
+sudo apt-get install ffmpeg openjdk-8-jre</p>
+
+<p>NOTE:  ScreenStudio is relying heavily on FFMpeg provided with Ubuntu 16.04.  Any other distros or custom builds of FFMPEG
+may not be supported.  If ScreenStudio does not work on your distro (or custom build), download the source code of
+ScreenStudio to adjust the proper command to use with FFMpeg.</p>
+
+<p>NOTE2:  An OSX version will be coming soon for version 2.  Use version 1.5.x for Mac OSX...</p>
+
+<p>Source code is available at: <a href="http://screenstudio.crombz.com">http://screenstudio.crombz.com</a></p>
+
+<hr>
+
+<p>USAGE:</p>
+
+<p>In your installation folder, you can find two sub-folders</p>
+
+<ul>
+<li>Overlays: This will contains any content panel that you wish to display.</li>
+<li><p>Capture: This is where your local recording will be saved</p></li>
+<li><p>TARGETS
+You need to select the output format by selecting a TARGET.  For local recording, select any file format.  For live streaming,
+select any service like Twitch or Youtube.</p></li>
+</ul>
+
+<p>For live streaming, you will have to select a server and enter your magic key in the opening dialog.</p>
+
+<p>Select the desired profile.  By default, "DISPLAY" is selected, meaning that the output will match the display size of your computer.  Other supported formats are: 240p, 360p, 480p, 720p, 1080p.</p>
+
+<p>ScreenStudio will calculate to output format size based on your selection so that the width will be adjusted to the selected
+height.</p>
+
+<p>Your current configuration is displayed in the "Configuration" display.</p>
+
+<ul>
+<li>SOURCES</li>
+</ul>
+
+<p>The SOURCES will let you select the different sources to use for a local recording or a live streaming:</p>
+
+<ul>
+<li>Display: If you have more than 1 display, select the proper display to use</li>
+<li>Webcam: Select the proper webcam to use.  "None" will not use any webcam.</li>
+<li>Microphone:  Select the microphone (audio input) to use.</li>
+<li>Internal:  Select the internal audio monitor to use.  This is the input that will be used to capture the audio from your computer</li>
+<li>Webcam Title: A text that will be displayed at the top of your webcam.</li>
+<li><p>Debug mode:  When activated, the console will show all the output from FFMpeg.</p></li>
+<li><p>PANEL</p></li>
+</ul>
+
+<p>This is where you configure your side panel.</p>
+
+<ul>
+<li>Panel:  Select the panel overlay you wish to use.  This is a list of the files found in the "Overlays" sub-folder</li>
+<li>Panel Width:  Set the with of the panel overlay to use.  It should match the width of your webcam format for best results</li>
+<li><p>Duration:  Enter your expected streaming duration.  This is used with Overlays to display the remaining time.</p></li>
+<li><p>PANEL AND OVERLAYS</p></li>
+</ul>
+
+<p>Supported file format are :</p>
+
+<ul>
+<li>*.txt : Basic text file</li>
+<li>*.html: Simple HTML file (HTML4) are supported.</li>
+<li>*.url:  A URL to be used to display content instead of a local HTML file.</li>
+</ul>
+
+<p>HTML file are the best of showing content in your recording/live streaming.  Use any text editor to create your own overlay
+using basic HTML tags.  Javascript is not supported.  For more dynamic content, your can use a URL file to load content
+from a web server.</p>
+
+<p>The HTML rendering do support some basic styles CSS but do not expect a full HTML5 support.  Here's an example:</p>
+
+<p>
+</p>
+
+<h1>
+<a id="screenstudio-is-amazing" class="anchor" href="#screenstudio-is-amazing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>ScreenStudio is amazing!</h1>
+
+<p>Download now!
+</p>
+
+<p>In the "BODY" tag, set the background and foreground color.  To ensure that the overlay will use all the available space,
+set the width and height also in the body tag.</p>
+
+<p>See <a href="http://www.w3schools.com/tags/">http://www.w3schools.com/tags/</a> for a list of tags to use...</p>
+
+<ul>
+<li>PANEL CONTENT TAGS</li>
+</ul>
+
+<p>In the text/html content, some tags are supported to udate the text content with values like the current date and time.</p>
+
+<pre><code>@CURRENTDATE (Current date)
+@CURRENTTIME (Current time)
+@RECORDINGTIME (Recording time in minutes)
+@STARTTIME (Time when the recording started)
+@REMAININGTIME (Time remaining in minutes)
+@TEXT (Custom text from the text entry in the Panel tab...)
+</code></pre>
+
+<ul>
+<li>AUDIO INPUT:
+ScreenStudio is relying on Pulseaudio for audio recording.  When two audio input are selected (Mic+Internal), ScreenStudio will
+add a virtual audio input that will mix both Mic and Internal audio input.  This virtual audio input will only exists while
+ScreenStudio is capturing and will be remove once the capture is completed.</li>
+</ul>
+
+<p>To adjust the audio levels, use the default audio mixer or install "pavucontrol" for more options.</p>
+
+<hr>
+
+<p>CONTACT:</p>
+
+<p>Main website: <a href="http://screenstudio.crombz.com">http://screenstudio.crombz.com</a>
+Twitter: <a href="http://twitter.com/patrickballeux">http://twitter.com/patrickballeux</a>
+G+ Community: <a href="https://plus.google.com/communities/107164189448403990139">https://plus.google.com/communities/107164189448403990139</a></p>
+
+<p>Keep in mind that ScreenStudio is free and that I work on this project in my spare time.</p>
+
+<p>Have fun!</p>
+
+<p>Patrick</p>
+        </section>
+
+        <footer>
+          Screenstudio is maintained by <a href="https://github.com/patrickballeux">patrickballeux</a><br>
+          This page was generated by <a href="https://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
+    </div>
+  </body>
+</html>
