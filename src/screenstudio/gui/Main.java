@@ -252,6 +252,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                 break;
             }
         }
+        txtCommand.setText(target.command);
     }
 
     private void initializeShortCuts() {
@@ -385,9 +386,9 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             if (cboWebcams.getSelectedIndex() > 0) {
                 Webcam w = (Webcam) cboWebcams.getSelectedItem();
                 w.setFps(s.getFps());
-                runningOverlay = new Overlay(content, (PanelWebcam.PanelLocation) cboPanelOrientation.getSelectedItem(), s, w, (Integer) spinShowDurationTime.getValue(), txtPanelContentText.getText(), txtWebcamTitle.getText());
+                runningOverlay = new Overlay(content, (PanelWebcam.PanelLocation) cboPanelOrientation.getSelectedItem(), s, w, (Integer) spinShowDurationTime.getValue(), txtPanelContentText.getText(), txtWebcamTitle.getText(),txtCommand.getText());
             } else {
-                runningOverlay = new Overlay(content, (PanelWebcam.PanelLocation) cboPanelOrientation.getSelectedItem(), s, null, (Integer) spinShowDurationTime.getValue(), txtPanelContentText.getText(), txtWebcamTitle.getText());
+                runningOverlay = new Overlay(content, (PanelWebcam.PanelLocation) cboPanelOrientation.getSelectedItem(), s, null, (Integer) spinShowDurationTime.getValue(), txtPanelContentText.getText(), txtWebcamTitle.getText(),txtCommand.getText());
             }
             command.setOverlay(runningOverlay);
             while (!runningOverlay.isRunning()) {
@@ -576,6 +577,8 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         btnEditor = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         cboPanelOrientation = new javax.swing.JComboBox<>();
+        jLabel12 = new javax.swing.JLabel();
+        txtCommand = new javax.swing.JTextField();
         panStatusBar = new javax.swing.JPanel();
         lblMessages = new javax.swing.JLabel();
         lblNotice = new javax.swing.JLabel();
@@ -935,6 +938,8 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         cboPanelOrientation.setModel(new javax.swing.DefaultComboBoxModel<PanelWebcam.PanelLocation>(PanelWebcam.PanelLocation.values())
         );
 
+        jLabel12.setText("Command");
+
         javax.swing.GroupLayout panPanelLayout = new javax.swing.GroupLayout(panPanel);
         panPanel.setLayout(panPanelLayout);
         panPanelLayout.setHorizontalGroup(
@@ -944,18 +949,15 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                 .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(scrollPanelContentText)
                     .addGroup(panPanelLayout.createSequentialGroup()
-                        .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 99, Short.MAX_VALUE))
-                            .addComponent(jLabel6))
+                        .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 99, Short.MAX_VALUE))
+                                .addComponent(jLabel6)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panPanelLayout.createSequentialGroup()
-                                .addComponent(spinShowDurationTime, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel8)
-                                .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panPanelLayout.createSequentialGroup()
                                 .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(cboPanelOrientation, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -963,7 +965,13 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnPreviewPanelContent)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnEditor)))))
+                                .addComponent(btnEditor))
+                            .addGroup(panPanelLayout.createSequentialGroup()
+                                .addComponent(spinShowDurationTime, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel8)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(txtCommand))))
                 .addContainerGap())
         );
         panPanelLayout.setVerticalGroup(
@@ -985,7 +993,11 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     .addComponent(spinShowDurationTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel8))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(scrollPanelContentText, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
+                .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel12)
+                    .addComponent(txtCommand, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(scrollPanelContentText, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1153,7 +1165,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             in.close();
             if (content.getName().endsWith("html")) {
                 //Reading content from a local html file
-                w.setText(new String(data), txtPanelContentText.getText());
+                w.setText(new String(data), txtPanelContentText.getText(),txtCommand.getText());
             } else if (content.getName().endsWith("url")) {
                 //Reading content from a webpage...
                 data = new byte[65536];
@@ -1167,10 +1179,10 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     count = in.read(data);
                 }
                 in.close();
-                w.setText(html.toString(), txtPanelContentText.getText());
+                w.setText(html.toString(), txtPanelContentText.getText(),txtCommand.getText());
             } else {
                 //Reading raw content from a text file
-                w.setText("<html>" + new String(data).replaceAll("\n", "<br>") + "</html>", txtPanelContentText.getText());
+                w.setText("<html>" + new String(data).replaceAll("\n", "<br>") + "</html>", txtPanelContentText.getText(),txtCommand.getText());
             }
             w.startPreview();
             d.setVisible(true);
@@ -1250,6 +1262,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             target.webcamTitle = txtWebcamTitle.getText();
             target.outputAudioRate = audioRate.name();
             target.mainOverlayLocation = cboPanelOrientation.getSelectedItem().toString();
+            target.command = txtCommand.getText();
             target.saveDefault(mConfig);
             stopShortcuts();
         } catch (IOException ex) {
@@ -1358,6 +1371,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1382,6 +1396,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     private javax.swing.JScrollPane scrollPanelContentText;
     private javax.swing.JSpinner spinShowDurationTime;
     private javax.swing.JTabbedPane tabs;
+    private javax.swing.JTextField txtCommand;
     private javax.swing.JTextArea txtPanelContentText;
     private javax.swing.JTextField txtWebcamTitle;
     // End of variables declaration//GEN-END:variables

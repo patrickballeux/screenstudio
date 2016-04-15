@@ -20,6 +20,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -32,7 +34,7 @@ import screenstudio.sources.WebcamViewer;
  *
  * @author patrick
  */
-public final class PanelWebcam extends javax.swing.JPanel implements TextContent {
+public final class PanelWebcam extends javax.swing.JPanel {
 
     private final WebcamViewer mViewer;
     private final long startingTime;
@@ -139,6 +141,7 @@ public final class PanelWebcam extends javax.swing.JPanel implements TextContent
         tips += "<li>@STARTTIME (Time when the recording started)</li>";
         tips += "<li>@REMAININGTIME (Time remaining in minutes)</li>";
         tips += "<li>@TEXT (Custom text from the text entry in the Panel tab...)</li>";
+        tips += "<li>@COMMAND (Custom text from a command output...)</li>";
         tips += "</ul>";
         this.setToolTipText("<html>" + tips + "</html>");
         this.revalidate();
@@ -210,15 +213,39 @@ public final class PanelWebcam extends javax.swing.JPanel implements TextContent
         super.paint(g);
     }
 
-    @Override
-    public void setText(String text, String userTextContent) {
+    public void setText(String text, String userTextContent, String command) {
         mIsUpdating = true;
         mText = text.replaceAll("@TEXT", userTextContent);
-        if (mText.toUpperCase().contains("<HTML>")){
-            mText = mText.replaceFirst("<BODY", "<BODY width="+ (int)lblText.getPreferredSize().getWidth() +" height="+(int)lblText.getPreferredSize().getHeight());
-            mText = mText.replaceFirst("<body", "<body width="+ (int)lblText.getPreferredSize().getWidth() +" height="+(int)lblText.getPreferredSize().getHeight());
+        if (command.length() > 0) {
+            String commandContent = getCommandContent(command);
+            if (mText.toUpperCase().contains("<HTML")){
+                commandContent = commandContent.replaceAll("\n", "<BR>");
+            }
+            mText = mText.replaceAll("@COMMAND", commandContent);
+        }
+        if (mText.toUpperCase().contains("<HTML>")) {
+            mText = mText.replaceFirst("<BODY", "<BODY width=" + (int) lblText.getPreferredSize().getWidth() + " height=" + (int) lblText.getPreferredSize().getHeight());
+            mText = mText.replaceFirst("<body", "<body width=" + (int) lblText.getPreferredSize().getWidth() + " height=" + (int) lblText.getPreferredSize().getHeight());
         }
         mIsUpdating = false;
+    }
+
+    private String getCommandContent(String command) {
+        String retValue = "";
+        try {
+            Process p = Runtime.getRuntime().exec(command);
+            InputStream in = p.getInputStream();
+            byte[] data = new byte[65000];
+            int count = in.read(data);
+            while (count > 0 && !mStopMe) {
+                retValue += new String(data, 0, count);
+                count = in.read(data);
+            }
+            retValue = retValue.trim();
+        } catch (IOException ex) {
+            Logger.getLogger(PanelWebcam.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return retValue;
     }
 
     private final DateFormat formatDate = DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault());
