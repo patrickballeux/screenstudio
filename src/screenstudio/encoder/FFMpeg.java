@@ -24,6 +24,7 @@ import java.net.MalformedURLException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import screenstudio.gui.overlays.PanelWebcam;
 import screenstudio.sources.Overlay;
 import screenstudio.sources.Screen;
 import screenstudio.targets.SIZES;
@@ -267,13 +268,22 @@ public class FFMpeg {
      * @param capHeight
      * @param size
      */
-    public void setOutputSize(int capWidth, int capHeight, SIZES size) {
+    public void setOutputSize(int capWidth, int capHeight, SIZES size,PanelWebcam.PanelLocation panelLocation) {
         captureWidth = String.valueOf(capWidth);
         captureHeight = String.valueOf(capHeight);
         if (overlayInput.length() > 0) {
-            capWidth += overlaySetting.getSize().getWidth();
+            switch(panelLocation){
+                case Top:
+                case Bottom:
+                    capHeight += overlaySetting.getSize().getHeight();
+                    break;
+                case Left:
+                case Right:
+                    capWidth += overlaySetting.getSize().getWidth();
+                    break;
+            }
         }
-        int calculatedWidth = capWidth;
+        int calculatedWidth;
         switch (size) {
             case SOURCE:
                 outputHeight = String.valueOf(capHeight);
@@ -344,10 +354,11 @@ public class FFMpeg {
     /**
      * Build the complete FFMpeg command from this object instance
      *
+     * @param panelLocation
      * @param debugMode : If enabled, verbose mode is activated
      * @return the full command for FFMpeg
      */
-    public String getCommand(boolean debugMode) {
+    public String getCommand(PanelWebcam.PanelLocation panelLocation, boolean debugMode) {
         StringBuilder c = new StringBuilder();
         // Add binary path
         c.append(bin);
@@ -377,8 +388,20 @@ public class FFMpeg {
             c.append(" -framerate ").append(framerate);
             c.append(" -video_size ").append(w).append("x").append(h);
             c.append(" -i ").append(overlayInput);
-            c.append(" -filter_complex [0:v]pad=iw+").append(w).append(":ih[desk];[desk][2:v]overlay=main_w-overlay_w:0");
-
+            switch (panelLocation) {
+                case Top:
+                    c.append(" -filter_complex [0:v]pad=iw:ih+").append(h).append(":0:").append(h).append("[desk];[desk][2:v]overlay=0:0");
+                    break;
+                case Bottom:
+                    c.append(" -filter_complex [0:v]pad=iw:ih+").append(h).append("[desk];[desk][2:v]overlay=0:main_h-overlay_h");
+                    break;
+                case Left:
+                    c.append(" -filter_complex [0:v]pad=iw+").append(w).append(":ih:").append(w).append("[desk];[desk][2:v]overlay=0:0");
+                    break;
+                case Right:
+                    c.append(" -filter_complex [0:v]pad=iw+").append(w).append(":ih[desk];[desk][2:v]overlay=main_w-overlay_w:0");
+                    break;
+            }
         }
 
         // Enabled strict settings

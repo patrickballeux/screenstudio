@@ -41,15 +41,14 @@ public class Overlay implements Runnable {
     private boolean stopME = false;
     private OverlayUnix mOutput = null;
 
-    public Overlay(File content, int width, int height, int fps, screenstudio.sources.Webcam webcam, int showDurationTime, String userTextContent, String webcamTitle) throws IOException, InterruptedException {
+    public Overlay(File content,PanelWebcam.PanelLocation location, Screen screen, screenstudio.sources.Webcam webcam, int showDurationTime, String userTextContent, String webcamTitle) throws IOException, InterruptedException {
         mContent = content;
         mUserTextContent = userTextContent;
-        htmlRenderer = new PanelWebcam(webcam, width, height, showDurationTime, webcamTitle);
+        htmlRenderer = new PanelWebcam(location,webcam, screen, showDurationTime, webcamTitle);
         htmlRenderer.setVisible(true);
-        htmlRenderer.setSize(width, height);
         htmlRenderer.setOpaque(true);
         htmlRenderer.repaint();
-        mFPS = fps;
+        mFPS = screen.getFps();
         new Thread(this).start();
         mOutput = new OverlayUnix(htmlRenderer, mFPS);
     }

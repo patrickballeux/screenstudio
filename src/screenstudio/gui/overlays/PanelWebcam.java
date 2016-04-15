@@ -17,6 +17,7 @@
 package screenstudio.gui.overlays;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.io.File;
 import java.text.DateFormat;
@@ -24,6 +25,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import screenstudio.sources.Screen;
 import screenstudio.sources.WebcamViewer;
 
 /**
@@ -38,21 +40,32 @@ public final class PanelWebcam extends javax.swing.JPanel implements TextContent
     private boolean mIsUpdating = false;
     private boolean mStopMe = false;
     private String mText = "";
-    public enum WebcamLocation{
+    private long nextTextUpdate = 0;
+
+    public enum WebcamLocation {
         Top,
         Bottom,
+        Left,
+        Right,
+    }
+
+    public enum PanelLocation {
+        Top,
+        Bottom,
+        Left,
+        Right,
     }
 
     /**
      * Creates new form PanelWebcam
      *
+     * @param location
      * @param webcam
-     * @param width
-     * @param height
+     * @param screen
      * @param showDuration
      * @param webcamTitle
      */
-    public PanelWebcam(screenstudio.sources.Webcam webcam, int width, int height, int showDuration, String webcamTitle) {
+    public PanelWebcam(PanelLocation location, screenstudio.sources.Webcam webcam, Screen screen, int showDuration, String webcamTitle) {
         initComponents();
         startingTime = System.currentTimeMillis();
         showEndTime = System.currentTimeMillis() + (showDuration * 60000);
@@ -61,15 +74,63 @@ public final class PanelWebcam extends javax.swing.JPanel implements TextContent
             mViewer.setOpaque(true);
             panWebcam.setOpaque(true);
             panWebcam.add(mViewer, BorderLayout.CENTER);
-            setWebcamLocation(webcam.getLocation());
+            panWebcam.setPreferredSize(new Dimension(webcam.getWidth(), webcam.getHeight()));
             new Thread(mViewer).start();
             System.out.println("Started webcam viewer");
+            switch (location) {
+                case Top:
+                case Bottom:
+                    switch (webcam.getLocation()) {
+                        case Bottom:
+                            setWebcamLocation(WebcamLocation.Right);
+                            break;
+                        case Top:
+                            setWebcamLocation(WebcamLocation.Left);
+                            break;
+                        default:
+                            setWebcamLocation(webcam.getLocation());
+                            break;
+                    }
+                    this.setSize((int) screen.getSize().getWidth(), webcam.getHeight());
+                    this.setPreferredSize(new Dimension((int) screen.getSize().getWidth(), webcam.getHeight()));
+                    lblText.setPreferredSize(new Dimension((int) screen.getSize().getWidth() - webcam.getWidth(), webcam.getHeight()));
+                    break;
+                case Left:
+                case Right:
+                    switch (webcam.getLocation()) {
+                        case Left:
+                            setWebcamLocation(WebcamLocation.Top);
+                            break;
+                        case Right:
+                            setWebcamLocation(WebcamLocation.Bottom);
+                            break;
+                        default:
+                            setWebcamLocation(webcam.getLocation());
+                            break;
+                    }
+                    this.setSize(webcam.getWidth(), (int) screen.getSize().getHeight());
+                    this.setPreferredSize(new Dimension(webcam.getWidth(), (int) screen.getSize().getHeight()));
+                    lblText.setPreferredSize(new Dimension(webcam.getWidth(), (int) screen.getSize().getHeight() - webcam.getHeight()));
+                    break;
+            }
         } else {
             mViewer = null;
             this.remove(panWebcam);
-            this.revalidate();
-            this.doLayout();
+            switch (location) {
+                case Top:
+                case Bottom:
+                    this.setSize((int) screen.getSize().getWidth(), 120);
+                    this.setPreferredSize(new Dimension((int) screen.getSize().getWidth(), 120));
+                    break;
+                case Left:
+                case Right:
+                    this.setSize(320, (int) screen.getSize().getHeight());
+                    this.setPreferredSize(new Dimension(320, (int) screen.getSize().getHeight()));
+                    break;
+            }
+            lblText.setPreferredSize(this.getPreferredSize());
         }
+        lblText.setSize(lblText.getPreferredSize());
         String tips = "<H1>Supported tags</H1>";
         tips += "<ul>";
         tips += "<li>@CURRENTDATE (Current date)</li>";
@@ -80,18 +141,26 @@ public final class PanelWebcam extends javax.swing.JPanel implements TextContent
         tips += "<li>@TEXT (Custom text from the text entry in the Panel tab...)</li>";
         tips += "</ul>";
         this.setToolTipText("<html>" + tips + "</html>");
+        this.revalidate();
+        this.doLayout();
 
     }
 
-    public void setWebcamLocation(WebcamLocation location){
-        if (mViewer !=null){
+    public void setWebcamLocation(WebcamLocation location) {
+        if (mViewer != null) {
             this.remove(panWebcam);
-            switch(location){
+            switch (location) {
                 case Top:
                     this.add(panWebcam, BorderLayout.NORTH);
                     break;
                 case Bottom:
                     this.add(panWebcam, BorderLayout.SOUTH);
+                    break;
+                case Left:
+                    this.add(panWebcam, BorderLayout.WEST);
+                    break;
+                case Right:
+                    this.add(panWebcam, BorderLayout.EAST);
                     break;
                 default:
                     this.add(panWebcam, BorderLayout.NORTH);
@@ -99,6 +168,7 @@ public final class PanelWebcam extends javax.swing.JPanel implements TextContent
             }
         }
     }
+
     public boolean IsUpdating() {
         return mIsUpdating;
     }
@@ -132,7 +202,11 @@ public final class PanelWebcam extends javax.swing.JPanel implements TextContent
 
     @Override
     public void paint(Graphics g) {
-        lblText.setText(replaceTags(mText));
+        if (System.currentTimeMillis() > nextTextUpdate) {
+            lblText.setText(replaceTags(mText));
+            lblText.revalidate();
+            nextTextUpdate = System.currentTimeMillis() + 1000;
+        }
         super.paint(g);
     }
 
@@ -140,11 +214,15 @@ public final class PanelWebcam extends javax.swing.JPanel implements TextContent
     public void setText(String text, String userTextContent) {
         mIsUpdating = true;
         mText = text.replaceAll("@TEXT", userTextContent);
+        if (mText.toUpperCase().contains("<HTML>")){
+            mText = mText.replaceFirst("<BODY", "<BODY width="+ (int)lblText.getPreferredSize().getWidth() +" height="+(int)lblText.getPreferredSize().getHeight());
+            mText = mText.replaceFirst("<body", "<body width="+ (int)lblText.getPreferredSize().getWidth() +" height="+(int)lblText.getPreferredSize().getHeight());
+        }
         mIsUpdating = false;
     }
 
-    private DateFormat formatDate = DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault());
-    private DateFormat formatTime = DateFormat.getTimeInstance(DateFormat.LONG, Locale.getDefault());
+    private final DateFormat formatDate = DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault());
+    private final DateFormat formatTime = DateFormat.getTimeInstance(DateFormat.LONG, Locale.getDefault());
 
     private String replaceTags(String text) {
         String retValue = text + "";
@@ -175,18 +253,16 @@ public final class PanelWebcam extends javax.swing.JPanel implements TextContent
         panWebcam.setBackground(new java.awt.Color(102, 102, 102));
         panWebcam.setBorder(null);
         panWebcam.setForeground(java.awt.Color.white);
-        panWebcam.setPreferredSize(new java.awt.Dimension(320, 240));
+        panWebcam.setPreferredSize(new java.awt.Dimension(160, 120));
         panWebcam.setLayout(new java.awt.BorderLayout());
-        add(panWebcam, java.awt.BorderLayout.SOUTH);
+        add(panWebcam, java.awt.BorderLayout.WEST);
 
         lblText.setBackground(java.awt.Color.black);
         lblText.setForeground(new java.awt.Color(19, 219, 19));
-        lblText.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         lblText.setText("<html>ScreenStudio</html>");
         lblText.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         lblText.setBorder(null);
         lblText.setOpaque(true);
-        lblText.setPreferredSize(new java.awt.Dimension(320, 24));
         add(lblText, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
