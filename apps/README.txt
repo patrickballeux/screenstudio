@@ -91,6 +91,7 @@ In the text/html content, some tags are supported to udate the text content with
 	@STARTTIME (Time when the recording started)
 	@REMAININGTIME (Time remaining in minutes)
 	@TEXT (Custom text from the text entry in the Panel tab...)
+        @COMMAND (Custom text from a command output...)
 
 
 - AUDIO INPUT:
