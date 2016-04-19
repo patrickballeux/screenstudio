@@ -96,6 +96,7 @@ public class FFMpeg {
     private String output = "Capture/capture.mp4";
     private File mHome = new File(".");
     private String mThreading = "";
+    private File mWatermarkFile = null;
 
     private Rectangle overlaySetting = new Rectangle(0, 0);
 
@@ -114,6 +115,14 @@ public class FFMpeg {
 
     public File getHome() {
         return mHome;
+    }
+
+    public File getWaterMark() {
+        return mWatermarkFile;
+    }
+
+    public void setWaterMark(File image) {
+        mWatermarkFile = image;
     }
 
     /**
@@ -268,11 +277,11 @@ public class FFMpeg {
      * @param capHeight
      * @param size
      */
-    public void setOutputSize(int capWidth, int capHeight, SIZES size,PanelWebcam.PanelLocation panelLocation) {
+    public void setOutputSize(int capWidth, int capHeight, SIZES size, PanelWebcam.PanelLocation panelLocation) {
         captureWidth = String.valueOf(capWidth);
         captureHeight = String.valueOf(capHeight);
         if (overlayInput.length() > 0) {
-            switch(panelLocation){
+            switch (panelLocation) {
                 case Top:
                 case Bottom:
                     capHeight += overlaySetting.getSize().getHeight();
@@ -403,7 +412,9 @@ public class FFMpeg {
                     break;
             }
         }
-
+        if (mWatermarkFile != null) {
+            c.append(" -f image2 -i ").append(mWatermarkFile.getAbsolutePath()).append("  -filter_complex overlay=0:main_h-overlay_h");
+        }
         // Enabled strict settings
         if (strictSetting.length() > 0) {
             c.append(" -strict ").append(strictSetting);

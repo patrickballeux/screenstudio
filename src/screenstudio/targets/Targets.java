@@ -123,6 +123,7 @@ public class Targets {
     public String doNotHide = "false";
     public String webcamLocation = "Top";
     public String command = "";
+    public String waterMarkFile = "";
 // </editor-fold>
 
     public void saveDefault(File config) throws IOException {

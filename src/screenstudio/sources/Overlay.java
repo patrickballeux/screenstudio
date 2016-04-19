@@ -110,8 +110,22 @@ public class Overlay implements Runnable {
         }
         return newList;
     }
-    //create overlay side by side
-//ffmpeg -i capture-1454504589261.mp4 -i capture-1454504589261.mp4 -filter_complex "[0:v]pad=iw+100:ih[left];[left][1:v]overlay=w" test.flv
+    public static ArrayList<File> getWaterMarks() throws IOException {
+
+        File home = new FFMpeg().getHome();
+        File overlayFolder = new File(home, "Overlays");
+        if (!overlayFolder.exists()) {
+            overlayFolder.mkdir();
+        }
+        File[] list = overlayFolder.listFiles((File folder, String filename) -> filename.endsWith("png"));
+        ArrayList<File> newList = new ArrayList();
+        newList.add(new ComboBoxFile("None"));
+
+        for (File f : list) {
+            newList.add(new ComboBoxFile(f.getAbsolutePath()));
+        }
+        return newList;
+    }
 
     @Override
     public void run() {

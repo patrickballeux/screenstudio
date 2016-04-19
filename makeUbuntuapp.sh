@@ -6,7 +6,7 @@ rm src/screenstudio/Version.java
 mv src/screenstudio/Version.java.temp src/screenstudio/Version.java
 ant -Dnb.internal.action.name=rebuild clean
 rm Capture/*.*
-tar -zcvf "../ScreenStudio-Ubuntu-$VERSION-src.tar.gz" .
+tar --exclude-vcs -zcvf "../ScreenStudio-Ubuntu-$VERSION-src.tar.gz" .
 ant -Dnb.internal.action.name=jar
 echo "Building Ubuntu app"
 echo "Removing previous build..."
