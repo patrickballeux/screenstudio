@@ -389,6 +389,10 @@ public class FFMpeg {
         }
         // Capture Audio
         c.append(" -f ").append(audioFormat).append(" -i ").append(audioInput);
+        // watermark
+        if (mWatermarkFile != null) {
+            c.append(" -f image2 -i ").append(mWatermarkFile.getAbsolutePath());
+        }
         // Capture Overlay Panel
         if (overlayInput.length() > 0) {
             int w = (int) overlaySetting.getWidth();
@@ -397,23 +401,36 @@ public class FFMpeg {
             c.append(" -framerate ").append(framerate);
             c.append(" -video_size ").append(w).append("x").append(h);
             c.append(" -i ").append(overlayInput);
+
             switch (panelLocation) {
                 case Top:
-                    c.append(" -filter_complex [0:v]pad=iw:ih+").append(h).append(":0:").append(h).append("[desk];[desk][2:v]overlay=0:0");
+                    if (mWatermarkFile != null) {
+                        c.append(" -filter_complex [0:v][2:v]overlay=0:main_h-overlay_h[pre];[pre]pad=iw:ih+").append(h).append(":0:").append(h).append("[desk];[desk][3:v]overlay=0:0");
+                    } else {
+                        c.append(" -filter_complex [0:v]pad=iw:ih+").append(h).append(":0:").append(h).append("[desk];[desk][2:v]overlay=0:0");
+                    }
                     break;
                 case Bottom:
-                    c.append(" -filter_complex [0:v]pad=iw:ih+").append(h).append("[desk];[desk][2:v]overlay=0:main_h-overlay_h");
-                    break;
+                    if (mWatermarkFile != null) {
+                        c.append(" -filter_complex [0:v][2:v]overlay=0:main_h-overlay_h[pre];[pre]pad=iw:ih+").append(h).append("[desk];[desk][3:v]overlay=0:main_h-overlay_h");
+                    } else {
+                        c.append(" -filter_complex [0:v]pad=iw:ih+").append(h).append("[desk];[desk][2:v]overlay=0:main_h-overlay_h");
+                    }
                 case Left:
-                    c.append(" -filter_complex [0:v]pad=iw+").append(w).append(":ih:").append(w).append("[desk];[desk][2:v]overlay=0:0");
-                    break;
+                    if (mWatermarkFile != null) {
+                        c.append(" -filter_complex [0:v][2:v]overlay=0:main_h-overlay_h[pre];[pre]pad=iw+").append(w).append(":ih:").append(w).append("[desk];[desk][3:v]overlay=0:0");
+                    } else {
+                        c.append(" -filter_complex [0:v]pad=iw+").append(w).append(":ih:").append(w).append("[desk];[desk][2:v]overlay=0:0");
+                    }
                 case Right:
-                    c.append(" -filter_complex [0:v]pad=iw+").append(w).append(":ih[desk];[desk][2:v]overlay=main_w-overlay_w:0");
-                    break;
+                    if (mWatermarkFile != null) {
+                        c.append(" -filter_complex [0:v][2:v]overlay=0:main_h-overlay_h[pre];[pre]pad=iw+").append(w).append(":ih[desk];[desk][3:v]overlay=main_w-overlay_w:0");
+                    } else {
+                        c.append(" -filter_complex [0:v]pad=iw+").append(w).append(":ih[desk];[desk][2:v]overlay=main_w-overlay_w:0");
+                    }
             }
-        }
-        if (mWatermarkFile != null) {
-            c.append(" -f image2 -i ").append(mWatermarkFile.getAbsolutePath()).append("  -filter_complex overlay=0:main_h-overlay_h");
+        } else if (mWatermarkFile != null) {
+            c.append(" -filter_complex [0:v][2:v]overlay=0:main_h-overlay_h");
         }
         // Enabled strict settings
         if (strictSetting.length() > 0) {
