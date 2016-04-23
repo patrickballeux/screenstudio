@@ -16,9 +16,15 @@
  */
 package screenstudio.sources;
 
+import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Robot;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
@@ -51,6 +57,7 @@ public class WebcamViewer extends javax.swing.JPanel implements Runnable {
      * @param width
      * @param height
      * @param title
+     * @param fps
      */
     public WebcamViewer(File device, int width, int height, String title, int fps) {
         initComponents();
@@ -84,7 +91,7 @@ public class WebcamViewer extends javax.swing.JPanel implements Runnable {
             g.setColor(Color.WHITE);
             g.setPaintMode();
             g.drawString(mTitle, (getWidth() / 2) - (strW / 2), strH);
-            
+
         }
     }
 
@@ -116,7 +123,9 @@ public class WebcamViewer extends javax.swing.JPanel implements Runnable {
     // End of variables declaration//GEN-END:variables
     @Override
     public void run() {
+
         String webcamFormat = "video4linux2";
+        String displayFormat = "x11grab";
         String bin = "ffmpeg";
         File folder = new File("FFMPEG");
         if (folder.exists()) {
@@ -134,6 +143,7 @@ public class WebcamViewer extends javax.swing.JPanel implements Runnable {
                         p.load(in);
                     }
                     webcamFormat = p.getProperty("WEBCAMFORMAT", webcamFormat);
+                    displayFormat = p.getProperty("DESKTOPFORMAT", webcamFormat);
                     bin = p.getProperty("BIN", bin);
                 } catch (MalformedURLException ex) {
                     Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
@@ -143,15 +153,27 @@ public class WebcamViewer extends javax.swing.JPanel implements Runnable {
 
             }
         }
+
         try {
             stopMe = false;
-            Process p = Runtime.getRuntime().exec(bin + " -nostats -loglevel 0 -f " + webcamFormat + " -i " + mDevice + " -s " + mWidth + "x" + mHeight + " -r " + mFPS + " -f rawvideo -pix_fmt bgr24 -");
-            java.io.DataInputStream in = new java.io.DataInputStream(p.getInputStream());
+            String command;
             BufferedImage img;
+  
+            if (mDevice.getName().equals("MOUSE")) {
+                if (Screen.isOSX()) {
+                    command = bin + " -nostats -loglevel 0 -f " + displayFormat + " -follow_mouse centered -video_size " + mWidth/2 + "x" + mHeight/2 + " -i " + "0: -s " + mWidth + "x" + mHeight + " -r " + mFPS + "  -f rawvideo -pix_fmt bgr24 -";
+                } else {
+                    command = bin + " -nostats -loglevel 0 -f " + displayFormat + " -follow_mouse centered -video_size " + mWidth/2 + "x" + mHeight/2 + " -i " + ":0.0 -s " + mWidth + "x" + mHeight + " -r " + mFPS + " -f rawvideo -pix_fmt bgr24 -";
+                }
+            } else {
+                command = bin + " -nostats -loglevel 0 -f " + webcamFormat + " -i " + mDevice.getAbsolutePath() + " -s " + mWidth + "x" + mHeight + " -r " + mFPS + " -f rawvideo -pix_fmt bgr24 -";
+            }
+            Process p = Runtime.getRuntime().exec(command);
+            java.io.DataInputStream in = new java.io.DataInputStream(p.getInputStream());
             while (!stopMe) {
                 img = new BufferedImage(mWidth, mHeight, BufferedImage.TYPE_3BYTE_BGR);
                 in.readFully(((DataBufferByte) img.getRaster().getDataBuffer()).getData());
-                buffer =img;
+                buffer = img;
             }
             in.close();
             p.destroy();
@@ -159,4 +181,5 @@ public class WebcamViewer extends javax.swing.JPanel implements Runnable {
             Logger.getLogger(WebcamViewer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
 }

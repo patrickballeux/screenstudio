@@ -111,6 +111,8 @@ public class Webcam {
                 }
             }
         }
+        w = new Webcam("MOUSE", "Mouse", "Mouse");
+        list.add(w);
         return list.toArray(new Webcam[list.size()]);
     }
 
