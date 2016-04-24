@@ -118,7 +118,6 @@ public class WebcamViewer extends javax.swing.JPanel implements Runnable {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
     @Override
@@ -143,7 +142,7 @@ public class WebcamViewer extends javax.swing.JPanel implements Runnable {
                         p.load(in);
                     }
                     webcamFormat = p.getProperty("WEBCAMFORMAT", webcamFormat);
-                    displayFormat = p.getProperty("DESKTOPFORMAT", webcamFormat);
+                    displayFormat = p.getProperty("DESKTOPFORMAT", displayFormat);
                     bin = p.getProperty("BIN", bin);
                 } catch (MalformedURLException ex) {
                     Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
@@ -158,15 +157,15 @@ public class WebcamViewer extends javax.swing.JPanel implements Runnable {
             stopMe = false;
             String command;
             BufferedImage img;
-  
+
             if (mDevice.getName().equals("MOUSE")) {
                 if (Screen.isOSX()) {
-                    command = bin + " -nostats -loglevel 0 -f " + displayFormat + " -follow_mouse centered -video_size " + mWidth/2 + "x" + mHeight/2 + " -i " + "0: -s " + mWidth + "x" + mHeight + " -r " + mFPS + "  -f rawvideo -pix_fmt bgr24 -";
+                    command = bin + " -nostats -loglevel 0 -f " + displayFormat + " -follow_mouse centered -video_size " + mWidth / 2 + "x" + mHeight / 2 + " -i " + "0: -s " + mWidth + "x" + mHeight + " -r " + mFPS + "  -f rawvideo -pix_fmt bgr24 -";
                 } else {
-                    command = bin + " -nostats -loglevel 0 -f " + displayFormat + " -follow_mouse centered -video_size " + mWidth/2 + "x" + mHeight/2 + " -i " + ":0.0 -s " + mWidth + "x" + mHeight + " -r " + mFPS + " -f rawvideo -pix_fmt bgr24 -";
+                    command = bin + " -nostats -loglevel 0 -f " + displayFormat + " -follow_mouse centered -video_size " + mWidth / 2 + "x" + mHeight / 2 + " -i " + ":0.0 -s " + mWidth + "x" + mHeight + " -r " + mFPS + " -f rawvideo -pix_fmt bgr24 -";
                 }
             } else {
-                command = bin + " -nostats -loglevel 0 -f " + webcamFormat + " -i " + mDevice.getAbsolutePath() + " -s " + mWidth + "x" + mHeight + " -r " + mFPS + " -f rawvideo -pix_fmt bgr24 -";
+                command = bin + " -nostats -loglevel 0 -f " + webcamFormat + " -i " + mDevice.toString() + " -s " + mWidth + "x" + mHeight + " -r " + mFPS + " -f rawvideo -pix_fmt bgr24 -";
             }
             Process p = Runtime.getRuntime().exec(command);
             java.io.DataInputStream in = new java.io.DataInputStream(p.getInputStream());

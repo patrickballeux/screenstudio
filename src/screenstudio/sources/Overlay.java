@@ -42,17 +42,21 @@ public class Overlay implements Runnable {
     private OverlayUnix mOutput = null;
     private String mCommand;
 
-    public Overlay(File content,PanelWebcam.PanelLocation location, Screen screen, screenstudio.sources.Webcam webcam, int showDurationTime, String userTextContent, String webcamTitle,String command) throws IOException, InterruptedException {
+    public Overlay(File content, PanelWebcam.PanelLocation location, Screen screen, screenstudio.sources.Webcam webcam, int showDurationTime, String userTextContent, String webcamTitle, String command) throws IOException, InterruptedException {
         mContent = content;
         mCommand = command;
         mUserTextContent = userTextContent;
-        htmlRenderer = new PanelWebcam(location,webcam, screen, showDurationTime, webcamTitle);
+        htmlRenderer = new PanelWebcam(location, webcam, screen, showDurationTime, webcamTitle);
         htmlRenderer.setVisible(true);
         htmlRenderer.setOpaque(true);
         htmlRenderer.repaint();
         mFPS = screen.getFps();
         new Thread(this).start();
         mOutput = new OverlayUnix(htmlRenderer, mFPS);
+    }
+
+    public void start() {
+        mOutput.start();
     }
 
     public boolean isRunning() {
@@ -110,6 +114,7 @@ public class Overlay implements Runnable {
         }
         return newList;
     }
+
     public static ArrayList<File> getWaterMarks() throws IOException {
 
         File home = new FFMpeg().getHome();
@@ -131,7 +136,7 @@ public class Overlay implements Runnable {
     public void run() {
         stopME = false;
         try {
-            htmlRenderer.setText("<html></html>", "","");
+            htmlRenderer.setText("<html></html>", "", "");
             htmlRenderer.repaint();
             while (!stopME) {
                 // Read content into renderer...
@@ -140,7 +145,7 @@ public class Overlay implements Runnable {
                 in.read(data);
                 if (mContent.getName().endsWith("html")) {
                     //Reading content from a local html file
-                    htmlRenderer.setText(new String(data), mUserTextContent,mCommand);
+                    htmlRenderer.setText(new String(data), mUserTextContent, mCommand);
                 } else if (mContent.getName().endsWith("url")) {
                     //Reading content from a webpage...
                     data = new byte[65536];
@@ -153,10 +158,10 @@ public class Overlay implements Runnable {
                         html.append(new String(data, 0, count));
                         count = in.read(data);
                     }
-                    htmlRenderer.setText(html.toString(), mUserTextContent,mCommand);
+                    htmlRenderer.setText(html.toString(), mUserTextContent, mCommand);
                 } else {
                     //Reading raw content from a text file
-                    htmlRenderer.setText("<html>" + new String(data).replaceAll("\n", "<br>") + "</html>", mUserTextContent,mCommand);
+                    htmlRenderer.setText("<html>" + new String(data).replaceAll("\n", "<br>") + "</html>", mUserTextContent, mCommand);
                 }
                 htmlRenderer.repaint();
                 in.close();

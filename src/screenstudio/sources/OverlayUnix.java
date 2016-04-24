@@ -46,6 +46,9 @@ public class OverlayUnix implements Runnable {
         //Make sure it does not exists
         mOutput.delete();
         Runtime.getRuntime().exec("mkfifo " + mOutput.getAbsolutePath());
+    }
+
+    public void start() {
         new Thread(this).start();
     }
 
@@ -73,7 +76,7 @@ public class OverlayUnix implements Runnable {
             byte[] imageBytes = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
             long frameTime = (1000000000 / mFPS);
             long nextPTS = System.nanoTime() + frameTime;
-            while (!stopMe && out != null) {
+            while (!stopMe) {
                 try {
                     if (!mPanel.IsUpdating()) {
                         mPanel.paint(g);

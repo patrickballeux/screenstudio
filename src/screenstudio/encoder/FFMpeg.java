@@ -76,6 +76,7 @@ public class FFMpeg {
     //Overlay
     private String overlayInput = "";
     private String overlayFormat = "rawvideo -pix_fmt bgr24";
+    private Overlay runningOverlay = null;
     // Audio
     private String audioRate = "44100";
     private String audioInput = "default";
@@ -155,12 +156,17 @@ public class FFMpeg {
      * @param overlay
      */
     public void setOverlay(Overlay overlay) {
+        runningOverlay = overlay;
         if (overlay == null) {
             overlayInput = "";
         } else {
             overlayInput = overlay.OutputURL();
             overlaySetting = new Rectangle(0, 0, (int) overlay.getSize().getWidth(), (int) overlay.getSize().getHeight());
         }
+    }
+
+    public Overlay getOverlay() {
+        return runningOverlay;
     }
 
     /**

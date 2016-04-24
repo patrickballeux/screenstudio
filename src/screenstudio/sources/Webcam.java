@@ -67,19 +67,20 @@ public class Webcam {
     private double offset = 0;
     private PanelWebcam.WebcamLocation location = PanelWebcam.WebcamLocation.Top;
 
-
     private Webcam(String dev, String id, String desc) {
         device = dev;
         description = desc.trim();
         this.id = id;
     }
 
-    public void setLocation (PanelWebcam.WebcamLocation l){
+    public void setLocation(PanelWebcam.WebcamLocation l) {
         location = l;
     }
-    public PanelWebcam.WebcamLocation getLocation(){
+
+    public PanelWebcam.WebcamLocation getLocation() {
         return location;
     }
+
     public static Webcam[] getSources() throws IOException, InterruptedException {
         java.util.ArrayList<Webcam> list = new java.util.ArrayList<Webcam>();
         System.out.println("Webcam List:");
@@ -111,8 +112,10 @@ public class Webcam {
                 }
             }
         }
-        w = new Webcam("MOUSE", "Mouse", "Mouse");
-        list.add(w);
+        if (!Screen.isOSX()) {
+            w = new Webcam("MOUSE", "Mouse", "Mouse");
+            list.add(w);
+        }
         return list.toArray(new Webcam[list.size()]);
     }
 
@@ -140,7 +143,7 @@ public class Webcam {
                         for (int i = parts.length - 1; i >= 0; i--) {
                             if (parts[i].startsWith("[")) {
                                 // reached device id
-                                w.device = parts[i].substring(1, parts[i].length() - 1)+":";
+                                w.device = parts[i].substring(1, parts[i].length() - 1) + ":";
                                 break;
                             } else {
                                 w.id = parts[i] + " " + w.id;

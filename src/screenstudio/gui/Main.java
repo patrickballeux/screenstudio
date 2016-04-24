@@ -403,9 +403,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                 runningOverlay = new Overlay(content, (PanelWebcam.PanelLocation) cboPanelOrientation.getSelectedItem(), s, null, (Integer) spinShowDurationTime.getValue(), txtPanelContentText.getText(), txtWebcamTitle.getText(), txtCommand.getText());
             }
             command.setOverlay(runningOverlay);
-            while (!runningOverlay.isRunning()) {
-                Thread.sleep(100);
-            }
         }
         command.setOutputSize((int) s.getSize().getWidth(), (int) s.getSize().getHeight(), (SIZES) cboProfiles.getSelectedItem(), (PanelWebcam.PanelLocation) cboPanelOrientation.getSelectedItem());
 
@@ -581,7 +578,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         jLabel11 = new javax.swing.JLabel();
         cboAudioRate = new javax.swing.JComboBox();
         jLabel13 = new javax.swing.JLabel();
-        cboWaterMarks = new javax.swing.JComboBox<>();
+        cboWaterMarks = new javax.swing.JComboBox<java.io.File>();
         panPanel = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         cboOverlays = new javax.swing.JComboBox();
@@ -593,7 +590,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         txtPanelContentText = new javax.swing.JTextArea();
         btnEditor = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
-        cboPanelOrientation = new javax.swing.JComboBox<>();
+        cboPanelOrientation = new javax.swing.JComboBox<PanelWebcam.PanelLocation>();
         jLabel12 = new javax.swing.JLabel();
         txtCommand = new javax.swing.JTextField();
         panStatusBar = new javax.swing.JPanel();
@@ -698,7 +695,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     .addGroup(panCaptureLayout.createSequentialGroup()
                         .addComponent(lblTargets)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cboTargets, 0, 292, Short.MAX_VALUE)
+                        .addComponent(cboTargets, 0, 341, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSetTarget))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panCaptureLayout.createSequentialGroup()
@@ -710,7 +707,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     .addGroup(panCaptureLayout.createSequentialGroup()
                         .addComponent(lblProfiles)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cboProfiles, 0, 292, Short.MAX_VALUE)
+                        .addComponent(cboProfiles, 0, 340, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSetProfile)
                         .addGap(1, 1, 1)))
@@ -928,7 +925,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             }
         });
 
-        spinShowDurationTime.setModel(new javax.swing.SpinnerNumberModel(30, 0, null, 15));
+        spinShowDurationTime.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(30), Integer.valueOf(0), null, Integer.valueOf(15)));
 
         jLabel1.setText("Duration");
 
@@ -985,7 +982,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panPanelLayout.createSequentialGroup()
                                 .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(cboPanelOrientation, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(cboOverlays, 0, 180, Short.MAX_VALUE))
+                                    .addComponent(cboOverlays, 0, 195, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnPreviewPanelContent)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1060,8 +1057,8 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                 } else {
                     this.setVisible(false);
                 }
-
                 FFMpeg command = getCommand();
+                command.getOverlay().start();
                 startProcess(command.getCommand((PanelWebcam.PanelLocation) cboPanelOrientation.getSelectedItem(), chkDebugMode.isSelected()));
             } catch (IOException | InterruptedException ex) {
                 lblMessages.setText("An error occured: " + ex.getMessage());
@@ -1323,7 +1320,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             /* Set the Nimbus look and feel */
             //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
             /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-            * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
+             * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
              */
 //        try {
 //            //javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getCrossPlatformLookAndFeelClassName());
