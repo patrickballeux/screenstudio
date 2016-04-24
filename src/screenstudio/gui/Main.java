@@ -578,7 +578,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         jLabel11 = new javax.swing.JLabel();
         cboAudioRate = new javax.swing.JComboBox();
         jLabel13 = new javax.swing.JLabel();
-        cboWaterMarks = new javax.swing.JComboBox<java.io.File>();
+        cboWaterMarks = new javax.swing.JComboBox<>();
         panPanel = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         cboOverlays = new javax.swing.JComboBox();
@@ -590,7 +590,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         txtPanelContentText = new javax.swing.JTextArea();
         btnEditor = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
-        cboPanelOrientation = new javax.swing.JComboBox<PanelWebcam.PanelLocation>();
+        cboPanelOrientation = new javax.swing.JComboBox<>();
         jLabel12 = new javax.swing.JLabel();
         txtCommand = new javax.swing.JTextField();
         panStatusBar = new javax.swing.JPanel();
@@ -925,7 +925,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             }
         });
 
-        spinShowDurationTime.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(30), Integer.valueOf(0), null, Integer.valueOf(15)));
+        spinShowDurationTime.setModel(new javax.swing.SpinnerNumberModel(30, 0, null, 15));
 
         jLabel1.setText("Duration");
 
@@ -1059,6 +1059,11 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                 }
                 FFMpeg command = getCommand();
                 command.getOverlay().start();
+                if (!Screen.isOSX()){
+                    while (!command.getOverlay().isRunning()){
+                        Thread.sleep(100);
+                    }
+                }
                 startProcess(command.getCommand((PanelWebcam.PanelLocation) cboPanelOrientation.getSelectedItem(), chkDebugMode.isSelected()));
             } catch (IOException | InterruptedException ex) {
                 lblMessages.setText("An error occured: " + ex.getMessage());
