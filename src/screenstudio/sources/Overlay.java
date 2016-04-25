@@ -122,7 +122,7 @@ public class Overlay implements Runnable {
         if (!overlayFolder.exists()) {
             overlayFolder.mkdir();
         }
-        File[] list = overlayFolder.listFiles((File folder, String filename) -> filename.endsWith("png"));
+        File[] list = overlayFolder.listFiles((File folder, String filename) -> filename.toLowerCase().endsWith("png"));
         ArrayList<File> newList = new ArrayList();
         newList.add(new ComboBoxFile("None"));
 
