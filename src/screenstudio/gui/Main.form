@@ -503,18 +503,16 @@
                                   <Group type="102" alignment="1" attributes="0">
                                       <Group type="103" groupAlignment="1" attributes="0">
                                           <Component id="cboPanelOrientation" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="cboOverlays" pref="195" max="32767" attributes="0"/>
+                                          <Component id="cboOverlays" pref="298" max="32767" attributes="0"/>
                                       </Group>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="btnPreviewPanelContent" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" max="-2" attributes="0"/>
                                       <Component id="btnEditor" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" attributes="0">
                                       <Component id="spinShowDurationTime" min="-2" pref="78" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="212" max="32767" attributes="0"/>
                                   </Group>
                                   <Component id="txtCommand" alignment="0" max="32767" attributes="0"/>
                               </Group>
@@ -531,7 +529,6 @@
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="cboOverlays" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="btnPreviewPanelContent" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="btnEditor" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -551,7 +548,7 @@
                           <Component id="txtCommand" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="scrollPanelContentText" pref="134" max="32767" attributes="0"/>
+                      <Component id="scrollPanelContentText" pref="142" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -566,15 +563,6 @@
             <Component class="javax.swing.JComboBox" name="cboOverlays">
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cboOverlaysActionPerformed"/>
-              </Events>
-            </Component>
-            <Component class="javax.swing.JButton" name="btnPreviewPanelContent">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="..."/>
-                <Property name="toolTipText" type="java.lang.String" value="Preview panel..."/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPreviewPanelContentActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JSpinner" name="spinShowDurationTime">

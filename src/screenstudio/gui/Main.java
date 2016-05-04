@@ -583,7 +583,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         panPanel = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         cboOverlays = new javax.swing.JComboBox();
-        btnPreviewPanelContent = new javax.swing.JButton();
         spinShowDurationTime = new javax.swing.JSpinner();
         jLabel1 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
@@ -902,14 +901,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             }
         });
 
-        btnPreviewPanelContent.setText("...");
-        btnPreviewPanelContent.setToolTipText("Preview panel...");
-        btnPreviewPanelContent.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnPreviewPanelContentActionPerformed(evt);
-            }
-        });
-
         spinShowDurationTime.setModel(new javax.swing.SpinnerNumberModel(30, 0, null, 15));
 
         jLabel1.setText("Duration");
@@ -967,16 +958,14 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panPanelLayout.createSequentialGroup()
                                 .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(cboPanelOrientation, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(cboOverlays, 0, 195, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnPreviewPanelContent)
+                                    .addComponent(cboOverlays, 0, 298, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnEditor))
                             .addGroup(panPanelLayout.createSequentialGroup()
                                 .addComponent(spinShowDurationTime, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel8)
-                                .addGap(0, 0, Short.MAX_VALUE))
+                                .addGap(0, 212, Short.MAX_VALUE))
                             .addComponent(txtCommand))))
                 .addContainerGap())
         );
@@ -987,7 +976,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                 .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(cboOverlays, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnPreviewPanelContent)
                     .addComponent(btnEditor))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1003,7 +991,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     .addComponent(jLabel12)
                     .addComponent(txtCommand, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(scrollPanelContentText, javax.swing.GroupLayout.DEFAULT_SIZE, 134, Short.MAX_VALUE)
+                .addComponent(scrollPanelContentText, javax.swing.GroupLayout.DEFAULT_SIZE, 142, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1133,12 +1121,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
 
     private void cboOverlaysActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboOverlaysActionPerformed
         updateCurrentConfigurationStatus();
-        btnPreviewPanelContent.setEnabled(cboOverlays.getSelectedIndex() > 0);
     }//GEN-LAST:event_cboOverlaysActionPerformed
-
-    private void btnPreviewPanelContentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPreviewPanelContentActionPerformed
-
-    }//GEN-LAST:event_btnPreviewPanelContentActionPerformed
 
     private void cboAudiosMicrophoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboAudiosMicrophoneActionPerformed
         updateCurrentConfigurationStatus();
@@ -1295,7 +1278,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCapture;
     private javax.swing.JButton btnEditor;
-    private javax.swing.JButton btnPreviewPanelContent;
     private javax.swing.JButton btnSetDisplay;
     private javax.swing.JButton btnSetProfile;
     private javax.swing.JButton btnSetTarget;
