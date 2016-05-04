@@ -95,8 +95,19 @@ public class DesktopViewer implements Runnable {
             }
             Process p = Runtime.getRuntime().exec(command);
             java.io.DataInputStream in = new java.io.DataInputStream(p.getInputStream());
+
+            BufferedImage b1 = new BufferedImage(buffer.getWidth(), buffer.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+            BufferedImage b2 = new BufferedImage(buffer.getWidth(), buffer.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+            boolean flip = false;
             while (!stopMe) {
-                in.readFully(((DataBufferByte) buffer.getRaster().getDataBuffer()).getData());
+                if (flip) {
+                    in.readFully(((DataBufferByte) b1.getRaster().getDataBuffer()).getData());
+                    buffer = b1;
+                } else {
+                    in.readFully(((DataBufferByte) b2.getRaster().getDataBuffer()).getData());
+                    buffer = b2;
+                }
+                flip = !flip;
             }
             in.close();
             p.destroy();

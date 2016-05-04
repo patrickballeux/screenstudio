@@ -35,7 +35,7 @@ public class Microphone {
 
     @Override
     public String toString() {
-        return getDescription();
+        return getDescription().trim();
     }
 
     public static Microphone[] getSources() throws IOException, InterruptedException {
