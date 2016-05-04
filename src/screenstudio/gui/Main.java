@@ -931,7 +931,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
 
         jLabel8.setText("minutes");
 
-        scrollPanelContentText.setBorder(javax.swing.BorderFactory.createTitledBorder("Text Content (@TEXT)"));
+        scrollPanelContentText.setBorder(javax.swing.BorderFactory.createTitledBorder("@TEXT"));
 
         txtPanelContentText.setColumns(20);
         txtPanelContentText.setFont(new java.awt.Font("Ubuntu", 0, 12)); // NOI18N
@@ -959,7 +959,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         cboPanelOrientation.setModel(new javax.swing.DefaultComboBoxModel<PanelWebcam.PanelLocation>(PanelWebcam.PanelLocation.values())
         );
 
-        jLabel12.setText("Command");
+        jLabel12.setText("@COMMAND");
 
         javax.swing.GroupLayout panPanelLayout = new javax.swing.GroupLayout(panPanel);
         panPanel.setLayout(panPanelLayout);
@@ -971,7 +971,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     .addComponent(scrollPanelContentText)
                     .addGroup(panPanelLayout.createSequentialGroup()
                         .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 99, Short.MAX_VALUE)
                             .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
