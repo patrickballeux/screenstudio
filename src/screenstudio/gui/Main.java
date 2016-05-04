@@ -21,7 +21,6 @@ import com.tulskiy.keymaster.common.HotKeyListener;
 import com.tulskiy.keymaster.common.Provider;
 import java.awt.AWTException;
 import java.awt.BasicStroke;
-import java.awt.BorderLayout;
 import java.awt.CheckboxMenuItem;
 import java.awt.Color;
 import java.awt.Desktop;
@@ -39,7 +38,6 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
@@ -47,13 +45,12 @@ import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 import javax.swing.UnsupportedLookAndFeelException;
 import screenstudio.Version;
 import screenstudio.encoder.FFMpeg;
-import screenstudio.gui.overlays.PanelWebcam;
+import screenstudio.gui.overlays.Renderer;
 import screenstudio.sources.Microphone;
 import screenstudio.sources.Overlay;
 import screenstudio.sources.Screen;
@@ -164,7 +161,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     o.setHeight(Integer.parseInt(target.webcamHeight));
                     o.setOffset(Double.parseDouble(target.webcamOffset));
                 }
-                o.setLocation(PanelWebcam.WebcamLocation.valueOf(target.webcamLocation));
+                o.setLocation(Renderer.WebcamLocation.valueOf(target.webcamLocation));
             }
 
         } catch (IOException | InterruptedException ex) {
@@ -253,7 +250,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         System.out.println("Shortcut Key in use: " + target.shortcutKey.trim());
         initializeShortCuts();
 
-        txtWebcamTitle.setText(target.webcamTitle);
         chkDoNotHide.setSelected(target.doNotHide.equals("true"));
 
         cboAudioRate.removeAllItems();
@@ -404,14 +400,15 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             if (cboWebcams.getSelectedIndex() > 0) {
                 Webcam w = (Webcam) cboWebcams.getSelectedItem();
                 w.setFps(s.getFps());
-                runningOverlay = new Overlay(content, (PanelWebcam.PanelLocation) cboPanelOrientation.getSelectedItem(), s, w, (Integer) spinShowDurationTime.getValue(), txtPanelContentText.getText(), txtWebcamTitle.getText(), txtCommand.getText());
+                runningOverlay = new Overlay(content, (Renderer.PanelLocation) cboPanelOrientation.getSelectedItem(), s, w, (Integer) spinShowDurationTime.getValue(), txtPanelContentText.getText(), txtCommand.getText());
             } else {
-                runningOverlay = new Overlay(content, (PanelWebcam.PanelLocation) cboPanelOrientation.getSelectedItem(), s, null, (Integer) spinShowDurationTime.getValue(), txtPanelContentText.getText(), txtWebcamTitle.getText(), txtCommand.getText());
+                runningOverlay = new Overlay(content, (Renderer.PanelLocation) cboPanelOrientation.getSelectedItem(), s, null, (Integer) spinShowDurationTime.getValue(), txtPanelContentText.getText(), txtCommand.getText());
             }
             command.setOverlay(runningOverlay);
+            command.setOutputSize((int) runningOverlay.getWidth(), (int) runningOverlay.getHeight(), (SIZES) cboProfiles.getSelectedItem());
+        } else {
+            command.setOutputSize((int) s.getSize().getWidth(), (int) s.getSize().getHeight(), (SIZES) cboProfiles.getSelectedItem());
         }
-        command.setOutputSize((int) s.getSize().getWidth(), (int) s.getSize().getHeight(), (SIZES) cboProfiles.getSelectedItem(), (PanelWebcam.PanelLocation) cboPanelOrientation.getSelectedItem());
-
         if (cboWaterMarks.getSelectedIndex() > 0) {
             command.setWaterMark((File) cboWaterMarks.getSelectedItem());
         }
@@ -579,8 +576,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         chkShortcutSHIFT = new javax.swing.JCheckBox();
         cboShortcutKey = new javax.swing.JComboBox();
         btnShortcutApply = new javax.swing.JButton();
-        jLabel10 = new javax.swing.JLabel();
-        txtWebcamTitle = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
         cboAudioRate = new javax.swing.JComboBox();
         jLabel13 = new javax.swing.JLabel();
@@ -807,8 +802,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             }
         });
 
-        jLabel10.setText("Webcam Title");
-
         jLabel11.setText("Audio Rate");
 
         cboAudioRate.addActionListener(new java.awt.event.ActionListener() {
@@ -832,15 +825,11 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                         .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE))
                     .addComponent(jLabel13))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panSourcesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panSourcesLayout.createSequentialGroup()
-                        .addComponent(cboAudioRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panSourcesLayout.createSequentialGroup()
                         .addGroup(panSourcesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(cboWaterMarks, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(panSourcesLayout.createSequentialGroup()
@@ -850,16 +839,18 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(cboShortcutKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnShortcutApply, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(btnShortcutApply, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE))
                             .addComponent(cboAudiosMicrophone, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(cboAudiosInternal, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(cboDisplays, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(cboWebcams, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txtWebcamTitle))
+                            .addComponent(cboWebcams, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panSourcesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnSetWebcam, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btnSetDisplay, javax.swing.GroupLayout.Alignment.TRAILING))))
+                            .addComponent(btnSetDisplay, javax.swing.GroupLayout.Alignment.TRAILING)))
+                    .addGroup(panSourcesLayout.createSequentialGroup()
+                        .addComponent(cboAudioRate, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panSourcesLayout.setVerticalGroup(
@@ -890,11 +881,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     .addComponent(chkShortcutSHIFT)
                     .addComponent(cboShortcutKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnShortcutApply))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panSourcesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel10)
-                    .addComponent(txtWebcamTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panSourcesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel11)
                     .addComponent(cboAudioRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -902,7 +889,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                 .addGroup(panSourcesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
                     .addComponent(cboWaterMarks, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(48, Short.MAX_VALUE))
         );
 
         tabs.addTab("Sources", panSources);
@@ -954,7 +941,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
 
         jLabel6.setText("Orientation");
 
-        cboPanelOrientation.setModel(new javax.swing.DefaultComboBoxModel<PanelWebcam.PanelLocation>(PanelWebcam.PanelLocation.values())
+        cboPanelOrientation.setModel(new javax.swing.DefaultComboBoxModel<Renderer.PanelLocation>(Renderer.PanelLocation.values())
         );
 
         jLabel12.setText("@COMMAND");
@@ -1064,7 +1051,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                         }
                     }
                 }
-                startProcess(command.getCommand((PanelWebcam.PanelLocation) cboPanelOrientation.getSelectedItem(), chkDebugMode.isSelected()));
+                startProcess(command.getCommand((Renderer.PanelLocation) cboPanelOrientation.getSelectedItem(), chkDebugMode.isSelected()));
             } catch (IOException | InterruptedException ex) {
                 lblMessages.setText("An error occured: " + ex.getMessage());
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -1150,73 +1137,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     }//GEN-LAST:event_cboOverlaysActionPerformed
 
     private void btnPreviewPanelContentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPreviewPanelContentActionPerformed
-        try {
-            Screen s = (Screen) cboDisplays.getSelectedItem();
-            JDialog d = new JDialog(this, "ScreenStudio Panel Preview", true);
-            d.setLayout(new BorderLayout());
 
-            Webcam device = null;
-            int width = 320;
-            int height = 120;
-            if (cboWebcams.getSelectedIndex() > 0) {
-                device = (Webcam) cboWebcams.getSelectedItem();
-                device.setFps(s.getFps());
-                width = device.getWidth();
-                height = device.getHeight();
-            }
-            switch ((PanelWebcam.PanelLocation) cboPanelOrientation.getSelectedItem()) {
-                case Top:
-                    d.setSize((int) s.getSize().getWidth(), height);
-                    d.setLocation(0, 0);
-                    break;
-                case Bottom:
-                    d.setSize((int) s.getSize().getWidth(), height);
-                    d.setLocation(0, (int) s.getSize().getHeight() - d.getHeight());
-                    break;
-                case Left:
-                    d.setSize(width, (int) s.getSize().getHeight());
-                    d.setLocation(0, 0);
-                    break;
-                case Right:
-                    d.setSize(width, (int) s.getSize().getHeight());
-                    d.setLocation((int) s.getSize().getWidth() - d.getWidth(), 0);
-                    break;
-            }
-            PanelWebcam w = new PanelWebcam((PanelWebcam.PanelLocation) cboPanelOrientation.getSelectedItem(), device, s, (Integer) spinShowDurationTime.getValue(), txtWebcamTitle.getText());
-            d.add(w, BorderLayout.CENTER);
-            File content = (File) cboOverlays.getSelectedItem();
-            InputStream in = content.toURI().toURL().openStream();
-            byte[] data = new byte[(int) content.length()];
-            in.read(data);
-            in.close();
-            if (content.getName().endsWith("html")) {
-                //Reading content from a local html file
-                w.setText(new String(data), txtPanelContentText.getText(), txtCommand.getText());
-            } else if (content.getName().endsWith("url")) {
-                //Reading content from a webpage...
-                data = new byte[65536];
-                String addr = new String(data);
-                in.close();
-                in = new java.net.URI(addr).toURL().openStream();
-                StringBuilder html = new StringBuilder();
-                int count = in.read(data);
-                while (count > 0) {
-                    html.append(new String(data, 0, count));
-                    count = in.read(data);
-                }
-                in.close();
-                w.setText(html.toString(), txtPanelContentText.getText(), txtCommand.getText());
-            } else {
-                //Reading raw content from a text file
-                w.setText("<html>" + new String(data).replaceAll("\n", "<br>") + "</html>", txtPanelContentText.getText(), txtCommand.getText());
-            }
-            w.startPreview();
-            d.setVisible(true);
-            w.stop();
-            d.dispose();
-        } catch (IOException | URISyntaxException ex) {
-            System.out.println(ex.getMessage());
-        }
     }//GEN-LAST:event_btnPreviewPanelContentActionPerformed
 
     private void cboAudiosMicrophoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboAudiosMicrophoneActionPerformed
@@ -1285,7 +1206,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                 target.mainOverlay = cboOverlays.getSelectedItem().toString();
             }
             target.panelTextContent = txtPanelContentText.getText();
-            target.webcamTitle = txtWebcamTitle.getText();
             target.outputAudioRate = audioRate.name();
             target.mainOverlayLocation = cboPanelOrientation.getSelectedItem().toString();
             target.command = txtCommand.getText();
@@ -1386,7 +1306,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     private javax.swing.JComboBox cboAudiosMicrophone;
     private javax.swing.JComboBox cboDisplays;
     private javax.swing.JComboBox cboOverlays;
-    private javax.swing.JComboBox<PanelWebcam.PanelLocation> cboPanelOrientation;
+    private javax.swing.JComboBox<Renderer.PanelLocation> cboPanelOrientation;
     private javax.swing.JComboBox cboProfiles;
     private javax.swing.JComboBox cboShortcutKey;
     private javax.swing.JComboBox cboTargets;
@@ -1397,7 +1317,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     private javax.swing.JCheckBox chkShortcutControl;
     private javax.swing.JCheckBox chkShortcutSHIFT;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
@@ -1427,7 +1346,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     private javax.swing.JTabbedPane tabs;
     private javax.swing.JTextField txtCommand;
     private javax.swing.JTextArea txtPanelContentText;
-    private javax.swing.JTextField txtWebcamTitle;
     // End of variables declaration//GEN-END:variables
 
     @Override

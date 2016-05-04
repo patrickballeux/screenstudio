@@ -24,7 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import screenstudio.gui.overlays.PanelWebcam;
+import screenstudio.gui.overlays.Renderer;
 
 /**
  *
@@ -32,13 +32,13 @@ import screenstudio.gui.overlays.PanelWebcam;
  */
 public class OverlayUnix implements Runnable {
 
-    private PanelWebcam mPanel = null;
+    private Renderer mPanel = null;
     private long mFPS = 10;
     private boolean stopMe = false;
     private boolean mIsRunning = false;
     private final File mOutput;
 
-    public OverlayUnix(PanelWebcam panel, long fps) throws IOException, InterruptedException {
+    public OverlayUnix(Renderer panel, long fps) throws IOException, InterruptedException {
         mPanel = panel;
         mFPS = fps;
         mOutput = File.createTempFile("screenstudio", ".raw");
@@ -70,7 +70,6 @@ public class OverlayUnix implements Runnable {
             // the panel in the fifo each x ms seconds..
             // Use a BGR 24 bits images as ffmpeg will read  -pix_format BGR24
             BufferedImage img = new BufferedImage(mPanel.getWidth(), mPanel.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-            mPanel.doLayout();
             Graphics g = img.getGraphics();
             out = new FileOutputStream(mOutput);
             byte[] imageBytes = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();

@@ -41,9 +41,18 @@ public class Screen {
         return getLabel();
     }
 
-    public String getDetailledLabel(){
-        return getLabel() + " (" + (int)this.size.getWidth() + "X" + (int)this.size.getHeight() + ") @" + fps + " FPS";
+    public int getWidth() {
+        return (int) size.getWidth();
     }
+
+    public int getHeight() {
+        return (int) size.getHeight();
+    }
+
+    public String getDetailledLabel() {
+        return getLabel() + " (" + (int) this.size.getWidth() + "X" + (int) this.size.getHeight() + ") @" + fps + " FPS";
+    }
+
     public static Screen[] getSources() throws IOException, InterruptedException {
         java.util.ArrayList<Screen> list = new java.util.ArrayList<>();
         System.out.println("Screen List:");
@@ -65,18 +74,18 @@ public class Screen {
                 //Assuming screens are side by side
                 maxWidth += s.getSize().getWidth();
                 //If we have one that has less height than the other
-                if (maxHeight > s.getSize().getHeight()){
+                if (maxHeight > s.getSize().getHeight()) {
                     maxHeight = s.getSize().getHeight();
                 }
                 list.add(s);
             }
-            if (list.size()>1){
+            if (list.size() > 1) {
                 //We have more than one screen
                 // Creating full screen capture...
                 Screen s = new Screen();
                 s.setId(":0.0");
                 s.setScreenIndex(i++);
-                s.setSize(new Rectangle(0, 0, (int)maxWidth, (int)maxHeight));
+                s.setSize(new Rectangle(0, 0, (int) maxWidth, (int) maxHeight));
                 list.add(s);
             }
         }
@@ -217,7 +226,7 @@ public class Screen {
                         for (int i = parts.length - 1; i >= 0; i--) {
                             if (parts[i].startsWith("[")) {
                                 // reached device id
-                                s.id = parts[i].substring(1, parts[i].length() - 1)+":";
+                                s.id = parts[i].substring(1, parts[i].length() - 1) + ":";
                                 break;
                             }
                         }

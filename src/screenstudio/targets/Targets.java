@@ -113,7 +113,6 @@ public class Targets {
     public String webcamWidth = "320";
     public String webcamHeight = "240";
     public String webcamOffset = "0.0";
-    public String webcamTitle = "";
     public String outputPreset = "ultrafast";
     public String outputVideoBitrate = "9000";
     public String outputAudioRate = "Audio22K";

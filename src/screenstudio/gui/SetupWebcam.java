@@ -16,7 +16,7 @@
  */
 package screenstudio.gui;
 
-import screenstudio.gui.overlays.PanelWebcam;
+import screenstudio.gui.overlays.Renderer;
 import screenstudio.sources.Webcam;
 
 /**
@@ -26,19 +26,21 @@ import screenstudio.sources.Webcam;
 public class SetupWebcam extends javax.swing.JDialog {
 
     private final Webcam webcam;
+
     /**
      * Creates new form SetupWebcam
+     *
      * @param webcam
      * @param parent
      * @param modal
      */
-    public SetupWebcam(Webcam webcam,java.awt.Frame parent, boolean modal) {
+    public SetupWebcam(Webcam webcam, java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         cboLocation.removeAllItems();
-        for (PanelWebcam.WebcamLocation l : PanelWebcam.WebcamLocation.values()){
+        for (Renderer.WebcamLocation l : Renderer.WebcamLocation.values()) {
             cboLocation.addItem(l);
-            if (l == webcam.getLocation()){
+            if (l == webcam.getLocation()) {
                 cboLocation.setSelectedItem(l);
             }
         }
@@ -47,7 +49,7 @@ public class SetupWebcam extends javax.swing.JDialog {
         this.setTitle(webcam.toString());
         spinWidth.setValue(webcam.getWidth());
         spinHeight.setValue(webcam.getHeight());
-        
+
     }
 
     /**
@@ -151,22 +153,26 @@ public class SetupWebcam extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void spinWidthPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_spinWidthPropertyChange
-        if (webcam != null) webcam.setWidth((Integer)spinWidth.getValue());
+        if (webcam != null) {
+            webcam.setWidth((Integer) spinWidth.getValue());
+        }
     }//GEN-LAST:event_spinWidthPropertyChange
 
     private void spinHeightPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_spinHeightPropertyChange
-        if (webcam != null) webcam.setHeight((Integer)spinHeight.getValue());
+        if (webcam != null) {
+            webcam.setHeight((Integer) spinHeight.getValue());
+        }
     }//GEN-LAST:event_spinHeightPropertyChange
 
     private void cboLocationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboLocationActionPerformed
-       if (webcam != null) webcam.setLocation((PanelWebcam.WebcamLocation)cboLocation.getSelectedItem());
-       
+        if (webcam != null) {
+            webcam.setLocation((Renderer.WebcamLocation) cboLocation.getSelectedItem());
+        }
+
     }//GEN-LAST:event_cboLocationActionPerformed
 
-    
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox<PanelWebcam.WebcamLocation> cboLocation;
+    private javax.swing.JComboBox<Renderer.WebcamLocation> cboLocation;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

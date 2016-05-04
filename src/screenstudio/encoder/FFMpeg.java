@@ -24,7 +24,7 @@ import java.net.MalformedURLException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import screenstudio.gui.overlays.PanelWebcam;
+import screenstudio.gui.overlays.Renderer;
 import screenstudio.sources.Overlay;
 import screenstudio.sources.Screen;
 import screenstudio.targets.SIZES;
@@ -75,7 +75,7 @@ public class FFMpeg {
     private String mainFormat = "x11grab";
     //Overlay
     private String overlayInput = "";
-    private String overlayFormat = "rawvideo -pix_fmt bgr24";
+    private final String overlayFormat = "rawvideo -pix_fmt bgr24";
     private Overlay runningOverlay = null;
     // Audio
     private String audioRate = "44100";
@@ -159,9 +159,10 @@ public class FFMpeg {
         runningOverlay = overlay;
         if (overlay == null) {
             overlayInput = "";
+            overlaySetting = null;
         } else {
             overlayInput = overlay.OutputURL();
-            overlaySetting = new Rectangle(0, 0, (int) overlay.getSize().getWidth(), (int) overlay.getSize().getHeight());
+            overlaySetting = new Rectangle(0, 0, overlay.getWidth(), overlay.getHeight());
         }
     }
 
@@ -283,21 +284,9 @@ public class FFMpeg {
      * @param capHeight
      * @param size
      */
-    public void setOutputSize(int capWidth, int capHeight, SIZES size, PanelWebcam.PanelLocation panelLocation) {
+    public void setOutputSize(int capWidth, int capHeight, SIZES size) {
         captureWidth = String.valueOf(capWidth);
         captureHeight = String.valueOf(capHeight);
-        if (overlayInput.length() > 0) {
-            switch (panelLocation) {
-                case Top:
-                case Bottom:
-                    capHeight += overlaySetting.getSize().getHeight();
-                    break;
-                case Left:
-                case Right:
-                    capWidth += overlaySetting.getSize().getWidth();
-                    break;
-            }
-        }
         int calculatedWidth;
         switch (size) {
             case SOURCE:
@@ -373,7 +362,7 @@ public class FFMpeg {
      * @param debugMode : If enabled, verbose mode is activated
      * @return the full command for FFMpeg
      */
-    public String getCommand(PanelWebcam.PanelLocation panelLocation, boolean debugMode) {
+    public String getCommand(Renderer.PanelLocation panelLocation, boolean debugMode) {
         StringBuilder c = new StringBuilder();
         // Add binary path
         c.append(bin);
@@ -381,63 +370,34 @@ public class FFMpeg {
         if (!debugMode) {
             c.append(nonVerboseMode);
         }
-        // Capture Desktop
-        if (!Screen.isOSX()) {
-            c.append(" -video_size ").append(captureWidth).append("x").append(captureHeight);
-        }
-        c.append(" -framerate ").append(framerate);
-        c.append(" ").append(mThreading).append(" -f ").append(mainFormat).append(" -i ").append(mainInput);
-
-        if (!Screen.isOSX()) {
-            if (captureX.length() > 0) {
-                c.append("+").append(captureX).append(",").append(captureY);
+        if (runningOverlay == null) {
+            // Capture Desktop
+            if (!Screen.isOSX()) {
+                c.append(" -video_size ").append(captureWidth).append("x").append(captureHeight);
             }
-        }
-        // Capture Audio
-        c.append(" -f ").append(audioFormat).append(" -i ").append(audioInput);
-        // watermark
-        if (mWatermarkFile != null) {
-            c.append(" -f image2 -i ").append(mWatermarkFile.getAbsolutePath());
-        }
-        // Capture Overlay Panel
-        if (overlayInput.length() > 0) {
+            c.append(" -framerate ").append(framerate);
+            c.append(" ").append(mThreading).append(" -f ").append(mainFormat).append(" -i ").append(mainInput);
+
+            if (!Screen.isOSX()) {
+                if (captureX.length() > 0) {
+                    c.append("+").append(captureX).append(",").append(captureY);
+                }
+            }
+        } else {
             int w = (int) overlaySetting.getWidth();
             int h = (int) overlaySetting.getHeight();
             c.append(" ").append(mThreading).append(" -f ").append(overlayFormat);
             c.append(" -framerate ").append(framerate);
             c.append(" -video_size ").append(w).append("x").append(h);
             c.append(" -i ").append(overlayInput);
-
-            switch (panelLocation) {
-                case Top:
-                    if (mWatermarkFile != null) {
-                        c.append(" -filter_complex [0:v][2:v]overlay=0:main_h-overlay_h[pre];[pre]pad=iw:ih+").append(h).append(":0:").append(h).append("[desk];[desk][3:v]overlay=0:0");
-                    } else {
-                        c.append(" -filter_complex [0:v]pad=iw:ih+").append(h).append(":0:").append(h).append("[desk];[desk][2:v]overlay=0:0");
-                    }
-                    break;
-                case Bottom:
-                    if (mWatermarkFile != null) {
-                        c.append(" -filter_complex [0:v][2:v]overlay=0:main_h-overlay_h[pre];[pre]pad=iw:ih+").append(h).append("[desk];[desk][3:v]overlay=0:main_h-overlay_h");
-                    } else {
-                        c.append(" -filter_complex [0:v]pad=iw:ih+").append(h).append("[desk];[desk][2:v]overlay=0:main_h-overlay_h");
-                    }
-                case Left:
-                    if (mWatermarkFile != null) {
-                        c.append(" -filter_complex [0:v][2:v]overlay=0:main_h-overlay_h[pre];[pre]pad=iw+").append(w).append(":ih:").append(w).append("[desk];[desk][3:v]overlay=0:0");
-                    } else {
-                        c.append(" -filter_complex [0:v]pad=iw+").append(w).append(":ih:").append(w).append("[desk];[desk][2:v]overlay=0:0");
-                    }
-                case Right:
-                    if (mWatermarkFile != null) {
-                        c.append(" -filter_complex [0:v][2:v]overlay=0:main_h-overlay_h[pre];[pre]pad=iw+").append(w).append(":ih[desk];[desk][3:v]overlay=main_w-overlay_w:0");
-                    } else {
-                        c.append(" -filter_complex [0:v]pad=iw+").append(w).append(":ih[desk];[desk][2:v]overlay=main_w-overlay_w:0");
-                    }
-            }
-        } else if (mWatermarkFile != null) {
-            c.append(" -filter_complex [0:v][2:v]overlay=0:main_h-overlay_h");
         }
+        // watermark
+        if (mWatermarkFile != null) {
+            c.append(" -f image2 -i ").append(mWatermarkFile.getAbsolutePath());
+            c.append(" -filter_complex [0:v][1:v]overlay=0:main_h-overlay_h");
+        }
+        // Capture Audio
+        c.append(" -f ").append(audioFormat).append(" -i ").append(audioInput);
         // Enabled strict settings
         if (strictSetting.length() > 0) {
             c.append(" -strict ").append(strictSetting);

@@ -247,18 +247,13 @@
                               <Component id="jLabel3" alignment="0" max="32767" attributes="0"/>
                               <Component id="jLabel4" alignment="0" max="32767" attributes="0"/>
                               <Component id="jLabel7" alignment="0" max="32767" attributes="0"/>
-                              <Component id="jLabel9" max="32767" attributes="0"/>
-                              <Component id="jLabel10" max="32767" attributes="0"/>
+                              <Component id="jLabel9" pref="94" max="32767" attributes="0"/>
                           </Group>
                           <Component id="jLabel13" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
-                              <Component id="cboAudioRate" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="1" attributes="0">
                               <Group type="103" groupAlignment="1" attributes="0">
                                   <Component id="cboWaterMarks" alignment="0" max="32767" attributes="0"/>
                                   <Group type="102" alignment="1" attributes="0">
@@ -268,19 +263,22 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="cboShortcutKey" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="btnShortcutApply" max="32767" attributes="0"/>
+                                      <Component id="btnShortcutApply" pref="138" max="32767" attributes="0"/>
                                   </Group>
                                   <Component id="cboAudiosMicrophone" alignment="0" max="32767" attributes="0"/>
                                   <Component id="cboAudiosInternal" alignment="1" max="32767" attributes="0"/>
                                   <Component id="cboDisplays" alignment="1" max="32767" attributes="0"/>
                                   <Component id="cboWebcams" alignment="1" max="32767" attributes="0"/>
-                                  <Component id="txtWebcamTitle" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="btnSetWebcam" alignment="1" min="-2" max="-2" attributes="0"/>
                                   <Component id="btnSetDisplay" alignment="1" min="-2" max="-2" attributes="0"/>
                               </Group>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Component id="cboAudioRate" min="-2" pref="132" max="-2" attributes="0"/>
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -320,12 +318,7 @@
                           <Component id="cboShortcutKey" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="btnShortcutApply" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel10" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="txtWebcamTitle" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="jLabel11" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="cboAudioRate" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -335,7 +328,7 @@
                           <Component id="jLabel13" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="cboWaterMarks" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace pref="48" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -455,13 +448,6 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnShortcutApplyActionPerformed"/>
               </Events>
-            </Component>
-            <Component class="javax.swing.JLabel" name="jLabel10">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Webcam Title"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JTextField" name="txtWebcamTitle">
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel11">
               <Properties>
@@ -657,11 +643,11 @@
             <Component class="javax.swing.JComboBox" name="cboPanelOrientation">
               <Properties>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="new javax.swing.DefaultComboBoxModel&lt;PanelWebcam.PanelLocation&gt;(PanelWebcam.PanelLocation.values())&#xa;" type="code"/>
+                  <Connection code="new javax.swing.DefaultComboBoxModel&lt;Renderer.PanelLocation&gt;(Renderer.PanelLocation.values())&#xa;" type="code"/>
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;PanelWebcam.PanelLocation&gt;"/>
+                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;Renderer.PanelLocation&gt;"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel12">
