@@ -87,15 +87,21 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         initComponents();
         mConfig = config;
         isLoading = true;
-        try {
-            target.loadDefault(mConfig);
-        } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        initControls();
-        updateCurrentConfigurationStatus();
+        lblMessages.setText("Loading...");
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    target.loadDefault(mConfig);
+                } catch (IOException ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                initControls();
+                updateCurrentConfigurationStatus();
+                isLoading = false;
+                lblMessages.setText("Welcome!");
+            }
+        }).start();
 
-        isLoading = false;
         new Thread(() -> {
             //Check for a new version...
             if (Version.hasNewVersion()) {
@@ -629,7 +635,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             }
         });
 
-        cboTargets.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cboTargets.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cboTargetsActionPerformed(evt);
@@ -640,7 +645,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
 
         lblProfiles.setText("Profile");
 
-        cboProfiles.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cboProfiles.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cboProfilesActionPerformed(evt);
@@ -670,7 +674,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             }
         });
 
-        lblCurrentTargetConfiguration.setText("None");
+        lblCurrentTargetConfiguration.setText("Loading...");
         lblCurrentTargetConfiguration.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         lblCurrentTargetConfiguration.setAutoscrolls(true);
         lblCurrentTargetConfiguration.setBorder(javax.swing.BorderFactory.createTitledBorder("Configuration"));
@@ -742,7 +746,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
 
         jLabel2.setText("Display");
 
-        cboDisplays.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cboDisplays.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cboDisplaysActionPerformed(evt);
@@ -751,7 +754,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
 
         jLabel3.setText("Webcam");
 
-        cboWebcams.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cboWebcams.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cboWebcamsActionPerformed(evt);
@@ -760,7 +762,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
 
         jLabel4.setText("Microphone");
 
-        cboAudiosMicrophone.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cboAudiosMicrophone.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cboAudiosMicrophoneActionPerformed(evt);
@@ -785,7 +786,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
 
         jLabel7.setText("Internal");
 
-        cboAudiosInternal.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cboAudiosInternal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cboAudiosInternalActionPerformed(evt);
@@ -811,7 +811,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
 
         jLabel11.setText("Audio Rate");
 
-        cboAudioRate.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cboAudioRate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cboAudioRateActionPerformed(evt);
@@ -910,7 +909,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
 
         jLabel5.setText("Panel");
 
-        cboOverlays.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cboOverlays.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cboOverlaysActionPerformed(evt);
