@@ -157,7 +157,6 @@ public class Renderer {
                 }
                 break;
             case Right:
-
                 if (mViewer != null) {
                     switch (webcamLocation) {
                         case Top:
@@ -178,6 +177,10 @@ public class Renderer {
                 }
                 break;
         }
+//        System.out.println("Desktop X,Y: " + desktopX + "," + desktopY);
+//        System.out.println("Text X,Y: " + textX + "," + textY);
+//        System.out.println("Webcam X,Y: " + webcamX + "," + webcamY);
+
     }
 
     public Renderer(PanelLocation location, screenstudio.sources.Webcam webcam, Screen screen, int showDuration) {
@@ -216,8 +219,7 @@ public class Renderer {
         }
         lblText.setSize(lblText.getPreferredSize());
         lblText.setLocation(0, 0);
-        textBuffer = new BufferedImage(lblText.getWidth(), lblText.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-        setPositions();
+        textBuffer = new BufferedImage((int) lblText.getPreferredSize().getWidth(), (int) lblText.getPreferredSize().getHeight(), BufferedImage.TYPE_3BYTE_BGR);
     }
 
     public boolean IsUpdating() {
@@ -234,11 +236,12 @@ public class Renderer {
 
     public void paint(Graphics g) {
         if (System.currentTimeMillis() > nextTextUpdate) {
+            setPositions();
             lblText.setText(replaceTags(mText));
             lblText.revalidate();
-            lblText.paint(textBuffer.getGraphics());
             nextTextUpdate = System.currentTimeMillis() + 1000;
         }
+        lblText.paint(textBuffer.getGraphics());
         BufferedImage desktop = mDesktop.getImage();
         g.drawImage(desktop, desktopX, desktopY, null);
         g.drawImage(textBuffer, textX, textY, null);

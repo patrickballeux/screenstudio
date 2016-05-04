@@ -66,7 +66,7 @@ public class FFMpeg {
 
     private String bin = "ffmpeg  ";
     private String nonVerboseMode = " -nostats -loglevel 0 ";
-    //Main inpu
+    //Main input
     private String captureWidth = "720";
     private String captureHeight = "480";
     private String captureX = "0";
