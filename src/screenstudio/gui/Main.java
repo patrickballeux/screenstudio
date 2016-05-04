@@ -1033,11 +1033,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                 FFMpeg command = getCommand();
                 if (command.getOverlay() != null) {
                     command.getOverlay().start();
-                    if (!Screen.isOSX()) {
-                        while (!command.getOverlay().isRunning()) {
-                            Thread.sleep(100);
-                        }
-                    }
                 }
                 startProcess(command.getCommand((Renderer.PanelLocation) cboPanelOrientation.getSelectedItem(), chkDebugMode.isSelected()));
             } catch (IOException | InterruptedException ex) {
