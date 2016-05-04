@@ -346,7 +346,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             text += "<B>Format:</B> " + cboTargets.getSelectedItem().toString() + "<BR>";
             if (Targets.isRTMP((FORMATS) cboTargets.getSelectedItem())) {
                 text += "<B>RTMP Server:</B> " + target.server + "<BR>";
-                if (target.rtmpKey.length() == 0) {
+                if (target.getKey((FORMATS) cboTargets.getSelectedItem()).length() == 0) {
                     text += "<font color=red><B>Warning:</B> Secret key not set</font><BR>";
                 }
             }
@@ -1059,8 +1059,8 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                 }
                 FFMpeg command = getCommand();
                 command.getOverlay().start();
-                if (!Screen.isOSX()){
-                    while (!command.getOverlay().isRunning()){
+                if (!Screen.isOSX()) {
+                    while (!command.getOverlay().isRunning()) {
                         Thread.sleep(100);
                     }
                 }

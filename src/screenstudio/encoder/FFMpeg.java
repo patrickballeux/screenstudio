@@ -224,9 +224,9 @@ public class FFMpeg {
                 videoEncoder = "libx264";
                 audioEncoder = "aac";
                 if (target.server.length() == 0) {
-                    output = target.rtmpKey;
+                    output = target.getKey(format);
                 } else {
-                    output = target.server + "/" + target.rtmpKey;
+                    output = target.server + "/" + target.getKey(format);
                 }
                 break;
             case BROADCAST:

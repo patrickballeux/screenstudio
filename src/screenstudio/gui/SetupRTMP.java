@@ -27,9 +27,11 @@ import screenstudio.targets.Targets.FORMATS;
 public class SetupRTMP extends javax.swing.JDialog {
 
     Targets target = null;
+    FORMATS format = FORMATS.BROADCAST;
 
     /**
      * Creates new form SetupRTMP
+     *
      * @param format
      * @param target
      * @param parent
@@ -38,13 +40,14 @@ public class SetupRTMP extends javax.swing.JDialog {
     public SetupRTMP(FORMATS format, Targets target, java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        this.format = format;
         this.setTitle(format.name());
         this.target = target;
         DefaultComboBoxModel model = new DefaultComboBoxModel(Targets.getServerList(format));
         cboServers.setModel(model);
-        txtKey.setText(target.rtmpKey);
-        for(String s : Targets.getServerList(format)){
-            if (s.contains(target.server)){
+        txtKey.setText(target.getKey(format));
+        for (String s : Targets.getServerList(format)) {
+            if (s.contains(target.server)) {
                 cboServers.setSelectedItem(s);
                 break;
             }
@@ -123,15 +126,14 @@ public class SetupRTMP extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
-        target.rtmpKey = txtKey.getText();
-        if (cboServers.getSelectedItem() != null){
+        target.updateKey(format, txtKey.getText());
+        if (cboServers.getSelectedItem() != null) {
             target.server = cboServers.getSelectedItem().toString().split(";")[1];
         } else {
             target.server = "";
         }
         this.dispose();
     }//GEN-LAST:event_btnOKActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnOK;

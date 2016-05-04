@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.util.Properties;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import screenstudio.encoder.FFMpeg;
@@ -80,7 +81,7 @@ public class Targets {
                     p.values().stream().forEach((server) -> {
                         l.add(server.toString());
                     });
-                    list =  l.toArray(list);
+                    list = l.toArray(list);
                     java.util.Arrays.sort(list);
                 } catch (MalformedURLException ex) {
                     Logger.getLogger(Targets.class.getName()).log(Level.SEVERE, null, ex);
@@ -98,7 +99,6 @@ public class Targets {
     public String format = "";
     public String size = "";
     public String server = "";
-    public String rtmpKey = "";
     public String mainSource = "";
     public String mainAudio = "";
     public String secondAudio = "";
@@ -124,15 +124,28 @@ public class Targets {
     public String webcamLocation = "Top";
     public String command = "";
     public String waterMarkFile = "";
+    private TreeMap<String, String> keys = new TreeMap();
 // </editor-fold>
 
+    public void updateKey(Targets.FORMATS format, String key) {
+        keys.put(format.name(), key);
+    }
+
+    public String getKey(Targets.FORMATS format) {
+        if (keys.containsKey(format.name())) {
+            return keys.get(format.name());
+        } else {
+            return "";
+        }
+    }
+
     public void saveDefault(File config) throws IOException {
-        if (config == null){
-            config = new File(new FFMpeg().getHome(),"screenstudio.properties");
+        if (config == null) {
+            config = new File(new FFMpeg().getHome(), "screenstudio.properties");
         }
         java.util.Properties props = new java.util.Properties();
         FileWriter out = new FileWriter(config);
-        for (Field f : this.getClass().getDeclaredFields()) {
+        for (Field f : this.getClass().getFields()) {
             try {
                 if (f.get(this) != null) {
                     props.setProperty(f.getName(), f.get(this).toString());
@@ -145,17 +158,23 @@ public class Targets {
         }
         props.store(out, "ScreenStudio default settings");
         out.close();
+        // save keys...
+        for (String key : keys.keySet()) {
+            FileWriter fout = new FileWriter(new File(config.getParentFile(), key + ".key"));
+            fout.write(keys.get(key));
+            fout.close();
+        }
     }
 
     public void loadDefault(File config) throws FileNotFoundException, IOException {
-        if (config == null){
-            config = new File(new FFMpeg().getHome(),"screenstudio.properties");
+        if (config == null) {
+            config = new File(new FFMpeg().getHome(), "screenstudio.properties");
         }
         if (config.exists()) {
             FileReader in = new FileReader(config);
             java.util.Properties props = new java.util.Properties();
             props.load(in);
-            for (Field f : this.getClass().getDeclaredFields()) {
+            for (Field f : this.getClass().getFields()) {
                 try {
                     if (props.getProperty(f.getName()) != null) {
                         f.set(this, props.getProperty(f.getName()));
@@ -165,6 +184,17 @@ public class Targets {
                 }
             }
             in.close();
+            keys.clear();
+            for (File key : config.getParentFile().listFiles()) {
+                byte[] data = new byte[1024];
+                int count;
+                if (key.getName().endsWith(".key")) {
+                    InputStream fin = key.toURI().toURL().openStream();
+                    count = fin.read(data);
+                    keys.put(key.getName().replaceAll(".key", ""), new String(data, 0, count));
+                    in.close();
+                }
+            }
         }
     }
 }
