@@ -59,6 +59,7 @@ public class Renderer {
     private int webcamY = 0;
 
     public enum WebcamLocation {
+
         Top,
         Bottom,
         Left,
@@ -66,6 +67,7 @@ public class Renderer {
     }
 
     public enum PanelLocation {
+
         Top,
         Bottom,
         Left,
@@ -191,7 +193,7 @@ public class Renderer {
         mViewer = null;
 
         if (webcam != null) {
-            mViewer = new WebcamViewer(new File(webcam.getDevice()), webcam.getWidth(), webcam.getHeight(), webcam.getFps());
+            mViewer = new WebcamViewer(screen, new File(webcam.getDevice()), webcam.getWidth(), webcam.getHeight(), webcam.getFps());
             new Thread(mViewer).start();
         }
         lblText = new JLabel();
