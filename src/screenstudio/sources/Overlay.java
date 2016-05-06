@@ -16,7 +16,6 @@
  */
 package screenstudio.sources;
 
-import java.awt.Dimension;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -41,6 +40,7 @@ public class Overlay implements Runnable {
     private boolean stopME = false;
     private OverlayUnix mOutput = null;
     private final String mCommand;
+    private boolean mIsPrivateMode = false;
 
     public Overlay(File content, Renderer.PanelLocation location, Screen screen, screenstudio.sources.Webcam webcam, int showDurationTime, String userTextContent, String command) throws IOException, InterruptedException {
         mContent = content;
@@ -52,6 +52,15 @@ public class Overlay implements Runnable {
         mOutput = new OverlayUnix(htmlRenderer, mFPS);
     }
 
+    
+    public boolean isPrivateMode(){
+        return mIsPrivateMode;
+    }
+    public void setPrivateMode(boolean value){
+        mIsPrivateMode = value;
+        mOutput.setPrivateMode(value);
+    }
+    
     public void start() {
         mOutput.start();
     }

@@ -16,6 +16,7 @@
  */
 package screenstudio.sources;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -37,6 +38,7 @@ public class OverlayUnix implements Runnable {
     private boolean stopMe = false;
     private boolean mIsRunning = false;
     private final File mOutput;
+    private boolean mIsPrivateMode = false;
 
     public OverlayUnix(Renderer panel, long fps) throws IOException, InterruptedException {
         mPanel = panel;
@@ -48,6 +50,9 @@ public class OverlayUnix implements Runnable {
         Runtime.getRuntime().exec("mkfifo " + mOutput.getAbsolutePath());
     }
 
+    public void setPrivateMode(boolean value){
+        mIsPrivateMode = value;
+    }
     public void start() {
         new Thread(this).start();
     }
@@ -77,7 +82,10 @@ public class OverlayUnix implements Runnable {
             long nextPTS = System.nanoTime() + frameTime;
             while (!stopMe) {
                 try {
-                    if (!mPanel.IsUpdating()) {
+                    if (mIsPrivateMode){
+                        g.setColor(Color.BLACK);
+                        g.fillRect(0, 0, img.getWidth(), img.getHeight());
+                    } else if (!mPanel.IsUpdating()) {                       
                         mPanel.paint(g);
                     }
                 } catch (Exception e) {

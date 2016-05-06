@@ -241,13 +241,17 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             }
         }
         txtPanelContentText.setText(target.panelTextContent);
-        if (target.shortcutKey.length() == 0) {
-            target.shortcutKey = "control shift R";
+        if (target.shortcutCaptureKey.length() == 0) {
+            target.shortcutCaptureKey = "control shift R";
         }
-        chkShortcutControl.setSelected(target.shortcutKey.contains("control"));
-        chkShortcutSHIFT.setSelected(target.shortcutKey.contains("shift"));
-        cboShortcutKey.setSelectedItem(target.shortcutKey.toUpperCase().trim().substring(target.shortcutKey.length() - 1, target.shortcutKey.length()));
-        System.out.println("Shortcut Key in use: " + target.shortcutKey.trim());
+        chkShortcutCaptureControl.setSelected(target.shortcutCaptureKey.contains("control"));
+        chkShortcutCaptureSHIFT.setSelected(target.shortcutCaptureKey.contains("shift"));
+        cboShortcutCaptureKey.setSelectedItem(target.shortcutCaptureKey.toUpperCase().trim().substring(target.shortcutCaptureKey.length() - 1, target.shortcutCaptureKey.length()));
+        chkShortcutPrivacyControl.setSelected(target.shortcutPrivacyKey.contains("control"));
+        chkShortcutPrivacySHIFT.setSelected(target.shortcutPrivacyKey.contains("shift"));
+        cboShortcutPrivacyKey.setSelectedItem(target.shortcutPrivacyKey.toUpperCase().trim().substring(target.shortcutPrivacyKey.length() - 1, target.shortcutPrivacyKey.length()));
+        System.out.println("Shortcut Key in use: " + target.shortcutCaptureKey.trim());
+        System.out.println("Shortcut Key in use: " + target.shortcutPrivacyKey.trim());
         initializeShortCuts();
 
         chkDoNotHide.setSelected(target.doNotHide.equals("true"));
@@ -277,7 +281,8 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     keyShortcuts = Provider.getCurrentProvider(false);
                 }
                 keyShortcuts.reset();
-                keyShortcuts.register(KeyStroke.getKeyStroke(target.shortcutKey), instance);
+                keyShortcuts.register(KeyStroke.getKeyStroke(target.shortcutCaptureKey), instance);
+                keyShortcuts.register(KeyStroke.getKeyStroke(target.shortcutPrivacyKey), instance);
             } catch (Exception ex) {
                 keyShortcuts = null;
             }
@@ -312,7 +317,11 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             Image img = trayIcon.getImage();
             Graphics2D g = (Graphics2D) img.getGraphics();
             if (this.processRunning) {
-                g.setBackground(Color.GREEN);
+                if (runningOverlay != null && runningOverlay.isPrivateMode()){
+                    g.setBackground(Color.RED);
+                } else {
+                    g.setBackground(Color.GREEN);
+                }
                 g.setRenderingHint(
                         RenderingHints.KEY_TEXT_ANTIALIASING,
                         RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -571,11 +580,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         btnSetWebcam = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
         cboAudiosInternal = new javax.swing.JComboBox();
-        jLabel9 = new javax.swing.JLabel();
-        chkShortcutControl = new javax.swing.JCheckBox();
-        chkShortcutSHIFT = new javax.swing.JCheckBox();
-        cboShortcutKey = new javax.swing.JComboBox();
-        btnShortcutApply = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
         cboAudioRate = new javax.swing.JComboBox();
         jLabel13 = new javax.swing.JLabel();
@@ -593,6 +597,17 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         cboPanelOrientation = new javax.swing.JComboBox<>();
         jLabel12 = new javax.swing.JLabel();
         txtCommand = new javax.swing.JTextField();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel9 = new javax.swing.JLabel();
+        chkShortcutCaptureControl = new javax.swing.JCheckBox();
+        chkShortcutCaptureSHIFT = new javax.swing.JCheckBox();
+        cboShortcutCaptureKey = new javax.swing.JComboBox();
+        btnShortcutCaptureApply = new javax.swing.JButton();
+        jLabel10 = new javax.swing.JLabel();
+        chkShortcutPrivacyControl = new javax.swing.JCheckBox();
+        chkShortcutPrivacySHIFT = new javax.swing.JCheckBox();
+        cboShortcutPrivacyKey = new javax.swing.JComboBox();
+        btnShortcutPrivacyApply = new javax.swing.JButton();
         panStatusBar = new javax.swing.JPanel();
         lblMessages = new javax.swing.JLabel();
         lblNotice = new javax.swing.JLabel();
@@ -693,7 +708,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     .addGroup(panCaptureLayout.createSequentialGroup()
                         .addComponent(lblTargets)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cboTargets, 0, 341, Short.MAX_VALUE)
+                        .addComponent(cboTargets, 0, 278, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSetTarget))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panCaptureLayout.createSequentialGroup()
@@ -705,7 +720,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     .addGroup(panCaptureLayout.createSequentialGroup()
                         .addComponent(lblProfiles)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cboProfiles, 0, 340, Short.MAX_VALUE)
+                        .addComponent(cboProfiles, 0, 278, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSetProfile)
                         .addGap(1, 1, 1)))
@@ -786,21 +801,6 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             }
         });
 
-        jLabel9.setText("Shortcut Key");
-
-        chkShortcutControl.setText("CTRL");
-
-        chkShortcutSHIFT.setText("SHIFT");
-
-        cboShortcutKey.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" }));
-
-        btnShortcutApply.setText("Apply");
-        btnShortcutApply.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnShortcutApplyActionPerformed(evt);
-            }
-        });
-
         jLabel11.setText("Audio Rate");
 
         cboAudioRate.addActionListener(new java.awt.event.ActionListener() {
@@ -823,22 +823,13 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                         .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE))
+                        .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jLabel13))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panSourcesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panSourcesLayout.createSequentialGroup()
                         .addGroup(panSourcesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(cboWaterMarks, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(panSourcesLayout.createSequentialGroup()
-                                .addComponent(chkShortcutControl)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(chkShortcutSHIFT)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cboShortcutKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnShortcutApply, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE))
                             .addComponent(cboAudiosMicrophone, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(cboAudiosInternal, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(cboDisplays, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -849,7 +840,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                             .addComponent(btnSetDisplay, javax.swing.GroupLayout.Alignment.TRAILING)))
                     .addGroup(panSourcesLayout.createSequentialGroup()
                         .addComponent(cboAudioRate, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 139, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panSourcesLayout.setVerticalGroup(
@@ -875,20 +866,13 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     .addComponent(cboAudiosInternal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panSourcesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel9)
-                    .addComponent(chkShortcutControl)
-                    .addComponent(chkShortcutSHIFT)
-                    .addComponent(cboShortcutKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnShortcutApply))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(panSourcesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel11)
                     .addComponent(cboAudioRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panSourcesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
                     .addComponent(cboWaterMarks, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(48, Short.MAX_VALUE))
+                .addContainerGap(90, Short.MAX_VALUE))
         );
 
         tabs.addTab("Sources", panSources);
@@ -958,14 +942,14 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panPanelLayout.createSequentialGroup()
                                 .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(cboPanelOrientation, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(cboOverlays, 0, 298, Short.MAX_VALUE))
+                                    .addComponent(cboOverlays, 0, 196, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnEditor))
                             .addGroup(panPanelLayout.createSequentialGroup()
                                 .addComponent(spinShowDurationTime, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel8)
-                                .addGap(0, 212, Short.MAX_VALUE))
+                                .addGap(0, 110, Short.MAX_VALUE))
                             .addComponent(txtCommand))))
                 .addContainerGap())
         );
@@ -996,6 +980,87 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         );
 
         tabs.addTab("Panel", panPanel);
+
+        jLabel9.setText("Capture");
+
+        chkShortcutCaptureControl.setText("CTRL");
+
+        chkShortcutCaptureSHIFT.setText("SHIFT");
+
+        cboShortcutCaptureKey.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" }));
+
+        btnShortcutCaptureApply.setText("Apply");
+        btnShortcutCaptureApply.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnShortcutCaptureApplyActionPerformed(evt);
+            }
+        });
+
+        jLabel10.setText("Privacy");
+
+        chkShortcutPrivacyControl.setText("CTRL");
+
+        chkShortcutPrivacySHIFT.setText("SHIFT");
+
+        cboShortcutPrivacyKey.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" }));
+
+        btnShortcutPrivacyApply.setText("Apply");
+        btnShortcutPrivacyApply.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnShortcutPrivacyApplyActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
+                    .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(chkShortcutPrivacyControl)
+                    .addComponent(chkShortcutCaptureControl, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(chkShortcutPrivacySHIFT)
+                    .addComponent(chkShortcutCaptureSHIFT, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(cboShortcutPrivacyKey, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(cboShortcutCaptureKey, 0, 60, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnShortcutPrivacyApply, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnShortcutCaptureApply, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(4, 4, 4))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(chkShortcutCaptureSHIFT)
+                    .addComponent(cboShortcutCaptureKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnShortcutCaptureApply)
+                    .addComponent(chkShortcutCaptureControl))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10)
+                    .addComponent(chkShortcutPrivacyControl)
+                    .addComponent(chkShortcutPrivacySHIFT)
+                    .addComponent(cboShortcutPrivacyKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnShortcutPrivacyApply))
+                .addContainerGap(226, Short.MAX_VALUE))
+        );
+
+        jLabel10.getAccessibleContext().setAccessibleName("Privacy");
+
+        tabs.addTab("Shortcuts", jPanel1);
 
         getContentPane().add(tabs, java.awt.BorderLayout.CENTER);
 
@@ -1128,19 +1193,19 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         }
     }//GEN-LAST:event_txtPanelContentTextKeyTyped
 
-    private void btnShortcutApplyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShortcutApplyActionPerformed
+    private void btnShortcutCaptureApplyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShortcutCaptureApplyActionPerformed
         if (target != null) {
-            target.shortcutKey = "";
-            if (chkShortcutControl.isSelected()) {
-                target.shortcutKey += "control ";
+            target.shortcutCaptureKey = "";
+            if (chkShortcutCaptureControl.isSelected()) {
+                target.shortcutCaptureKey += "control ";
             }
-            if (chkShortcutSHIFT.isSelected()) {
-                target.shortcutKey += "shift ";
+            if (chkShortcutCaptureSHIFT.isSelected()) {
+                target.shortcutCaptureKey += "shift ";
             }
-            target.shortcutKey += cboShortcutKey.getSelectedItem().toString();
+            target.shortcutCaptureKey += cboShortcutCaptureKey.getSelectedItem().toString();
             initializeShortCuts();
         }
-    }//GEN-LAST:event_btnShortcutApplyActionPerformed
+    }//GEN-LAST:event_btnShortcutCaptureApplyActionPerformed
 
     private void lblNoticeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblNoticeMouseClicked
         if (evt.getClickCount() == 2) {
@@ -1215,6 +1280,20 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         }
     }//GEN-LAST:event_btnEditorActionPerformed
 
+    private void btnShortcutPrivacyApplyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShortcutPrivacyApplyActionPerformed
+       if (target != null) {
+            target.shortcutPrivacyKey = "";
+            if (chkShortcutPrivacyControl.isSelected()) {
+                target.shortcutPrivacyKey += "control ";
+            }
+            if (chkShortcutPrivacySHIFT.isSelected()) {
+                target.shortcutPrivacyKey += "shift ";
+            }
+            target.shortcutPrivacyKey += cboShortcutPrivacyKey.getSelectedItem().toString();
+            initializeShortCuts();
+        }
+    }//GEN-LAST:event_btnShortcutPrivacyApplyActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1238,34 +1317,20 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
 //        }
             javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
 //</editor-fold>
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         //</editor-fold>
         if (args.length >= 1) {
             /* Create and display the form */
-            java.awt.EventQueue.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-
-                    new Main(new File(args[0])).setVisible(true);
-                }
+            java.awt.EventQueue.invokeLater(() -> {
+                new Main(new File(args[0])).setVisible(true);
             });
         } else {
             /* Create and display the form */
-            java.awt.EventQueue.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-
-                    new Main(null).setVisible(true);
-                }
+            java.awt.EventQueue.invokeLater(() -> {
+                new Main(null).setVisible(true);
             });
         }
     }
@@ -1277,7 +1342,8 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     private javax.swing.JButton btnSetProfile;
     private javax.swing.JButton btnSetTarget;
     private javax.swing.JButton btnSetWebcam;
-    private javax.swing.JButton btnShortcutApply;
+    private javax.swing.JButton btnShortcutCaptureApply;
+    private javax.swing.JButton btnShortcutPrivacyApply;
     private javax.swing.JComboBox cboAudioRate;
     private javax.swing.JComboBox cboAudiosInternal;
     private javax.swing.JComboBox cboAudiosMicrophone;
@@ -1285,15 +1351,19 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     private javax.swing.JComboBox cboOverlays;
     private javax.swing.JComboBox<Renderer.PanelLocation> cboPanelOrientation;
     private javax.swing.JComboBox cboProfiles;
-    private javax.swing.JComboBox cboShortcutKey;
+    private javax.swing.JComboBox cboShortcutCaptureKey;
+    private javax.swing.JComboBox cboShortcutPrivacyKey;
     private javax.swing.JComboBox cboTargets;
     private javax.swing.JComboBox<java.io.File> cboWaterMarks;
     private javax.swing.JComboBox cboWebcams;
     private javax.swing.JCheckBox chkDebugMode;
     private javax.swing.JCheckBox chkDoNotHide;
-    private javax.swing.JCheckBox chkShortcutControl;
-    private javax.swing.JCheckBox chkShortcutSHIFT;
+    private javax.swing.JCheckBox chkShortcutCaptureControl;
+    private javax.swing.JCheckBox chkShortcutCaptureSHIFT;
+    private javax.swing.JCheckBox chkShortcutPrivacyControl;
+    private javax.swing.JCheckBox chkShortcutPrivacySHIFT;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
@@ -1305,6 +1375,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblCurrentTargetConfiguration;
     private javax.swing.JLabel lblMessages;
     private javax.swing.JLabel lblNotice;
@@ -1355,8 +1426,14 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         shortcut += " " + KeyEvent.getKeyText(hotkey.keyStroke.getKeyCode());
 
         shortcut = shortcut.trim().toUpperCase().replaceAll("  ", " ");
-        if (shortcut.equals(target.shortcutKey.toUpperCase())) {
+        if (shortcut.equals(target.shortcutCaptureKey.toUpperCase())) {
             btnCapture.doClick();
+        } else if (shortcut.equals(target.shortcutPrivacyKey.toUpperCase())) {
+            //Activate or deactivate privacy mode...
+            if (runningOverlay != null){
+                System.out.println("Private mode...");
+                runningOverlay.setPrivateMode(!runningOverlay.isPrivateMode());
+            }
         }
 
     }

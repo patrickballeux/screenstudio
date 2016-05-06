@@ -118,7 +118,8 @@ public class Targets {
     public String outputAudioRate = "Audio22K";
     public String showDuration = "60";
     public String panelTextContent = "";
-    public String shortcutKey = "control shift R";
+    public String shortcutCaptureKey = "control shift R";
+    public String shortcutPrivacyKey = "control shift P";
     public String doNotHide = "false";
     public String webcamLocation = "Top";
     public String command = "";
