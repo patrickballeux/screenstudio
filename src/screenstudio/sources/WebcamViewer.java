@@ -34,6 +34,7 @@ import screenstudio.encoder.FFMpeg;
 public class WebcamViewer implements Runnable {
 
     private final File mDevice;
+    private final Screen mScreen;
     private final int mWidth;
     private final int mHeight;
     private BufferedImage buffer;
@@ -43,13 +44,15 @@ public class WebcamViewer implements Runnable {
     /**
      * Creates new form WebcamViewer
      *
+     * @param screen
      * @param device
      * @param width
      * @param height
      * @param fps
      */
-    public WebcamViewer(File device, int width, int height, int fps) {
+    public WebcamViewer(Screen screen, File device, int width, int height, int fps) {
         mDevice = device;
+        mScreen = screen;
         mWidth = width;
         mHeight = height;
         mFPS = fps;
@@ -103,7 +106,7 @@ public class WebcamViewer implements Runnable {
 
             if (mDevice.getName().equals("MOUSE")) {
                 if (Screen.isOSX()) {
-                    command = bin + " -nostats -loglevel 0 -f " + displayFormat + " -follow_mouse centered -video_size " + mWidth / 2 + "x" + mHeight / 2 + " -i " + "0: -s " + mWidth + "x" + mHeight + " -r " + mFPS + "  -f rawvideo -pix_fmt bgr24 -";
+                    command = bin + " -nostats -loglevel 0 -f " + displayFormat + " -follow_mouse centered -video_size " + mWidth / 2 + "x" + mHeight / 2 + " -i " + mScreen.getId() + ": -s " + mWidth + "x" + mHeight + " -r " + mFPS + "  -f rawvideo -pix_fmt bgr24 -";
                 } else {
                     command = bin + " -nostats -loglevel 0 -f " + displayFormat + " -follow_mouse centered -video_size " + mWidth / 2 + "x" + mHeight / 2 + " -i " + ":0.0 -s " + mWidth + "x" + mHeight + " -r " + mFPS + " -f rawvideo -pix_fmt bgr24 -";
                 }

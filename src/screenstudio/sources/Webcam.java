@@ -112,10 +112,10 @@ public class Webcam {
                 }
             }
         }
-        if (!Screen.isOSX()) {
-            w = new Webcam("MOUSE", "Mouse", "Mouse");
-            list.add(w);
-        }
+        //if (!Screen.isOSX()) {
+        w = new Webcam("MOUSE", "Mouse", "Mouse");
+        list.add(w);
+        // }
         return list.toArray(new Webcam[list.size()]);
     }
 
