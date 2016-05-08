@@ -317,7 +317,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             Image img = trayIcon.getImage();
             Graphics2D g = (Graphics2D) img.getGraphics();
             if (this.processRunning) {
-                if (runningOverlay != null && runningOverlay.isPrivateMode()){
+                if (runningOverlay != null && runningOverlay.isPrivateMode()) {
                     g.setBackground(Color.RED);
                 } else {
                     g.setBackground(Color.GREEN);
@@ -383,7 +383,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         if (cboOverlays.getSelectedItem() != null) {
             text += "<B>Panel:</B> " + cboOverlays.getSelectedItem().toString() + "<BR>";
         }
-        if (new File(new FFMpeg().getHome()+"/Overlays","privacy.png").exists()){
+        if (new File(new FFMpeg().getHome() + "/Overlays", "privacy.png").exists()) {
             text += "<B>Privacy file found...</B> <BR>";
         }
         text += "</HTML>";
@@ -557,6 +557,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     private void initComponents() {
 
         popTrayIcon = new java.awt.PopupMenu();
+        popTrayIconPrivacyMode = new java.awt.CheckboxMenuItem();
         popTrayIconPanelContent = new java.awt.Menu();
         popTrayIconRecord = new java.awt.MenuItem();
         popTrayIconExit = new java.awt.MenuItem();
@@ -616,6 +617,14 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         lblNotice = new javax.swing.JLabel();
 
         popTrayIcon.setLabel("ScreenStudio");
+
+        popTrayIconPrivacyMode.setLabel("Privacy Mode");
+        popTrayIconPrivacyMode.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                popTrayIconPrivacyModeItemStateChanged(evt);
+            }
+        });
+        popTrayIcon.add(popTrayIconPrivacyMode);
 
         popTrayIconPanelContent.setLabel("Panel Content");
         popTrayIcon.add(popTrayIconPanelContent);
@@ -1282,7 +1291,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     }//GEN-LAST:event_btnEditorActionPerformed
 
     private void btnShortcutPrivacyApplyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShortcutPrivacyApplyActionPerformed
-       if (target != null) {
+        if (target != null) {
             target.shortcutPrivacyKey = "";
             if (chkShortcutPrivacyControl.isSelected()) {
                 target.shortcutPrivacyKey += "control ";
@@ -1294,6 +1303,12 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             initializeShortCuts();
         }
     }//GEN-LAST:event_btnShortcutPrivacyApplyActionPerformed
+
+    private void popTrayIconPrivacyModeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_popTrayIconPrivacyModeItemStateChanged
+        if (!isLoading && runningOverlay != null) {
+            runningOverlay.setPrivateMode(ItemEvent.SELECTED == evt.getStateChange());
+        }
+    }//GEN-LAST:event_popTrayIconPrivacyModeItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -1389,6 +1404,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     private java.awt.PopupMenu popTrayIcon;
     private java.awt.MenuItem popTrayIconExit;
     private java.awt.Menu popTrayIconPanelContent;
+    private java.awt.CheckboxMenuItem popTrayIconPrivacyMode;
     private java.awt.MenuItem popTrayIconRecord;
     private javax.swing.JScrollPane scrollPanelContentText;
     private javax.swing.JSpinner spinShowDurationTime;
@@ -1431,9 +1447,12 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             btnCapture.doClick();
         } else if (shortcut.equals(target.shortcutPrivacyKey.toUpperCase())) {
             //Activate or deactivate privacy mode...
-            if (runningOverlay != null){
-                System.out.println("Private mode...");
+            if (runningOverlay != null) {
                 runningOverlay.setPrivateMode(!runningOverlay.isPrivateMode());
+                isLoading = true;
+                CheckboxMenuItem item = (CheckboxMenuItem) popTrayIconPrivacyMode;
+                item.setState(runningOverlay.isPrivateMode());
+                isLoading = false;
             }
         }
 

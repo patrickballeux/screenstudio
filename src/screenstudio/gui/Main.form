@@ -7,6 +7,14 @@
         <Property name="label" type="java.lang.String" value="ScreenStudio"/>
       </Properties>
       <SubComponents>
+        <MenuItem class="java.awt.CheckboxMenuItem" name="popTrayIconPrivacyMode">
+          <Properties>
+            <Property name="label" type="java.lang.String" value="Privacy Mode"/>
+          </Properties>
+          <Events>
+            <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="popTrayIconPrivacyModeItemStateChanged"/>
+          </Events>
+        </MenuItem>
         <Menu class="java.awt.Menu" name="popTrayIconPanelContent">
           <Properties>
             <Property name="label" type="java.lang.String" value="Panel Content"/>
