@@ -124,7 +124,7 @@ public class Targets {
     public String webcamLocation = "Top";
     public String command = "";
     public String waterMarkFile = "";
-    private TreeMap<String, String> keys = new TreeMap();
+    private final TreeMap<String, String> keys = new TreeMap();
 // </editor-fold>
 
     public void updateKey(Targets.FORMATS format, String key) {
