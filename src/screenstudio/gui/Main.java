@@ -271,6 +271,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             }
         }
         txtCommand.setText(target.command);
+        spinPanelSize.setValue(new Integer(target.mainOverlaySize));
     }
 
     private void initializeShortCuts() {
@@ -412,9 +413,9 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             if (cboWebcams.getSelectedIndex() > 0) {
                 Webcam w = (Webcam) cboWebcams.getSelectedItem();
                 w.setFps(s.getFps());
-                runningOverlay = new Overlay(content, (Renderer.PanelLocation) cboPanelOrientation.getSelectedItem(), s, w, (Integer) spinShowDurationTime.getValue(), txtPanelContentText.getText(), txtCommand.getText());
+                runningOverlay = new Overlay(content, (Renderer.PanelLocation) cboPanelOrientation.getSelectedItem(),(Integer)spinPanelSize.getValue(), s, w, (Integer) spinShowDurationTime.getValue(), txtPanelContentText.getText(), txtCommand.getText());
             } else {
-                runningOverlay = new Overlay(content, (Renderer.PanelLocation) cboPanelOrientation.getSelectedItem(), s, null, (Integer) spinShowDurationTime.getValue(), txtPanelContentText.getText(), txtCommand.getText());
+                runningOverlay = new Overlay(content, (Renderer.PanelLocation) cboPanelOrientation.getSelectedItem(),(Integer)spinPanelSize.getValue(), s, null, (Integer) spinShowDurationTime.getValue(), txtPanelContentText.getText(), txtCommand.getText());
             }
             command.setOverlay(runningOverlay);
             command.setOutputSize((int) runningOverlay.getWidth(), (int) runningOverlay.getHeight(), (SIZES) cboProfiles.getSelectedItem());
@@ -601,6 +602,8 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         cboPanelOrientation = new javax.swing.JComboBox<>();
         jLabel12 = new javax.swing.JLabel();
         txtCommand = new javax.swing.JTextField();
+        jLabel14 = new javax.swing.JLabel();
+        spinPanelSize = new javax.swing.JSpinner();
         jPanel1 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
         chkShortcutCaptureControl = new javax.swing.JCheckBox();
@@ -720,7 +723,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     .addGroup(panCaptureLayout.createSequentialGroup()
                         .addComponent(lblTargets)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cboTargets, 0, 308, Short.MAX_VALUE)
+                        .addComponent(cboTargets, 0, 287, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSetTarget))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panCaptureLayout.createSequentialGroup()
@@ -732,7 +735,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     .addGroup(panCaptureLayout.createSequentialGroup()
                         .addComponent(lblProfiles)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cboProfiles, 0, 308, Short.MAX_VALUE)
+                        .addComponent(cboProfiles, 0, 287, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSetProfile)
                         .addGap(1, 1, 1)))
@@ -852,7 +855,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                             .addComponent(btnSetDisplay, javax.swing.GroupLayout.Alignment.TRAILING)))
                     .addGroup(panSourcesLayout.createSequentialGroup()
                         .addComponent(cboAudioRate, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 169, Short.MAX_VALUE)))
+                        .addGap(0, 148, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panSourcesLayout.setVerticalGroup(
@@ -933,6 +936,11 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
 
         jLabel12.setText("@COMMAND");
 
+        jLabel14.setText("Size");
+
+        spinPanelSize.setModel(new javax.swing.SpinnerNumberModel(320, 0, null, 10));
+        spinPanelSize.setToolTipText("Size of the panel when no webcam is selected...");
+
         javax.swing.GroupLayout panPanelLayout = new javax.swing.GroupLayout(panPanel);
         panPanel.setLayout(panPanelLayout);
         panPanelLayout.setHorizontalGroup(
@@ -952,16 +960,23 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panPanelLayout.createSequentialGroup()
-                                .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(cboPanelOrientation, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(cboOverlays, 0, 226, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnEditor))
+                                .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(panPanelLayout.createSequentialGroup()
+                                        .addComponent(cboOverlays, 0, 202, Short.MAX_VALUE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(btnEditor))
+                                    .addGroup(panPanelLayout.createSequentialGroup()
+                                        .addComponent(cboPanelOrientation, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabel14)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(spinPanelSize, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(3, 3, 3))
                             .addGroup(panPanelLayout.createSequentialGroup()
                                 .addComponent(spinShowDurationTime, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel8)
-                                .addGap(0, 140, Short.MAX_VALUE))
+                                .addGap(0, 119, Short.MAX_VALUE))
                             .addComponent(txtCommand))))
                 .addContainerGap())
         );
@@ -976,7 +991,9 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(cboPanelOrientation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cboPanelOrientation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel14)
+                    .addComponent(spinPanelSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
@@ -1263,6 +1280,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             target.mainOverlayLocation = cboPanelOrientation.getSelectedItem().toString();
             target.command = txtCommand.getText();
             target.waterMarkFile = cboWaterMarks.getSelectedItem().toString();
+            target.mainOverlaySize = spinPanelSize.getValue().toString();
             target.saveDefault(mConfig);
             stopShortcuts();
         } catch (IOException ex) {
@@ -1383,6 +1401,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1407,6 +1426,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     private java.awt.CheckboxMenuItem popTrayIconPrivacyMode;
     private java.awt.MenuItem popTrayIconRecord;
     private javax.swing.JScrollPane scrollPanelContentText;
+    private javax.swing.JSpinner spinPanelSize;
     private javax.swing.JSpinner spinShowDurationTime;
     private javax.swing.JTabbedPane tabs;
     private javax.swing.JTextField txtCommand;

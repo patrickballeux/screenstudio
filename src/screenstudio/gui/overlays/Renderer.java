@@ -57,6 +57,7 @@ public class Renderer {
     private int textY = 0;
     private int webcamX = 0;
     private int webcamY = 0;
+    private int textSize = 0;
 
     public enum WebcamLocation {
 
@@ -185,9 +186,10 @@ public class Renderer {
 
     }
 
-    public Renderer(PanelLocation location, screenstudio.sources.Webcam webcam, Screen screen, int showDuration) {
+    public Renderer(PanelLocation location, int panelSize, screenstudio.sources.Webcam webcam, Screen screen, int showDuration) {
         startingTime = System.currentTimeMillis();
         showEndTime = System.currentTimeMillis() + (showDuration * 60000);
+        textSize = panelSize;
         mDesktop = new DesktopViewer(screen);
         new Thread(mDesktop).start();
         mViewer = null;
@@ -207,7 +209,7 @@ public class Renderer {
                 if (webcam != null) {
                     lblText.setPreferredSize(new Dimension(screen.getWidth() - webcam.getWidth(), webcam.getHeight()));
                 } else {
-                    lblText.setPreferredSize(new Dimension(screen.getWidth(), 120));
+                    lblText.setPreferredSize(new Dimension(screen.getWidth(), textSize));
                 }
                 break;
             case Left:
@@ -215,7 +217,7 @@ public class Renderer {
                 if (webcam != null) {
                     lblText.setPreferredSize(new Dimension(webcam.getWidth(), screen.getHeight() - webcam.getHeight()));
                 } else {
-                    lblText.setPreferredSize(new Dimension(120, screen.getHeight()));
+                    lblText.setPreferredSize(new Dimension(textSize, screen.getHeight()));
                 }
                 break;
         }

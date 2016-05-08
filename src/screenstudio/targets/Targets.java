@@ -104,6 +104,7 @@ public class Targets {
     public String secondAudio = "";
     public String mainOverlay = "";
     public String mainOverlayLocation = "Right";
+    public String mainOverlaySize = "320";
     public String framerate = "";
     public String captureX = "";
     public String captureY = "";

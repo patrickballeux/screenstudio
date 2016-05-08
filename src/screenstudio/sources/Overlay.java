@@ -42,11 +42,11 @@ public class Overlay implements Runnable {
     private final String mCommand;
     private boolean mIsPrivateMode = false;
 
-    public Overlay(File content, Renderer.PanelLocation location, Screen screen, screenstudio.sources.Webcam webcam, int showDurationTime, String userTextContent, String command) throws IOException, InterruptedException {
+    public Overlay(File content, Renderer.PanelLocation location,int panelSize, Screen screen, screenstudio.sources.Webcam webcam, int showDurationTime, String userTextContent, String command) throws IOException, InterruptedException {
         mContent = content;
         mCommand = command;
         mUserTextContent = userTextContent;
-        htmlRenderer = new Renderer(location, webcam, screen, showDurationTime);
+        htmlRenderer = new Renderer(location,panelSize, webcam, screen, showDurationTime);
         mFPS = screen.getFps();
         new Thread(this).start();
         mOutput = new OverlayUnix(htmlRenderer, mFPS);
