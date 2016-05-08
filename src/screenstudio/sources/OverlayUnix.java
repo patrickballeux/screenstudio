@@ -18,6 +18,7 @@ package screenstudio.sources;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
@@ -25,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import screenstudio.encoder.FFMpeg;
 import screenstudio.gui.overlays.Renderer;
 
 /**
@@ -39,6 +41,7 @@ public class OverlayUnix implements Runnable {
     private boolean mIsRunning = false;
     private final File mOutput;
     private boolean mIsPrivateMode = false;
+    private Image privacyImage = null;
 
     public OverlayUnix(Renderer panel, long fps) throws IOException, InterruptedException {
         mPanel = panel;
@@ -50,9 +53,10 @@ public class OverlayUnix implements Runnable {
         Runtime.getRuntime().exec("mkfifo " + mOutput.getAbsolutePath());
     }
 
-    public void setPrivateMode(boolean value){
+    public void setPrivateMode(boolean value) {
         mIsPrivateMode = value;
     }
+
     public void start() {
         new Thread(this).start();
     }
@@ -70,6 +74,17 @@ public class OverlayUnix implements Runnable {
         mIsRunning = true;
         stopMe = false;
         java.io.FileOutputStream out = null;
+        File privacyTemplate = new File(new FFMpeg().getHome() + "/Overlays", "privacy.png");
+        if (privacyTemplate.exists()) {
+            System.out.println("Found privacy template... Loading...");
+            try {
+                privacyImage = javax.imageio.ImageIO.read(privacyTemplate).getScaledInstance(mPanel.getWidth(), mPanel.getHeight(), BufferedImage.SCALE_SMOOTH);
+            } catch (IOException ex) {
+                Logger.getLogger(OverlayUnix.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            privacyImage = null;
+        }
         try {
             // Pipe created. so we need to paint
             // the panel in the fifo each x ms seconds..
@@ -82,10 +97,14 @@ public class OverlayUnix implements Runnable {
             long nextPTS = System.nanoTime() + frameTime;
             while (!stopMe) {
                 try {
-                    if (mIsPrivateMode){
-                        g.setColor(Color.BLACK);
-                        g.fillRect(0, 0, img.getWidth(), img.getHeight());
-                    } else if (!mPanel.IsUpdating()) {                       
+                    if (mIsPrivateMode) {
+                        if (privacyImage == null) {
+                            g.setColor(Color.BLACK);
+                            g.fillRect(0, 0, img.getWidth(), img.getHeight());
+                        } else {
+                            g.drawImage(privacyImage, 0, 0, null);
+                        }
+                    } else if (!mPanel.IsUpdating()) {
                         mPanel.paint(g);
                     }
                 } catch (Exception e) {
@@ -106,9 +125,7 @@ public class OverlayUnix implements Runnable {
                 nextPTS += frameTime;
             }
             g.dispose();
-            if (out != null) {
-                out.close();
-            }
+            out.close();
         } catch (IOException ex) {
             if (out != null) {
                 try {
