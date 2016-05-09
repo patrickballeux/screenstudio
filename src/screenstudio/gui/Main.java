@@ -342,11 +342,16 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                 g.drawString(time, x, img.getHeight(null) - 4);
                 g.dispose();
                 trayIcon.setImage(img);
-                this.trayIcon.setToolTip("Recording Time: " + delta + " minutes...");
+                if (runningOverlay == null){
+                    this.trayIcon.setToolTip("Recording Time: " + delta + " minutes...");
+                } else {
+                    this.trayIcon.setToolTip("Recording Time: " + delta + " minutes...\nNotifications on port UDP:" + runningOverlay.getNotificationPort());
+                }
             } else {
                 g.drawImage(this.getIconImage().getScaledInstance(img.getWidth(null), img.getHeight(null), Image.SCALE_FAST), 0, 0, null);
                 g.dispose();
                 trayIcon.setImage(img);
+                this.trayIcon.setToolTip("Stopped");
             }
         }
     }
@@ -723,7 +728,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     .addGroup(panCaptureLayout.createSequentialGroup()
                         .addComponent(lblTargets)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cboTargets, 0, 287, Short.MAX_VALUE)
+                        .addComponent(cboTargets, 0, 264, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSetTarget))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panCaptureLayout.createSequentialGroup()
@@ -735,7 +740,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     .addGroup(panCaptureLayout.createSequentialGroup()
                         .addComponent(lblProfiles)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cboProfiles, 0, 287, Short.MAX_VALUE)
+                        .addComponent(cboProfiles, 0, 264, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSetProfile)
                         .addGap(1, 1, 1)))
@@ -855,7 +860,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                             .addComponent(btnSetDisplay, javax.swing.GroupLayout.Alignment.TRAILING)))
                     .addGroup(panSourcesLayout.createSequentialGroup()
                         .addComponent(cboAudioRate, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 148, Short.MAX_VALUE)))
+                        .addGap(0, 125, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panSourcesLayout.setVerticalGroup(
@@ -962,7 +967,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panPanelLayout.createSequentialGroup()
                                 .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(panPanelLayout.createSequentialGroup()
-                                        .addComponent(cboOverlays, 0, 202, Short.MAX_VALUE)
+                                        .addComponent(cboOverlays, 0, 179, Short.MAX_VALUE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(btnEditor))
                                     .addGroup(panPanelLayout.createSequentialGroup()
@@ -976,7 +981,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                                 .addComponent(spinShowDurationTime, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel8)
-                                .addGap(0, 119, Short.MAX_VALUE))
+                                .addGap(0, 96, Short.MAX_VALUE))
                             .addComponent(txtCommand))))
                 .addContainerGap())
         );

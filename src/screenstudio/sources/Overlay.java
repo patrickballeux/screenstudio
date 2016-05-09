@@ -52,7 +52,9 @@ public class Overlay implements Runnable {
         mOutput = new OverlayUnix(htmlRenderer, mFPS);
     }
 
-    
+    public int getNotificationPort(){
+        return htmlRenderer.getPort();
+    }
     public boolean isPrivateMode(){
         return mIsPrivateMode;
     }

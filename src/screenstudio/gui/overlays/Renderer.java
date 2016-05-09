@@ -17,6 +17,7 @@
 package screenstudio.gui.overlays;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -29,14 +30,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JLabel;
 import screenstudio.sources.DesktopViewer;
+import screenstudio.sources.NotificationListener;
 import screenstudio.sources.Screen;
+import screenstudio.sources.UDPNotifications;
 import screenstudio.sources.WebcamViewer;
 
 /**
  *
  * @author patrick
  */
-public class Renderer {
+public class Renderer implements NotificationListener{
 
     private WebcamViewer mViewer;
     private DesktopViewer mDesktop;
@@ -50,6 +53,9 @@ public class Renderer {
     private PanelLocation panelLocation;
     private WebcamLocation webcamLocation;
     private final BufferedImage textBuffer;
+    private UDPNotifications notifications;
+    private long lastNotificationTime = 0;
+    private JLabel notificationMessage = null;
 
     private int desktopX = 0;
     private int desktopY = 0;
@@ -58,6 +64,14 @@ public class Renderer {
     private int webcamX = 0;
     private int webcamY = 0;
     private int textSize = 0;
+
+    @Override
+    public void received(String message) {
+        lastNotificationTime = System.currentTimeMillis();
+        notificationMessage.setText("<HTML><BODY width="+notificationMessage.getWidth()+" height="+notificationMessage.getHeight()+">" + message + "</BODY></HTML>");
+        notificationMessage.validate();
+        System.out.println("Message received: " + message);
+    }
 
     public enum WebcamLocation {
 
@@ -190,6 +204,8 @@ public class Renderer {
         startingTime = System.currentTimeMillis();
         showEndTime = System.currentTimeMillis() + (showDuration * 60000);
         textSize = panelSize;
+        notifications = new UDPNotifications(this);
+        notificationMessage = new JLabel("<HTML><BODY></BODY></HTML>");
         mDesktop = new DesktopViewer(screen);
         new Thread(mDesktop).start();
         mViewer = null;
@@ -224,12 +240,21 @@ public class Renderer {
         lblText.setSize(lblText.getPreferredSize());
         lblText.setLocation(0, 0);
         textBuffer = new BufferedImage((int) lblText.getPreferredSize().getWidth(), (int) lblText.getPreferredSize().getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+        notificationMessage.setPreferredSize(new Dimension(screen.getWidth(), 150));
+        notificationMessage.setVisible(true);
+        notificationMessage.setSize(notificationMessage.getPreferredSize());
+        notificationMessage.setLocation(0,250);
+        notificationMessage.setVerticalAlignment(JLabel.TOP);
+        notificationMessage.setFont(new Font("Monospaced", Font.BOLD, 24));
     }
 
     public boolean IsUpdating() {
         return mIsUpdating;
     }
 
+    public int getPort(){
+        return notifications.getPort();
+    }
     public void stop() {
         mStopMe = true;
         mDesktop.stop();
@@ -252,6 +277,9 @@ public class Renderer {
         if (mViewer != null) {
             BufferedImage webcam = mViewer.getImage();
             g.drawImage(webcam, webcamX, webcamY, null);
+        }
+        if (System.currentTimeMillis() - lastNotificationTime <= 15000){
+            notificationMessage.paint(g);
         }
     }
 
