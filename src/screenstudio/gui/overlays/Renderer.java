@@ -16,9 +16,11 @@
  */
 package screenstudio.gui.overlays;
 
+import java.awt.AlphaComposite;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -56,6 +58,8 @@ public class Renderer implements NotificationListener{
     private UDPNotifications notifications;
     private long lastNotificationTime = 0;
     private JLabel notificationMessage = null;
+    private int notificationOpacity = 0;
+    
 
     private int desktopX = 0;
     private int desktopY = 0;
@@ -68,6 +72,7 @@ public class Renderer implements NotificationListener{
     @Override
     public void received(String message) {
         lastNotificationTime = System.currentTimeMillis();
+        notificationOpacity = 100;
         notificationMessage.setText("<HTML><BODY width="+notificationMessage.getWidth()+" height="+notificationMessage.getHeight()+">" + message + "</BODY></HTML>");
         notificationMessage.validate();
         System.out.println("Message received: " + message);
@@ -263,6 +268,8 @@ public class Renderer implements NotificationListener{
         }
     }
 
+    private long lastPaintTime = System.currentTimeMillis();
+    
     public void paint(Graphics g) {
         if (System.currentTimeMillis() > nextTextUpdate) {
             setPositions();
@@ -278,9 +285,13 @@ public class Renderer implements NotificationListener{
             BufferedImage webcam = mViewer.getImage();
             g.drawImage(webcam, webcamX, webcamY, null);
         }
-        if (System.currentTimeMillis() - lastNotificationTime <= 15000){
+        if (System.currentTimeMillis() - lastNotificationTime <= 10000){
+            notificationOpacity -= (1000 / (System.currentTimeMillis()-lastPaintTime));
+            ((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float)(10000-(System.currentTimeMillis() - lastNotificationTime))/10000F));
             notificationMessage.paint(g);
+            ((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
         }
+        lastPaintTime = System.currentTimeMillis();
     }
 
     public void setText(String text, String userTextContent, String command) {
