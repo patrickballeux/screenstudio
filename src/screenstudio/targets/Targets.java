@@ -192,7 +192,9 @@ public class Targets {
                 if (key.getName().endsWith(".key")) {
                     InputStream fin = key.toURI().toURL().openStream();
                     count = fin.read(data);
-                    keys.put(key.getName().replaceAll(".key", ""), new String(data, 0, count));
+                    if (count > 1) {
+                        keys.put(key.getName().replaceAll(".key", ""), new String(data, 0, count));
+                    }
                     in.close();
                 }
             }

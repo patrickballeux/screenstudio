@@ -54,6 +54,7 @@ import screenstudio.gui.overlays.Renderer;
 import screenstudio.sources.Microphone;
 import screenstudio.sources.Overlay;
 import screenstudio.sources.Screen;
+import screenstudio.sources.TwitchAlerts;
 import screenstudio.sources.Webcam;
 import screenstudio.targets.SIZES;
 import screenstudio.targets.Targets;
@@ -74,6 +75,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     private boolean isLoading = false;
     private File mConfig = null;
     private FFMpeg.AudioRate audioRate = FFMpeg.AudioRate.Audio22K;
+    private TwitchAlerts mTwitchAlerts = null;
 
     /**
      * Creates new form Main
@@ -447,6 +449,12 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         try {
             //updateControls(true);
             streamProcess = Runtime.getRuntime().exec(command);
+            if (runningOverlay != null && cboTargets.getSelectedItem().equals(Targets.FORMATS.TWITCH)){
+                File tFolder = new File(txtTwitchAlertFolder.getText());
+                if (tFolder.exists()){
+                    mTwitchAlerts = new TwitchAlerts(tFolder, runningOverlay.getNotificationPort());
+                }
+            }
             new Thread(this::updateStatus).start();
             new Thread(this::monitorProcess).start();
         } catch (IOException ex) {
@@ -475,6 +483,10 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         if (runningOverlay != null) {
             runningOverlay.stop();
             runningOverlay = null;
+        }
+        if (mTwitchAlerts != null){
+            mTwitchAlerts.stop();
+            mTwitchAlerts = null;
         }
         while (processRunning) {
             //Waiting for the process to completly stop...
@@ -609,7 +621,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         txtCommand = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
         spinPanelSize = new javax.swing.JSpinner();
-        jPanel1 = new javax.swing.JPanel();
+        panShortcuts = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
         chkShortcutCaptureControl = new javax.swing.JCheckBox();
         chkShortcutCaptureSHIFT = new javax.swing.JCheckBox();
@@ -620,6 +632,9 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         chkShortcutPrivacySHIFT = new javax.swing.JCheckBox();
         cboShortcutPrivacyKey = new javax.swing.JComboBox();
         btnShortcutPrivacyApply = new javax.swing.JButton();
+        jLabel15 = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
+        txtTwitchAlertFolder = new javax.swing.JTextField();
         panStatusBar = new javax.swing.JPanel();
         lblMessages = new javax.swing.JLabel();
         lblNotice = new javax.swing.JLabel();
@@ -728,7 +743,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     .addGroup(panCaptureLayout.createSequentialGroup()
                         .addComponent(lblTargets)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cboTargets, 0, 264, Short.MAX_VALUE)
+                        .addComponent(cboTargets, 0, 266, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSetTarget))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panCaptureLayout.createSequentialGroup()
@@ -740,7 +755,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     .addGroup(panCaptureLayout.createSequentialGroup()
                         .addComponent(lblProfiles)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cboProfiles, 0, 264, Short.MAX_VALUE)
+                        .addComponent(cboProfiles, 0, 266, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSetProfile)
                         .addGap(1, 1, 1)))
@@ -860,7 +875,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                             .addComponent(btnSetDisplay, javax.swing.GroupLayout.Alignment.TRAILING)))
                     .addGroup(panSourcesLayout.createSequentialGroup()
                         .addComponent(cboAudioRate, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 125, Short.MAX_VALUE)))
+                        .addGap(0, 127, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panSourcesLayout.setVerticalGroup(
@@ -967,7 +982,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panPanelLayout.createSequentialGroup()
                                 .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(panPanelLayout.createSequentialGroup()
-                                        .addComponent(cboOverlays, 0, 179, Short.MAX_VALUE)
+                                        .addComponent(cboOverlays, 0, 181, Short.MAX_VALUE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(btnEditor))
                                     .addGroup(panPanelLayout.createSequentialGroup()
@@ -981,7 +996,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                                 .addComponent(spinShowDurationTime, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel8)
-                                .addGap(0, 96, Short.MAX_VALUE))
+                                .addGap(0, 98, Short.MAX_VALUE))
                             .addComponent(txtCommand))))
                 .addContainerGap())
         );
@@ -1045,54 +1060,73 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             }
         });
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        jLabel15.setText("Twitch Alert Folder");
+
+        txtTwitchAlertFolder.setText("~/twitchalerts");
+
+        javax.swing.GroupLayout panShortcutsLayout = new javax.swing.GroupLayout(panShortcuts);
+        panShortcuts.setLayout(panShortcutsLayout);
+        panShortcutsLayout.setHorizontalGroup(
+            panShortcutsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panShortcutsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
-                    .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(chkShortcutPrivacyControl)
-                    .addComponent(chkShortcutCaptureControl, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(chkShortcutPrivacySHIFT)
-                    .addComponent(chkShortcutCaptureSHIFT, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(cboShortcutPrivacyKey, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(cboShortcutCaptureKey, 0, 60, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnShortcutPrivacyApply, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnShortcutCaptureApply, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(4, 4, 4))
+                .addGroup(panShortcutsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSeparator1)
+                    .addGroup(panShortcutsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(panShortcutsLayout.createSequentialGroup()
+                            .addGroup(panShortcutsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
+                                .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(panShortcutsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(chkShortcutPrivacyControl)
+                                .addComponent(chkShortcutCaptureControl, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(panShortcutsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(chkShortcutPrivacySHIFT)
+                                .addComponent(chkShortcutCaptureSHIFT, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(panShortcutsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(cboShortcutPrivacyKey, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(cboShortcutCaptureKey, 0, 60, Short.MAX_VALUE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(panShortcutsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(btnShortcutPrivacyApply, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnShortcutCaptureApply, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGap(0, 0, Short.MAX_VALUE))
+                        .addGroup(panShortcutsLayout.createSequentialGroup()
+                            .addComponent(jLabel15)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(txtTwitchAlertFolder))))
+                .addContainerGap())
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        panShortcutsLayout.setVerticalGroup(
+            panShortcutsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panShortcutsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(panShortcutsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
                     .addComponent(chkShortcutCaptureSHIFT)
                     .addComponent(cboShortcutCaptureKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnShortcutCaptureApply)
                     .addComponent(chkShortcutCaptureControl))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(panShortcutsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel10)
                     .addComponent(chkShortcutPrivacyControl)
                     .addComponent(chkShortcutPrivacySHIFT)
                     .addComponent(cboShortcutPrivacyKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnShortcutPrivacyApply))
-                .addContainerGap(280, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panShortcutsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel15)
+                    .addComponent(txtTwitchAlertFolder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(217, Short.MAX_VALUE))
         );
 
-        tabs.addTab("Shortcuts", jPanel1);
+        tabs.addTab("Shortcuts", panShortcuts);
 
         getContentPane().add(tabs, java.awt.BorderLayout.CENTER);
 
@@ -1407,6 +1441,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1415,7 +1450,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel lblCurrentTargetConfiguration;
     private javax.swing.JLabel lblMessages;
     private javax.swing.JLabel lblNotice;
@@ -1423,6 +1458,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     private javax.swing.JLabel lblTargets;
     private javax.swing.JPanel panCapture;
     private javax.swing.JPanel panPanel;
+    private javax.swing.JPanel panShortcuts;
     private javax.swing.JPanel panSources;
     private javax.swing.JPanel panStatusBar;
     private java.awt.PopupMenu popTrayIcon;
@@ -1436,6 +1472,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     private javax.swing.JTabbedPane tabs;
     private javax.swing.JTextField txtCommand;
     private javax.swing.JTextArea txtPanelContentText;
+    private javax.swing.JTextField txtTwitchAlertFolder;
     // End of variables declaration//GEN-END:variables
 
     @Override
