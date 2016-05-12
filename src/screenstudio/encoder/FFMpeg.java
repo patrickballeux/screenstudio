@@ -406,6 +406,7 @@ public class FFMpeg {
         c.append(" -r ").append(framerate);
         c.append(" -s ").append(outputWidth).append("x").append(outputHeight);
         c.append(" -vb ").append(videoBitrate).append("k");
+        c.append(" -pix_fmt yuv420p ");
         if (output.startsWith("rtmp://")) {
             c.append(" -minrate ").append(videoBitrate).append("k -maxrate ").append(videoBitrate).append("k ");
         }

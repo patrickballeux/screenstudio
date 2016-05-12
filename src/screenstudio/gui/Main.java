@@ -87,19 +87,15 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         mConfig = config;
         isLoading = true;
         lblMessages.setText("Loading...");
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    target.loadDefault(mConfig);
-                } catch (IOException ex) {
-                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                initControls();
-                updateCurrentConfigurationStatus();
-                isLoading = false;
-                lblMessages.setText("Welcome!");
-            }
-        }).start();
+        try {
+            target.loadDefault(mConfig);
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        initControls();
+        updateCurrentConfigurationStatus();
+        isLoading = false;
+        lblMessages.setText("Welcome!");
 
         new Thread(() -> {
             //Check for a new version...
@@ -344,7 +340,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                 g.drawString(time, x, img.getHeight(null) - 4);
                 g.dispose();
                 trayIcon.setImage(img);
-                if (runningOverlay == null){
+                if (runningOverlay == null) {
                     this.trayIcon.setToolTip("Recording Time: " + delta + " minutes...");
                 } else {
                     this.trayIcon.setToolTip("Recording Time: " + delta + " minutes...\nNotifications on port UDP:" + runningOverlay.getNotificationPort());
@@ -420,9 +416,9 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             if (cboWebcams.getSelectedIndex() > 0) {
                 Webcam w = (Webcam) cboWebcams.getSelectedItem();
                 w.setFps(s.getFps());
-                runningOverlay = new Overlay(content, (Renderer.PanelLocation) cboPanelOrientation.getSelectedItem(),(Integer)spinPanelSize.getValue(), s, w, (Integer) spinShowDurationTime.getValue(), txtPanelContentText.getText(), txtCommand.getText());
+                runningOverlay = new Overlay(content, (Renderer.PanelLocation) cboPanelOrientation.getSelectedItem(), (Integer) spinPanelSize.getValue(), s, w, (Integer) spinShowDurationTime.getValue(), txtPanelContentText.getText(), txtCommand.getText());
             } else {
-                runningOverlay = new Overlay(content, (Renderer.PanelLocation) cboPanelOrientation.getSelectedItem(),(Integer)spinPanelSize.getValue(), s, null, (Integer) spinShowDurationTime.getValue(), txtPanelContentText.getText(), txtCommand.getText());
+                runningOverlay = new Overlay(content, (Renderer.PanelLocation) cboPanelOrientation.getSelectedItem(), (Integer) spinPanelSize.getValue(), s, null, (Integer) spinShowDurationTime.getValue(), txtPanelContentText.getText(), txtCommand.getText());
             }
             command.setOverlay(runningOverlay);
             command.setOutputSize((int) runningOverlay.getWidth(), (int) runningOverlay.getHeight(), (SIZES) cboProfiles.getSelectedItem());
@@ -449,9 +445,9 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         try {
             //updateControls(true);
             streamProcess = Runtime.getRuntime().exec(command);
-            if (runningOverlay != null && cboTargets.getSelectedItem().equals(Targets.FORMATS.TWITCH)){
+            if (runningOverlay != null && cboTargets.getSelectedItem().equals(Targets.FORMATS.TWITCH)) {
                 File tFolder = new File(txtTwitchAlertFolder.getText());
-                if (tFolder.exists()){
+                if (tFolder.exists()) {
                     mTwitchAlerts = new TwitchAlerts(tFolder, runningOverlay.getNotificationPort());
                 }
             }
@@ -484,7 +480,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             runningOverlay.stop();
             runningOverlay = null;
         }
-        if (mTwitchAlerts != null){
+        if (mTwitchAlerts != null) {
             mTwitchAlerts.stop();
             mTwitchAlerts = null;
         }

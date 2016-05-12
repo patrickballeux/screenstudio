@@ -58,7 +58,6 @@ public class Renderer implements NotificationListener{
     private UDPNotifications notifications;
     private long lastNotificationTime = 0;
     private JLabel notificationMessage = null;
-    private int notificationOpacity = 0;
     
 
     private int desktopX = 0;
@@ -72,7 +71,6 @@ public class Renderer implements NotificationListener{
     @Override
     public void received(String message) {
         lastNotificationTime = System.currentTimeMillis();
-        notificationOpacity = 100;
         notificationMessage.setText("<HTML><BODY width="+notificationMessage.getWidth()+" height="+notificationMessage.getHeight()+">" + message + "</BODY></HTML>");
         notificationMessage.validate();
         System.out.println("Message received: " + message);
@@ -268,7 +266,6 @@ public class Renderer implements NotificationListener{
         }
     }
 
-    private long lastPaintTime = System.currentTimeMillis();
     
     public void paint(Graphics g) {
         if (System.currentTimeMillis() > nextTextUpdate) {
@@ -286,12 +283,10 @@ public class Renderer implements NotificationListener{
             g.drawImage(webcam, webcamX, webcamY, null);
         }
         if (System.currentTimeMillis() - lastNotificationTime <= 10000){
-            notificationOpacity -= (1000 / (System.currentTimeMillis()-lastPaintTime));
             ((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float)(10000-(System.currentTimeMillis() - lastNotificationTime))/10000F));
             notificationMessage.paint(g);
             ((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
         }
-        lastPaintTime = System.currentTimeMillis();
     }
 
     public void setText(String text, String userTextContent, String command) {
