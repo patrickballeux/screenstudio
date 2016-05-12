@@ -270,6 +270,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         }
         txtCommand.setText(target.command);
         spinPanelSize.setValue(new Integer(target.mainOverlaySize));
+        txtTwitchAlertFolder.setText(target.twitchalertsfolder);
     }
 
     private void initializeShortCuts() {
@@ -1316,6 +1317,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             target.command = txtCommand.getText();
             target.waterMarkFile = cboWaterMarks.getSelectedItem().toString();
             target.mainOverlaySize = spinPanelSize.getValue().toString();
+            target.twitchalertsfolder = txtTwitchAlertFolder.getText();
             target.saveDefault(mConfig);
             stopShortcuts();
         } catch (IOException ex) {

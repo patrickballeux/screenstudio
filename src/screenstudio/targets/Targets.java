@@ -125,6 +125,8 @@ public class Targets {
     public String webcamLocation = "Top";
     public String command = "";
     public String waterMarkFile = "";
+    public String twitchalertsfolder = "/home/user/twitchalerts";
+    
     private final TreeMap<String, String> keys = new TreeMap();
 // </editor-fold>
 
