@@ -16,6 +16,7 @@
  */
 package screenstudio.sources;
 
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
@@ -44,14 +45,16 @@ public class DesktopViewer implements Runnable {
      */
     public DesktopViewer(Screen device) {
         mDevice = device;
-        buffer = new BufferedImage((int) mDevice.getSize().getWidth(), (int) mDevice.getSize().getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+        int w = (int) mDevice.getSize().getWidth();
+        int h = (int) mDevice.getSize().getHeight();
+        buffer = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
     }
 
     public void stop() {
         stopMe = true;
     }
 
-    public BufferedImage getImage() {
+    public Image getImage() {
         return buffer;
     }
 
@@ -99,13 +102,15 @@ public class DesktopViewer implements Runnable {
 
             BufferedImage b1 = new BufferedImage(buffer.getWidth(), buffer.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
             BufferedImage b2 = new BufferedImage(buffer.getWidth(), buffer.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+            byte[] byteBuffer1 = ((DataBufferByte) b1.getRaster().getDataBuffer()).getData();
+            byte[] byteBuffer2 = ((DataBufferByte) b2.getRaster().getDataBuffer()).getData();
             boolean flip = false;
             while (!stopMe) {
                 if (flip) {
-                    in.readFully(((DataBufferByte) b1.getRaster().getDataBuffer()).getData());
+                    in.readFully(byteBuffer1);
                     buffer = b1;
                 } else {
-                    in.readFully(((DataBufferByte) b2.getRaster().getDataBuffer()).getData());
+                    in.readFully(byteBuffer2);
                     buffer = b2;
                 }
                 flip = !flip;

@@ -104,7 +104,7 @@ public class OverlayUnix implements Runnable {
                         } else {
                             g.drawImage(privacyImage, 0, 0, null);
                         }
-                    } else if (!mPanel.IsUpdating()) {
+                    } else {
                         mPanel.paint(g);
                     }
                 } catch (Exception e) {

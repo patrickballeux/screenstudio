@@ -16,6 +16,7 @@
  */
 package screenstudio.sources;
 
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
@@ -59,7 +60,7 @@ public class WebcamViewer implements Runnable {
         buffer = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
     }
 
-    public BufferedImage getImage() {
+    public Image getImage() {
         return buffer;
     }
 
@@ -117,13 +118,15 @@ public class WebcamViewer implements Runnable {
             java.io.DataInputStream in = new java.io.DataInputStream(p.getInputStream());
             BufferedImage b1 = new BufferedImage(buffer.getWidth(), buffer.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
             BufferedImage b2 = new BufferedImage(buffer.getWidth(), buffer.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+            byte[] byteBuffer1 = ((DataBufferByte) b1.getRaster().getDataBuffer()).getData();
+            byte[] byteBuffer2 = ((DataBufferByte) b2.getRaster().getDataBuffer()).getData();
             boolean flip = false;
             while (!stopMe) {
                 if (flip) {
-                    in.readFully(((DataBufferByte) b1.getRaster().getDataBuffer()).getData());
+                    in.readFully(byteBuffer1);
                     buffer = b1;
                 } else {
-                    in.readFully(((DataBufferByte) b2.getRaster().getDataBuffer()).getData());
+                    in.readFully(byteBuffer2);
                     buffer = b2;
                 }
                 flip = !flip;
