@@ -33,12 +33,13 @@ public class Screen {
 
     private Rectangle size = new Rectangle(0, 0);
     private String id = "";
+    private String name = "None";
     private int screenIndex = -1;
     private int fps = 10;
 
     @Override
     public String toString() {
-        return getLabel();
+        return name;
     }
 
     public int getWidth() {
@@ -56,7 +57,6 @@ public class Screen {
     public static Screen[] getSources() throws IOException, InterruptedException {
         java.util.ArrayList<Screen> list = new java.util.ArrayList<>();
         System.out.println("Screen List:");
-        //list.add(new Screen());
         if (Screen.isOSX()) {
             list.addAll(getOSXDevices());
         } else {
@@ -88,8 +88,18 @@ public class Screen {
                 s.setSize(new Rectangle(0, 0, (int) maxWidth, (int) maxHeight));
                 list.add(s);
             }
+            Screen webcam = new Screen();
+            webcam.setScreenIndex(i++);
+            webcam.setId("WEBCAM");
+            webcam.setName("Webcam");
+            webcam.setSize(new Rectangle(0, 0, 640, 480));
+            list.add(webcam);
         }
         return list.toArray(new Screen[list.size()]);
+    }
+
+    private void setName(String n) {
+        name = n;
     }
 
     public static Rectangle captureWindowArea() throws IOException {
@@ -177,6 +187,7 @@ public class Screen {
      */
     public void setScreenIndex(int screenIndex) {
         this.screenIndex = screenIndex;
+        this.name = "Screen " + screenIndex;
     }
 
     public String getLabel() {

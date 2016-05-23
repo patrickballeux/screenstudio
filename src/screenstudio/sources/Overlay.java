@@ -42,27 +42,29 @@ public class Overlay implements Runnable {
     private final String mCommand;
     private boolean mIsPrivateMode = false;
 
-    public Overlay(File content, Renderer.PanelLocation location,int panelSize, Screen screen, screenstudio.sources.Webcam webcam, int showDurationTime, String userTextContent, String command) throws IOException, InterruptedException {
+    public Overlay(File content, Renderer.PanelLocation location, int panelSize, Screen screen, screenstudio.sources.Webcam webcam, int showDurationTime, String userTextContent, String command) throws IOException, InterruptedException {
         mContent = content;
         mCommand = command;
         mUserTextContent = userTextContent;
-        htmlRenderer = new Renderer(location,panelSize, webcam, screen, showDurationTime);
+        htmlRenderer = new Renderer(location, panelSize, webcam, screen, showDurationTime);
         mFPS = screen.getFps();
         new Thread(this).start();
         mOutput = new OverlayUnix(htmlRenderer, mFPS);
     }
 
-    public int getNotificationPort(){
+    public int getNotificationPort() {
         return htmlRenderer.getPort();
     }
-    public boolean isPrivateMode(){
+
+    public boolean isPrivateMode() {
         return mIsPrivateMode;
     }
-    public void setPrivateMode(boolean value){
+
+    public void setPrivateMode(boolean value) {
         mIsPrivateMode = value;
         mOutput.setPrivateMode(value);
     }
-    
+
     public void start() {
         mOutput.start();
     }
@@ -150,37 +152,39 @@ public class Overlay implements Runnable {
         try {
             htmlRenderer.setText("<html></html>", "", "");
             while (!stopME) {
-                // Read content into renderer...
-                InputStream in = mContent.toURI().toURL().openStream();
-                byte[] data = new byte[(int) mContent.length()];
-                in.read(data);
-                if (mContent.getName().endsWith("html")) {
-                    //Reading content from a local html file
-                    htmlRenderer.setText(new String(data), mUserTextContent, mCommand);
-                } else if (mContent.getName().endsWith("url")) {
-                    //Reading content from a webpage...
-                    data = new byte[65536];
-                    String addr = new String(data);
-                    in.close();
-                    in = new java.net.URI(addr).toURL().openStream();
-                    StringBuilder html = new StringBuilder();
-                    int count = in.read(data);
-                    while (count > 0) {
-                        html.append(new String(data, 0, count));
-                        count = in.read(data);
+                if (mContent != null) {
+                    // Read content into renderer...
+                    InputStream in = mContent.toURI().toURL().openStream();
+                    byte[] data = new byte[(int) mContent.length()];
+                    in.read(data);
+                    if (mContent.getName().endsWith("html")) {
+                        //Reading content from a local html file
+                        htmlRenderer.setText(new String(data), mUserTextContent, mCommand);
+                    } else if (mContent.getName().endsWith("url")) {
+                        //Reading content from a webpage...
+                        data = new byte[65536];
+                        String addr = new String(data);
+                        in.close();
+                        in = new java.net.URI(addr).toURL().openStream();
+                        StringBuilder html = new StringBuilder();
+                        int count = in.read(data);
+                        while (count > 0) {
+                            html.append(new String(data, 0, count));
+                            count = in.read(data);
+                        }
+                        htmlRenderer.setText(html.toString(), mUserTextContent, mCommand);
+                    } else {
+                        //Reading raw content from a text file
+                        htmlRenderer.setText("<html>" + new String(data).replaceAll("\n", "<br>") + "</html>", mUserTextContent, mCommand);
                     }
-                    htmlRenderer.setText(html.toString(), mUserTextContent, mCommand);
-                } else {
-                    //Reading raw content from a text file
-                    htmlRenderer.setText("<html>" + new String(data).replaceAll("\n", "<br>") + "</html>", mUserTextContent, mCommand);
+                    in.close();
+                    //System.out.println(htmlRenderer.getText());
                 }
-                in.close();
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(Overlay.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                //System.out.println(htmlRenderer.getText());
             }
         } catch (IOException | URISyntaxException ex) {
             Logger.getLogger(Overlay.class.getName()).log(Level.SEVERE, null, ex);
@@ -190,6 +194,7 @@ public class Overlay implements Runnable {
         }
         htmlRenderer.stop();
         System.out.println("Exiting Overlay rendering...");
+
     }
 }
 

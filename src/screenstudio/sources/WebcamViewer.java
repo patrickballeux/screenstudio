@@ -114,6 +114,7 @@ public class WebcamViewer implements Runnable {
             } else {
                 command = bin + " -nostats -loglevel 0 -f " + webcamFormat + " -i " + mDevice.toString() + " -s " + mWidth + "x" + mHeight + " -r " + mFPS + " -f rawvideo -pix_fmt bgr24 -";
             }
+            System.out.println("WEBCAM: " + command);
             Process p = Runtime.getRuntime().exec(command);
             java.io.DataInputStream in = new java.io.DataInputStream(p.getInputStream());
             BufferedImage b1 = new BufferedImage(buffer.getWidth(), buffer.getHeight(), BufferedImage.TYPE_3BYTE_BGR);

@@ -372,15 +372,17 @@ public class FFMpeg {
         }
         if (runningOverlay == null) {
             // Capture Desktop
-            if (!Screen.isOSX()) {
-                c.append(" -video_size ").append(captureWidth).append("x").append(captureHeight);
-            }
-            c.append(" -framerate ").append(framerate);
-            c.append(" ").append(mThreading).append(" -f ").append(mainFormat).append(" -i ").append(mainInput);
+            if (!"WEBCAM".equals(mainInput)) {
+                if (!Screen.isOSX()) {
+                    c.append(" -video_size ").append(captureWidth).append("x").append(captureHeight);
+                }
+                c.append(" -framerate ").append(framerate);
+                c.append(" ").append(mThreading).append(" -f ").append(mainFormat).append(" -i ").append(mainInput);
 
-            if (!Screen.isOSX()) {
-                if (captureX.length() > 0) {
-                    c.append("+").append(captureX).append(",").append(captureY);
+                if (!Screen.isOSX()) {
+                    if (captureX.length() > 0) {
+                        c.append("+").append(captureX).append(",").append(captureY);
+                    }
                 }
             }
         } else {
