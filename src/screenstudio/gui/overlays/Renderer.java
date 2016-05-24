@@ -17,6 +17,7 @@
 package screenstudio.gui.overlays;
 
 import java.awt.AlphaComposite;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -70,6 +71,8 @@ public class Renderer implements NotificationListener {
     private int webcamY = 0;
     private int textSize = 0;
 
+    private boolean mWebcamFocus = false;
+
     @Override
     public void received(String message) {
         lastNotificationTime = System.currentTimeMillis();
@@ -116,6 +119,14 @@ public class Renderer implements NotificationListener {
                 return mDesktop.getImage().getHeight(null);
         }
         return mDesktop.getImage().getHeight(null);
+    }
+
+    public void setWebcamFocus(boolean focus) {
+        mWebcamFocus = focus && mWebcam != null && !"WEBCAM".equals(mDesktop.getId());
+    }
+
+    public boolean isWebcamFocus() {
+        return mWebcamFocus;
     }
 
     private void setPositions() {
@@ -327,7 +338,19 @@ public class Renderer implements NotificationListener {
         }
         if (mWebcam != null) {
             Image webcam = mWebcam.getImage();
-            g.drawImage(webcam, webcamX, webcamY, null);
+            if (mWebcamFocus) {
+                int w = webcam.getWidth(null) * 3;
+                int h = webcam.getHeight(null) * 3;
+                int x = desktopX + ((mDesktop.getImage().getWidth(null) - w) / 3);
+                int y = desktopY + ((mDesktop.getImage().getHeight(null) - h) / 3);
+                g.drawImage(webcam.getScaledInstance(w, h, Image.SCALE_FAST), x, y, null);
+                if (textBuffer != null) {
+                    g.setColor(Color.darkGray);
+                    g.fillRect(webcamX, webcamY, webcam.getWidth(null), webcam.getHeight(null));
+                }
+            } else {
+                g.drawImage(webcam, webcamX, webcamY, null);
+            }
         }
         if (System.currentTimeMillis() - lastNotificationTime <= 10000) {
             ((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) (10000 - (System.currentTimeMillis() - lastNotificationTime)) / 10000F));

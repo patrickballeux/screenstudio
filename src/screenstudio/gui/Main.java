@@ -449,6 +449,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     private boolean processRunning = false;
 
     private void startProcess(String command) {
+        popChkWebcamFocus.setState(false);
         btnCapture.setText("Stop");
         popTrayIconRecord.setLabel("Stop recording");
         processRunning = true;
@@ -475,6 +476,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
 
     private void stopStream(String message) {
         btnCapture.setText("Capture");
+        popChkWebcamFocus.setState(false);
         popTrayIconRecord.setLabel(btnCapture.getText());
         if (streamProcess != null) {
             try {
@@ -586,6 +588,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
 
         popTrayIcon = new java.awt.PopupMenu();
         popTrayIconPrivacyMode = new java.awt.CheckboxMenuItem();
+        popChkWebcamFocus = new java.awt.CheckboxMenuItem();
         popTrayIconPanelContent = new java.awt.Menu();
         popTrayIconRecord = new java.awt.MenuItem();
         popTrayIconExit = new java.awt.MenuItem();
@@ -658,6 +661,14 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             }
         });
         popTrayIcon.add(popTrayIconPrivacyMode);
+
+        popChkWebcamFocus.setLabel("Webcam Focus");
+        popChkWebcamFocus.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                popChkWebcamFocusItemStateChanged(evt);
+            }
+        });
+        popTrayIcon.add(popChkWebcamFocus);
 
         popTrayIconPanelContent.setLabel("Panel Content");
         popTrayIcon.add(popTrayIconPanelContent);
@@ -1377,6 +1388,12 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         }
     }//GEN-LAST:event_popTrayIconPrivacyModeItemStateChanged
 
+    private void popChkWebcamFocusItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_popChkWebcamFocusItemStateChanged
+        if (!isLoading && runningOverlay != null) {
+            runningOverlay.setWebcamFocus(ItemEvent.SELECTED == evt.getStateChange());
+        }
+    }//GEN-LAST:event_popChkWebcamFocusItemStateChanged
+
     /**
      * @param args the command line arguments
      */
@@ -1471,6 +1488,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
     private javax.swing.JPanel panShortcuts;
     private javax.swing.JPanel panSources;
     private javax.swing.JPanel panStatusBar;
+    private java.awt.CheckboxMenuItem popChkWebcamFocus;
     private java.awt.PopupMenu popTrayIcon;
     private java.awt.MenuItem popTrayIconExit;
     private java.awt.Menu popTrayIconPanelContent;

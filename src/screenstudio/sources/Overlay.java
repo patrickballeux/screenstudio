@@ -56,6 +56,12 @@ public class Overlay implements Runnable {
         return htmlRenderer.getPort();
     }
 
+    public void setWebcamFocus(boolean focus){
+        htmlRenderer.setWebcamFocus(focus);
+    }
+    public boolean isWebcamFocus(){
+        return htmlRenderer.isWebcamFocus();
+    }
     public boolean isPrivateMode() {
         return mIsPrivateMode;
     }

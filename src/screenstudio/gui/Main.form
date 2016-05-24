@@ -15,6 +15,14 @@
             <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="popTrayIconPrivacyModeItemStateChanged"/>
           </Events>
         </MenuItem>
+        <MenuItem class="java.awt.CheckboxMenuItem" name="popChkWebcamFocus">
+          <Properties>
+            <Property name="label" type="java.lang.String" value="Webcam Focus"/>
+          </Properties>
+          <Events>
+            <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="popChkWebcamFocusItemStateChanged"/>
+          </Events>
+        </MenuItem>
         <Menu class="java.awt.Menu" name="popTrayIconPanelContent">
           <Properties>
             <Property name="label" type="java.lang.String" value="Panel Content"/>
