@@ -341,8 +341,8 @@ public class Renderer implements NotificationListener {
             if (mWebcamFocus) {
                 int w = webcam.getWidth(null) * 3;
                 int h = webcam.getHeight(null) * 3;
-                int x = desktopX + ((mDesktop.getImage().getWidth(null) - w) / 3);
-                int y = desktopY + ((mDesktop.getImage().getHeight(null) - h) / 3);
+                int x = desktopX + ((mDesktop.getImage().getWidth(null) - w) / 2);
+                int y = desktopY + ((mDesktop.getImage().getHeight(null) - h) / 2);
                 g.drawImage(webcam.getScaledInstance(w, h, Image.SCALE_FAST), x, y, null);
                 if (textBuffer != null) {
                     g.setColor(Color.darkGray);
