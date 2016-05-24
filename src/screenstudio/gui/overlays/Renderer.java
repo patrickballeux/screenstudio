@@ -60,6 +60,7 @@ public class Renderer implements NotificationListener {
     private UDPNotifications notifications;
     private long lastNotificationTime = 0;
     private JLabel notificationMessage = null;
+    private String homeFolder = "";
 
     private int desktopX = 0;
     private int desktopY = 0;
@@ -335,8 +336,9 @@ public class Renderer implements NotificationListener {
         }
     }
 
-    public void setText(String text, String userTextContent, String command) {
+    public void setText(String text, String userTextContent, String command, String homeFolder) {
         mIsUpdating = true;
+        this.homeFolder = homeFolder;
         mText = text.replaceAll("@TEXT", userTextContent);
         if (command.length() > 0) {
             String commandContent = getCommandContent(command);
@@ -380,6 +382,11 @@ public class Renderer implements NotificationListener {
         retValue = retValue.replaceAll("@RECORDINGTIME", (System.currentTimeMillis() - startingTime) / 60000 + " min");
         retValue = retValue.replaceAll("@STARTTIME", formatTime.format(new Date(startingTime)));
         retValue = retValue.replaceAll("@REMAININGTIME", (((showEndTime - System.currentTimeMillis()) / 60000) + 1) + " min");
+        if (!homeFolder.isEmpty()) {
+            String parentPath = "file://" + homeFolder + "";
+            parentPath = parentPath.replaceAll("\\.\\/", "");
+            retValue = retValue.replaceAll("\\.\\/", parentPath + "/");
+        }
         return retValue;
     }
 

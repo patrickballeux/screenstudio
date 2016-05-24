@@ -150,7 +150,7 @@ public class Overlay implements Runnable {
     public void run() {
         stopME = false;
         try {
-            htmlRenderer.setText("<html></html>", "", "");
+            htmlRenderer.setText("<html></html>", "", "","");
             while (!stopME) {
                 if (mContent != null) {
                     // Read content into renderer...
@@ -159,7 +159,7 @@ public class Overlay implements Runnable {
                     in.read(data);
                     if (mContent.getName().endsWith("html")) {
                         //Reading content from a local html file
-                        htmlRenderer.setText(new String(data), mUserTextContent, mCommand);
+                        htmlRenderer.setText(new String(data), mUserTextContent, mCommand,mContent.getParentFile().getAbsolutePath());
                     } else if (mContent.getName().endsWith("url")) {
                         //Reading content from a webpage...
                         data = new byte[65536];
@@ -172,10 +172,10 @@ public class Overlay implements Runnable {
                             html.append(new String(data, 0, count));
                             count = in.read(data);
                         }
-                        htmlRenderer.setText(html.toString(), mUserTextContent, mCommand);
+                        htmlRenderer.setText(html.toString(), mUserTextContent, mCommand,addr);
                     } else {
                         //Reading raw content from a text file
-                        htmlRenderer.setText("<html>" + new String(data).replaceAll("\n", "<br>") + "</html>", mUserTextContent, mCommand);
+                        htmlRenderer.setText("<html>" + new String(data).replaceAll("\n", "<br>") + "</html>", mUserTextContent, mCommand,"");
                     }
                     in.close();
                     //System.out.println(htmlRenderer.getText());

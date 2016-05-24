@@ -223,7 +223,7 @@ public class Editor extends javax.swing.JFrame {
             text = new String(data).trim();
         } catch (IOException ex) {
             Logger.getLogger(Editor.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }        
         return text;
     }
 
@@ -238,6 +238,9 @@ public class Editor extends javax.swing.JFrame {
         retValue = retValue.replaceAll("@RECORDINGTIME", "17 min");
         retValue = retValue.replaceAll("@STARTTIME", formatTime.format(new Date(System.currentTimeMillis() - 600000)));
         retValue = retValue.replaceAll("@REMAININGTIME", "23 min");
+        String parentPath = "file://" +currentFile.getParentFile().getAbsolutePath() + "";
+        parentPath = parentPath.replaceAll("\\.\\/","");
+        retValue = retValue.replaceAll("\\.\\/",parentPath + "/");
         return retValue;
     }
     private void mnuFileOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFileOpenActionPerformed
