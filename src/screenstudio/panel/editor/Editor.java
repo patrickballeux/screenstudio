@@ -5,6 +5,7 @@
  */
 package screenstudio.panel.editor;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -88,6 +89,9 @@ public class Editor extends javax.swing.JFrame {
         mnuEditCopy = new javax.swing.JMenuItem();
         mnuEditCut = new javax.swing.JMenuItem();
         mnuEditPaste = new javax.swing.JMenuItem();
+        mnuView = new javax.swing.JMenu();
+        mnuViewPanel = new javax.swing.JMenuItem();
+        mnuViewBanner = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Screen Studio Panel Editor");
@@ -183,6 +187,26 @@ public class Editor extends javax.swing.JFrame {
         mnuEdit.add(mnuEditPaste);
 
         menu.add(mnuEdit);
+
+        mnuView.setText("View");
+
+        mnuViewPanel.setText("Panel Mode");
+        mnuViewPanel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuViewPanelActionPerformed(evt);
+            }
+        });
+        mnuView.add(mnuViewPanel);
+
+        mnuViewBanner.setText("Banner Mode");
+        mnuViewBanner.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuViewBannerActionPerformed(evt);
+            }
+        });
+        mnuView.add(mnuViewBanner);
+
+        menu.add(mnuView);
 
         setJMenuBar(menu);
 
@@ -355,6 +379,22 @@ public class Editor extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_mnuEditPasteActionPerformed
 
+    private void mnuViewPanelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuViewPanelActionPerformed
+        this.remove(lblPreview);
+        lblPreview.setPreferredSize(new Dimension(320, 500));
+        this.add(lblPreview, BorderLayout.EAST);
+        this.doLayout();
+        this.revalidate();
+    }//GEN-LAST:event_mnuViewPanelActionPerformed
+
+    private void mnuViewBannerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuViewBannerActionPerformed
+        this.remove(lblPreview);
+        lblPreview.setPreferredSize(new Dimension(500, 200));
+        this.add(lblPreview, BorderLayout.SOUTH);
+        this.doLayout();
+         this.revalidate();
+    }//GEN-LAST:event_mnuViewBannerActionPerformed
+
     private final static String[] TAGS = {
         "html", "body", "p", "hr", "br", "table", "th", "tr", "td", "span", "div", "a", "thead", "head", "h",
         "ul", "li", "div", "style", "img"
@@ -379,6 +419,9 @@ public class Editor extends javax.swing.JFrame {
     private javax.swing.JMenuItem mnuFileExit;
     private javax.swing.JMenuItem mnuFileOpen;
     private javax.swing.JMenuItem mnuFileSave;
+    private javax.swing.JMenu mnuView;
+    private javax.swing.JMenuItem mnuViewBanner;
+    private javax.swing.JMenuItem mnuViewPanel;
     private javax.swing.JScrollPane scrollEditor;
     private javax.swing.JTextArea txtEditor;
     // End of variables declaration//GEN-END:variables
