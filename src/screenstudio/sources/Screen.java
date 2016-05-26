@@ -88,13 +88,14 @@ public class Screen {
                 s.setSize(new Rectangle(0, 0, (int) maxWidth, (int) maxHeight));
                 list.add(s);
             }
-            Screen webcam = new Screen();
-            webcam.setScreenIndex(i++);
-            webcam.setId("WEBCAM");
-            webcam.setName("Webcam");
-            webcam.setSize(new Rectangle(0, 0, 640, 480));
-            list.add(webcam);
+
         }
+        Screen webcam = new Screen();
+        webcam.setScreenIndex(999);
+        webcam.setId("WEBCAM");
+        webcam.setName("Webcam");
+        webcam.setSize(new Rectangle(0, 0, 640, 480));
+        list.add(webcam);
         return list.toArray(new Screen[list.size()]);
     }
 
@@ -232,6 +233,7 @@ public class Screen {
                         }
                         s.screenIndex = index;
                         s.id = "";
+
                         String[] parts = line.split(" ");
                         System.out.println(line);
                         for (int i = parts.length - 1; i >= 0; i--) {
@@ -241,7 +243,8 @@ public class Screen {
                                 break;
                             }
                         }
-                        System.out.println(s.getLabel());
+                        s.setName("Screen " + index);
+                        System.out.println(s.toString());
                         list.add(s);
                     }
                     line = reader.readLine();

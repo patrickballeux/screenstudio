@@ -321,7 +321,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             if (this.processRunning) {
                 if (runningOverlay != null && runningOverlay.isPrivateMode()) {
                     g.setBackground(Color.RED);
-                } else if(runningOverlay != null && runningOverlay.isWebcamFocus()){
+                } else if (runningOverlay != null && runningOverlay.isWebcamFocus()) {
                     g.setBackground(Color.YELLOW);
                 } else {
                     g.setBackground(Color.GREEN);
@@ -622,7 +622,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         jLabel11 = new javax.swing.JLabel();
         cboAudioRate = new javax.swing.JComboBox();
         jLabel13 = new javax.swing.JLabel();
-        cboWaterMarks = new javax.swing.JComboBox<>();
+        cboWaterMarks = new javax.swing.JComboBox<java.io.File>();
         panPanel = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         cboOverlays = new javax.swing.JComboBox();
@@ -633,7 +633,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         txtPanelContentText = new javax.swing.JTextArea();
         btnEditor = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
-        cboPanelOrientation = new javax.swing.JComboBox<>();
+        cboPanelOrientation = new javax.swing.JComboBox<Renderer.PanelLocation>();
         jLabel12 = new javax.swing.JLabel();
         txtCommand = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
@@ -770,7 +770,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     .addGroup(panCaptureLayout.createSequentialGroup()
                         .addComponent(lblTargets)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cboTargets, 0, 326, Short.MAX_VALUE)
+                        .addComponent(cboTargets, 0, 321, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSetTarget))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panCaptureLayout.createSequentialGroup()
@@ -782,7 +782,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     .addGroup(panCaptureLayout.createSequentialGroup()
                         .addComponent(lblProfiles)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cboProfiles, 0, 326, Short.MAX_VALUE)
+                        .addComponent(cboProfiles, 0, 320, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSetProfile)
                         .addGap(1, 1, 1)))
@@ -902,7 +902,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                             .addComponent(btnSetDisplay, javax.swing.GroupLayout.Alignment.TRAILING)))
                     .addGroup(panSourcesLayout.createSequentialGroup()
                         .addComponent(cboAudioRate, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 187, Short.MAX_VALUE)))
+                        .addGap(0, 236, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panSourcesLayout.setVerticalGroup(
@@ -947,7 +947,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             }
         });
 
-        spinShowDurationTime.setModel(new javax.swing.SpinnerNumberModel(30, 0, null, 15));
+        spinShowDurationTime.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(30), Integer.valueOf(0), null, Integer.valueOf(15)));
 
         jLabel1.setText("Duration");
 
@@ -985,7 +985,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
 
         jLabel14.setText("Size");
 
-        spinPanelSize.setModel(new javax.swing.SpinnerNumberModel(320, 0, null, 10));
+        spinPanelSize.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(320), Integer.valueOf(0), null, Integer.valueOf(10)));
         spinPanelSize.setToolTipText("Size of the panel when no webcam is selected...");
 
         javax.swing.GroupLayout panPanelLayout = new javax.swing.GroupLayout(panPanel);
@@ -1009,7 +1009,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panPanelLayout.createSequentialGroup()
                                 .addGroup(panPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(panPanelLayout.createSequentialGroup()
-                                        .addComponent(cboOverlays, 0, 241, Short.MAX_VALUE)
+                                        .addComponent(cboOverlays, 0, 253, Short.MAX_VALUE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(btnEditor))
                                     .addGroup(panPanelLayout.createSequentialGroup()
@@ -1023,7 +1023,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                                 .addComponent(spinShowDurationTime, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel8)
-                                .addGap(0, 158, Short.MAX_VALUE))
+                                .addGap(0, 208, Short.MAX_VALUE))
                             .addComponent(txtCommand))))
                 .addContainerGap())
         );
@@ -1122,12 +1122,12 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panShortcutsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(cboShortcutPrivacyKey, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(cboShortcutCaptureKey, 0, 60, Short.MAX_VALUE))
+                            .addComponent(cboShortcutCaptureKey, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panShortcutsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(btnShortcutPrivacyApply, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnShortcutCaptureApply, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(0, 2, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(panShortcutsLayout.createSequentialGroup()
                         .addComponent(jLabel15)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
