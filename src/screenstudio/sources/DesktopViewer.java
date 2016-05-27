@@ -99,7 +99,7 @@ public class DesktopViewer implements Runnable {
                 if (Screen.isOSX()) {
                     command = bin + " -nostats -loglevel 0 -f " + displayFormat + " -video_size " + buffer.getWidth() + "x" + buffer.getHeight() + " -i " + mDevice.getId() + ": -r " + mDevice.getFps() + "  -f rawvideo -pix_fmt bgr24 -";
                 } else {
-                    command = bin + " -nostats -loglevel 0 -f " + displayFormat + " -video_size " + buffer.getWidth() + "x" + buffer.getHeight() + " -i " + ":0.0  -r " + mDevice.getFps() + "  -f rawvideo -pix_fmt bgr24 -";
+                    command = bin + " -nostats -loglevel 0 -f " + displayFormat + " -video_size " + buffer.getWidth() + "x" + buffer.getHeight() + " -i " + ":0.0+" + (int) mDevice.getSize().getX() + "," + (int) mDevice.getSize().getY() + "  -r " + mDevice.getFps() + "  -f rawvideo -pix_fmt bgr24 -";
                 }
                 System.out.println("DESKTOP: " + command);
                 Process p = Runtime.getRuntime().exec(command);
