@@ -20,10 +20,12 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import screenstudio.encoder.FFMpeg;
 
 /**
  *
@@ -96,6 +98,16 @@ public class Screen {
         webcam.setName("Webcam");
         webcam.setSize(new Rectangle(0, 0, 640, 480));
         list.add(webcam);
+        for (File f : new File(new FFMpeg().getHome(), "Overlays").listFiles()) {
+            if (f.getName().endsWith(".screen")) {
+                Screen remote = new Screen();
+                remote.setScreenIndex(1000);
+                remote.setId(f.getAbsolutePath());
+                remote.setName(f.getName());
+                remote.setSize(new Rectangle(0, 0, 720, 480));
+                list.add(remote);
+            }
+        }
         return list.toArray(new Screen[list.size()]);
     }
 

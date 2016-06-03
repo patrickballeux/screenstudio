@@ -17,6 +17,7 @@
 package screenstudio.sources;
 
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
@@ -24,8 +25,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import screenstudio.encoder.FFMpeg;
 
 /**
@@ -45,6 +48,7 @@ public class DesktopViewer implements Runnable {
      */
     public DesktopViewer(Screen device) {
         mDevice = device;
+        guessSize(device);
         int w = (int) mDevice.getSize().getWidth();
         int h = (int) mDevice.getSize().getHeight();
         buffer = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
@@ -96,7 +100,15 @@ public class DesktopViewer implements Runnable {
             try {
                 stopMe = false;
                 String command;
-                if (Screen.isOSX()) {
+                if (mDevice.getId().endsWith(".screen")) {
+                    File f = new File(mDevice.getId());
+                    byte[] data = new byte[65536];
+                    InputStream in = f.toURI().toURL().openStream();
+                    int count = in.read(data);
+                    in.close();
+                    String content = new String(data, 0, count).trim();
+                    command = bin + " -nostats -loglevel 0 " + content + " -s " + buffer.getWidth() + "x" + buffer.getHeight() + " -f rawvideo -pix_fmt bgr24 -";
+                } else if (Screen.isOSX()) {
                     command = bin + " -nostats -loglevel 0 -f " + displayFormat + " -video_size " + buffer.getWidth() + "x" + buffer.getHeight() + " -i " + mDevice.getId() + ": -r " + mDevice.getFps() + "  -f rawvideo -pix_fmt bgr24 -";
                 } else {
                     command = bin + " -nostats -loglevel 0 -f " + displayFormat + " -video_size " + buffer.getWidth() + "x" + buffer.getHeight() + " -i " + ":0.0+" + (int) mDevice.getSize().getX() + "," + (int) mDevice.getSize().getY() + "  -r " + mDevice.getFps() + "  -f rawvideo -pix_fmt bgr24 -";
@@ -126,6 +138,60 @@ public class DesktopViewer implements Runnable {
                 Logger.getLogger(DesktopViewer.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+
     }
 
+    private void guessSize(Screen d) {
+        if (d.getId().endsWith(".screen")) {
+            String bin = "ffmpeg";
+            File folder = new File("FFMPEG");
+            if (folder.exists()) {
+                File file;
+                if (Screen.isOSX()) {
+                    file = new File(folder, "osx.properties");
+                } else {
+                    file = new File(folder, "default.properties");
+                }
+
+                if (file.exists()) {
+                    try {
+                        Properties p = new Properties();
+                        try (InputStream in = file.toURI().toURL().openStream()) {
+                            p.load(in);
+                        }
+                        bin = p.getProperty("BIN", bin);
+                    } catch (MalformedURLException ex) {
+                        Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IOException ex) {
+                        Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                }
+            }
+
+            try {
+                String command;
+                File f = new File(mDevice.getId());
+                byte[] data = new byte[65536];
+                InputStream in = f.toURI().toURL().openStream();
+                int count = in.read(data);
+                in.close();
+                String content = new String(data, 0, count);
+                File image = File.createTempFile("screenstudio", ".png");
+                image.deleteOnExit();
+                image.delete();
+                command = bin + " " + content + " -vframes 1 -y " + image.getAbsolutePath();
+                Process p = Runtime.getRuntime().exec(command);
+                p.waitFor(300, TimeUnit.SECONDS);
+                if (image.exists()) {
+                    BufferedImage img = ImageIO.read(image);
+                    d.setSize(new Rectangle(0,0,img.getWidth(),img.getHeight()));
+                    image.delete();
+                }
+            } catch (IOException | InterruptedException ex) {
+                Logger.getLogger(DesktopViewer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+    }
 }
