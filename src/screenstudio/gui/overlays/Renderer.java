@@ -25,6 +25,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,6 +58,7 @@ public class Renderer implements NotificationListener {
     private long nextTextUpdate = 0;
     private PanelLocation panelLocation;
     private WebcamLocation webcamLocation;
+    private BufferedImage webcamGreenScreen = null;
     private final BufferedImage textBuffer;
     private UDPNotifications notifications;
     private long lastNotificationTime = 0;
@@ -261,7 +263,10 @@ public class Renderer implements NotificationListener {
         new Thread(mDesktop).start();
         mWebcam = null;
         if (webcam != null) {
-            mWebcam = new WebcamViewer(screen, new File(webcam.getDevice()), webcam.getWidth(), webcam.getHeight(), webcam.getFps());
+            if (webcam.isGreenScreen()) {
+                webcamGreenScreen = new BufferedImage(webcam.getWidth(), webcam.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            }
+            mWebcam = new WebcamViewer(screen, new File(webcam.getDevice()), webcam.getWidth(), webcam.getHeight(), webcam.getFps(), webcam.isGreenScreen());
             new Thread(mWebcam).start();
         }
         lblText = new JLabel();
@@ -337,7 +342,7 @@ public class Renderer implements NotificationListener {
             g.drawImage(textBuffer, textX, textY, null);
         }
         if (mWebcam != null) {
-            Image webcam = mWebcam.getImage();
+            BufferedImage webcam = mWebcam.getImage();
             if (mWebcamFocus) {
                 int w = webcam.getWidth(null) * 3;
                 int h = webcam.getHeight(null) * 3;
@@ -348,6 +353,20 @@ public class Renderer implements NotificationListener {
                     g.setColor(Color.darkGray);
                     g.fillRect(webcamX, webcamY, webcam.getWidth(null), webcam.getHeight(null));
                 }
+            } else if (webcamGreenScreen != null) {
+                webcamGreenScreen.createGraphics().drawImage(webcam, 0, 0, null);
+                for (int x = 0; x < webcamGreenScreen.getWidth(); x++) {
+                    for (int y = 0; y < webcamGreenScreen.getHeight(); y++) {
+                        int c = webcamGreenScreen.getRGB(x, y);
+                        int r = ((c & 0x00FF0000) >> 16);
+                        int gr = ((c & 0x0000FF00) >> 8);
+                        int b = (c & 0x000000FF);
+                        if (r <= 175 && b <= 175 & gr >= 200) {
+                            webcamGreenScreen.setRGB(x, y, 0);
+                        }
+                    }
+                }
+                g.drawImage(webcamGreenScreen, webcamX, webcamY, null);
             } else {
                 g.drawImage(webcam, webcamX, webcamY, null);
             }

@@ -16,7 +16,6 @@
  */
 package screenstudio.sources;
 
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
@@ -41,7 +40,7 @@ public class WebcamViewer implements Runnable {
     private BufferedImage buffer;
     private final int mFPS;
     private boolean stopMe = false;
-
+    private final boolean mIsGreenScreen;
     /**
      * Creates new form WebcamViewer
      *
@@ -51,16 +50,20 @@ public class WebcamViewer implements Runnable {
      * @param height
      * @param fps
      */
-    public WebcamViewer(Screen screen, File device, int width, int height, int fps) {
+    public WebcamViewer(Screen screen, File device, int width, int height, int fps,boolean greenScreen) {
         mDevice = device;
         mScreen = screen;
         mWidth = width;
         mHeight = height;
         mFPS = fps;
+        mIsGreenScreen = greenScreen;
         buffer = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
     }
 
-    public Image getImage() {
+    public boolean isGreenScreen(){
+        return mIsGreenScreen;
+    }
+    public BufferedImage getImage() {
         return buffer;
     }
 

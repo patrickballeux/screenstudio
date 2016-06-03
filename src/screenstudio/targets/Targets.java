@@ -123,6 +123,7 @@ public class Targets {
     public String shortcutPrivacyKey = "control shift P";
     public String doNotHide = "false";
     public String webcamLocation = "Top";
+    public String webcamGreenScreenMode = "false";
     public String command = "";
     public String waterMarkFile = "";
     public String twitchalertsfolder = "/home/user/twitchalerts";

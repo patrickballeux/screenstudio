@@ -158,6 +158,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     o.setWidth(Integer.parseInt(target.webcamWidth));
                     o.setHeight(Integer.parseInt(target.webcamHeight));
                     o.setOffset(Double.parseDouble(target.webcamOffset));
+                    o.setGreenScreen(target.webcamGreenScreenMode == "true");
                 }
                 o.setLocation(Renderer.WebcamLocation.valueOf(target.webcamLocation));
             }
@@ -622,7 +623,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         jLabel11 = new javax.swing.JLabel();
         cboAudioRate = new javax.swing.JComboBox();
         jLabel13 = new javax.swing.JLabel();
-        cboWaterMarks = new javax.swing.JComboBox<java.io.File>();
+        cboWaterMarks = new javax.swing.JComboBox<>();
         panPanel = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         cboOverlays = new javax.swing.JComboBox();
@@ -633,7 +634,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
         txtPanelContentText = new javax.swing.JTextArea();
         btnEditor = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
-        cboPanelOrientation = new javax.swing.JComboBox<Renderer.PanelLocation>();
+        cboPanelOrientation = new javax.swing.JComboBox<>();
         jLabel12 = new javax.swing.JLabel();
         txtCommand = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
@@ -947,7 +948,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             }
         });
 
-        spinShowDurationTime.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(30), Integer.valueOf(0), null, Integer.valueOf(15)));
+        spinShowDurationTime.setModel(new javax.swing.SpinnerNumberModel(30, 0, null, 15));
 
         jLabel1.setText("Duration");
 
@@ -985,7 +986,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
 
         jLabel14.setText("Size");
 
-        spinPanelSize.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(320), Integer.valueOf(0), null, Integer.valueOf(10)));
+        spinPanelSize.setModel(new javax.swing.SpinnerNumberModel(320, 0, null, 10));
         spinPanelSize.setToolTipText("Size of the panel when no webcam is selected...");
 
         javax.swing.GroupLayout panPanelLayout = new javax.swing.GroupLayout(panPanel);
@@ -1348,6 +1349,11 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                 target.webcamWidth = "" + w.getWidth();
                 target.webcamHeight = "" + w.getHeight();
                 target.webcamOffset = "" + w.getOffset();
+                if (w.isGreenScreen()) {
+                    target.webcamGreenScreenMode = "true";
+                } else {
+                    target.webcamGreenScreenMode = "false";
+                }
             } else {
                 target.webcamDevice = "";
             }
@@ -1361,6 +1367,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
             target.waterMarkFile = cboWaterMarks.getSelectedItem().toString();
             target.mainOverlaySize = spinPanelSize.getValue().toString();
             target.twitchalertsfolder = txtTwitchAlertFolder.getText();
+
             target.saveDefault(mConfig);
             stopShortcuts();
         } catch (IOException ex) {

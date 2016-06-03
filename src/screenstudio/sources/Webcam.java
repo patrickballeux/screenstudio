@@ -66,7 +66,9 @@ public class Webcam {
     private String id = "";
     private double offset = 0;
     private Renderer.WebcamLocation location = Renderer.WebcamLocation.Top;
-
+    private boolean mIsGreenScreen = false;
+    
+    
     private Webcam(String dev, String id, String desc) {
         device = dev;
         description = desc.trim();
@@ -81,6 +83,12 @@ public class Webcam {
         return location;
     }
 
+    public boolean isGreenScreen(){
+        return mIsGreenScreen;
+    }
+    public void setGreenScreen(boolean value){
+        mIsGreenScreen = value;
+    }
     public static Webcam[] getSources() throws IOException, InterruptedException {
         java.util.ArrayList<Webcam> list = new java.util.ArrayList<Webcam>();
         System.out.println("Webcam List:");
