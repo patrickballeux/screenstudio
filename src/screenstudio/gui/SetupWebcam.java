@@ -49,6 +49,7 @@ public class SetupWebcam extends javax.swing.JDialog {
         this.setTitle(webcam.toString());
         spinWidth.setValue(webcam.getWidth());
         spinHeight.setValue(webcam.getHeight());
+        chkGreenScreenMode.setSelected(webcam.isGreenScreen());
 
     }
 

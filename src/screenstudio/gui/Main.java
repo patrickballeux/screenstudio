@@ -158,7 +158,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     o.setWidth(Integer.parseInt(target.webcamWidth));
                     o.setHeight(Integer.parseInt(target.webcamHeight));
                     o.setOffset(Double.parseDouble(target.webcamOffset));
-                    o.setGreenScreen(target.webcamGreenScreenMode == "true");
+                    o.setGreenScreen("true".equals(target.webcamGreenScreenMode));
                 }
                 o.setLocation(Renderer.WebcamLocation.valueOf(target.webcamLocation));
             }
