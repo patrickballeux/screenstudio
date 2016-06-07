@@ -361,7 +361,7 @@ public class Renderer implements NotificationListener {
                         int gr = ((c & 0x0000FF00) >> 8) / 32;
                         int b = (c & 0x000000FF) / 32;
 
-                        if (r < gr && b < gr) {
+                        if (r < (gr-1) && b < (gr-1)) {
                             webcamGreenScreen.setRGB(x, y, 0);
                         }
                     }
