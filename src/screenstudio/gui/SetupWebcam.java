@@ -50,7 +50,7 @@ public class SetupWebcam extends javax.swing.JDialog {
         spinWidth.setValue(webcam.getWidth());
         spinHeight.setValue(webcam.getHeight());
         chkGreenScreenMode.setSelected(webcam.isGreenScreen());
-
+        sliderGreenScreenSensitivity.setValue(webcam.getGcreenSensitivity());
     }
 
     /**
@@ -71,6 +71,8 @@ public class SetupWebcam extends javax.swing.JDialog {
         jLabel3 = new javax.swing.JLabel();
         cboLocation = new javax.swing.JComboBox<>();
         chkGreenScreenMode = new javax.swing.JCheckBox();
+        sliderGreenScreenSensitivity = new javax.swing.JSlider();
+        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -112,6 +114,22 @@ public class SetupWebcam extends javax.swing.JDialog {
             }
         });
 
+        sliderGreenScreenSensitivity.setMajorTickSpacing(16);
+        sliderGreenScreenSensitivity.setMaximum(64);
+        sliderGreenScreenSensitivity.setMinorTickSpacing(4);
+        sliderGreenScreenSensitivity.setPaintLabels(true);
+        sliderGreenScreenSensitivity.setPaintTicks(true);
+        sliderGreenScreenSensitivity.setToolTipText("Set sensitivity on Green Screen Mode");
+        sliderGreenScreenSensitivity.setValue(5);
+        sliderGreenScreenSensitivity.setName(""); // NOI18N
+        sliderGreenScreenSensitivity.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                sliderGreenScreenSensitivityStateChanged(evt);
+            }
+        });
+
+        jLabel4.setText("Sensitivity");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -122,21 +140,26 @@ public class SetupWebcam extends javax.swing.JDialog {
                     .addComponent(jSeparator1)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblWebcamName)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(spinHeight, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-                                    .addComponent(spinWidth)
-                                    .addComponent(cboLocation, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 17, Short.MAX_VALUE)
-                        .addComponent(chkGreenScreenMode)))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(lblWebcamName)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(spinHeight, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                                        .addComponent(spinWidth)
+                                        .addComponent(cboLocation, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(81, 81, 81)
+                                .addComponent(chkGreenScreenMode))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addGap(13, 13, 13)
+                                .addComponent(sliderGreenScreenSensitivity, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -158,9 +181,13 @@ public class SetupWebcam extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(cboLocation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
-                .addComponent(chkGreenScreenMode)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(chkGreenScreenMode, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4)
+                    .addComponent(sliderGreenScreenSensitivity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -189,14 +216,20 @@ public class SetupWebcam extends javax.swing.JDialog {
         webcam.setGreenScreen(chkGreenScreenMode.isSelected());
     }//GEN-LAST:event_chkGreenScreenModeActionPerformed
 
+    private void sliderGreenScreenSensitivityStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sliderGreenScreenSensitivityStateChanged
+        webcam.setGreenSensitivity(sliderGreenScreenSensitivity.getValue());
+    }//GEN-LAST:event_sliderGreenScreenSensitivityStateChanged
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<Renderer.WebcamLocation> cboLocation;
     private javax.swing.JCheckBox chkGreenScreenMode;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel lblWebcamName;
+    private javax.swing.JSlider sliderGreenScreenSensitivity;
     private javax.swing.JSpinner spinHeight;
     private javax.swing.JSpinner spinWidth;
     // End of variables declaration//GEN-END:variables

@@ -67,7 +67,7 @@ public class Webcam {
     private double offset = 0;
     private Renderer.WebcamLocation location = Renderer.WebcamLocation.Top;
     private boolean mIsGreenScreen = false;
-    
+    private int mGreenSensitivity = 1;
     
     private Webcam(String dev, String id, String desc) {
         device = dev;
@@ -83,6 +83,12 @@ public class Webcam {
         return location;
     }
 
+    public int getGcreenSensitivity(){
+        return mGreenSensitivity;
+    }
+    public void setGreenSensitivity(int s){
+        mGreenSensitivity = s;
+    }
     public boolean isGreenScreen(){
         return mIsGreenScreen;
     }

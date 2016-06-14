@@ -159,6 +159,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                     o.setHeight(Integer.parseInt(target.webcamHeight));
                     o.setOffset(Double.parseDouble(target.webcamOffset));
                     o.setGreenScreen("true".equals(target.webcamGreenScreenMode));
+                    o.setGreenSensitivity(new Integer(target.greenSensitivity));
                 }
                 o.setLocation(Renderer.WebcamLocation.valueOf(target.webcamLocation));
             }
@@ -1354,6 +1355,7 @@ public class Main extends javax.swing.JFrame implements ItemListener, HotKeyList
                 } else {
                     target.webcamGreenScreenMode = "false";
                 }
+                target.greenSensitivity = w.getGcreenSensitivity()+"";
             } else {
                 target.webcamDevice = "";
             }
