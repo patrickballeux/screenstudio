@@ -112,7 +112,7 @@ public class WebcamViewer implements Runnable {
                 if (Screen.isOSX()) {
                     command = bin + " -nostats -loglevel 0 -f " + displayFormat + " -follow_mouse centered -video_size " + mWidth / 2 + "x" + mHeight / 2 + " -i " + mScreen.getId() + ": -s " + mWidth + "x" + mHeight + " -r " + mFPS + "  -f rawvideo -pix_fmt bgr24 -";
                 } else {
-                    command = bin + " -nostats -loglevel 0 -f " + displayFormat + " -follow_mouse centered -video_size " + mWidth / 2 + "x" + mHeight / 2 + " -i " + ":0.0 -s " + mWidth + "x" + mHeight + " -r " + mFPS + " -f rawvideo -pix_fmt bgr24 -";
+                    command = bin + " -nostats -loglevel 0 -f " + displayFormat + " -follow_mouse centered -video_size " + mWidth / 2 + "x" + mHeight / 2 + " -i " + mScreen.getId() + " -s " + mWidth + "x" + mHeight + " -r " + mFPS + " -f rawvideo -pix_fmt bgr24 -";
                 }
             } else {
                 command = bin + " -nostats -loglevel 0 -f " + webcamFormat + " -i " + mDevice.toString() + " -s " + mWidth + "x" + mHeight + " -r " + mFPS + " -f rawvideo -pix_fmt bgr24 -";

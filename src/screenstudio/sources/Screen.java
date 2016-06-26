@@ -67,10 +67,11 @@ public class Screen {
             int i = 1;
             double maxWidth = 0;
             double maxHeight = 9999;
+            String currentDisplay = System.getenv("DISPLAY");
             for (GraphicsDevice d : devices) {
-                System.out.println(d.getIDstring() + " " + d.getDefaultConfiguration().getBounds().toString().replaceAll("java.awt.Rectangle", ""));
                 Screen s = new Screen();
-                s.setId(":0.0");
+                s.setId(d.getIDstring().replaceFirst(":0", currentDisplay));
+                System.out.println(s.getId() + " " + d.getDefaultConfiguration().getBounds().toString().replaceAll("java.awt.Rectangle", ""));
                 s.setScreenIndex(i++);
                 s.setSize(d.getDefaultConfiguration().getBounds());
                 //Assuming screens are side by side
@@ -85,7 +86,7 @@ public class Screen {
                 //We have more than one screen
                 // Creating full screen capture...
                 Screen s = new Screen();
-                s.setId(":0.0");
+                s.setId(list.get(0).getId());
                 s.setScreenIndex(i++);
                 s.setSize(new Rectangle(0, 0, (int) maxWidth, (int) maxHeight));
                 list.add(s);
