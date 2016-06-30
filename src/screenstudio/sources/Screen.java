@@ -68,6 +68,10 @@ public class Screen {
             double maxWidth = 0;
             double maxHeight = 9999;
             String currentDisplay = System.getenv("DISPLAY");
+            if (currentDisplay.length() > 2){
+                currentDisplay = currentDisplay.substring(0, 2);
+            }
+            System.out.println(currentDisplay + " TEST");
             for (GraphicsDevice d : devices) {
                 Screen s = new Screen();
                 s.setId(d.getIDstring().replaceFirst(":0", currentDisplay));
