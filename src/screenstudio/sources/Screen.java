@@ -68,10 +68,9 @@ public class Screen {
             double maxWidth = 0;
             double maxHeight = 9999;
             String currentDisplay = System.getenv("DISPLAY");
-            if (currentDisplay.length() > 2){
+            if (currentDisplay.length() > 2) {
                 currentDisplay = currentDisplay.substring(0, 2);
             }
-            System.out.println(currentDisplay + " TEST");
             for (GraphicsDevice d : devices) {
                 Screen s = new Screen();
                 s.setId(d.getIDstring().replaceFirst(":0", currentDisplay));
@@ -103,14 +102,24 @@ public class Screen {
         webcam.setName("Webcam");
         webcam.setSize(new Rectangle(0, 0, 640, 480));
         list.add(webcam);
-        for (File f : new File(new FFMpeg().getHome(), "Overlays").listFiles()) {
-            if (f.getName().endsWith(".screen")) {
-                Screen remote = new Screen();
-                remote.setScreenIndex(1000);
-                remote.setId(f.getAbsolutePath());
-                remote.setName(f.getName());
-                remote.setSize(new Rectangle(0, 0, 720, 480));
-                list.add(remote);
+        File home = new FFMpeg().getHome();
+        if (!home.exists()) {
+            home.mkdir();
+        }
+        File overlays = new File(home, "Overlays");
+        if (!overlays.exists()) {
+            overlays.mkdir();
+        }
+        if (overlays.exists()) {
+            for (File f : overlays.listFiles()) {
+                if (f.getName().endsWith(".screen")) {
+                    Screen remote = new Screen();
+                    remote.setScreenIndex(1000);
+                    remote.setId(f.getAbsolutePath());
+                    remote.setName(f.getName());
+                    remote.setSize(new Rectangle(0, 0, 720, 480));
+                    list.add(remote);
+                }
             }
         }
         return list.toArray(new Screen[list.size()]);
