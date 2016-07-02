@@ -302,6 +302,8 @@ public class Renderer implements NotificationListener {
         if (panelSize > 0) {
             textBuffer = new BufferedImage((int) lblText.getPreferredSize().getWidth(), (int) lblText.getPreferredSize().getHeight(), BufferedImage.TYPE_3BYTE_BGR);
         } else {
+            lblText.setSize(new Dimension(0,0));
+            lblText.setPreferredSize(new Dimension(0,0));
             textBuffer = null;
         }
         notificationMessage.setPreferredSize(new Dimension(screen.getWidth(), 150));
