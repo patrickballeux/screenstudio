@@ -68,12 +68,12 @@ public class Screen {
             double maxWidth = 0;
             double maxHeight = 9999;
             String currentDisplay = System.getenv("DISPLAY");
-            if (currentDisplay.length() > 2) {
-                currentDisplay = currentDisplay.substring(0, 2);
+            if (currentDisplay.length() == 2) {
+                currentDisplay = currentDisplay+".0";
             }
             for (GraphicsDevice d : devices) {
                 Screen s = new Screen();
-                s.setId(d.getIDstring().replaceFirst(":0", currentDisplay));
+                s.setId(currentDisplay);
                 System.out.println(s.getId() + " " + d.getDefaultConfiguration().getBounds().toString().replaceAll("java.awt.Rectangle", ""));
                 s.setScreenIndex(i++);
                 s.setSize(d.getDefaultConfiguration().getBounds());
