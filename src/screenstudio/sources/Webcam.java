@@ -16,6 +16,7 @@
  */
 package screenstudio.sources;
 
+import java.awt.Rectangle;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -96,10 +97,8 @@ public class Webcam {
         mIsGreenScreen = value;
     }
     public static Webcam[] getSources() throws IOException, InterruptedException {
-        java.util.ArrayList<Webcam> list = new java.util.ArrayList<Webcam>();
+        java.util.ArrayList<Webcam> list = new java.util.ArrayList<>();
         System.out.println("Webcam List:");
-        Webcam w = new Webcam(null, "None", "None");
-        list.add(w);
         if (Screen.isOSX()) {
             list.addAll(getOSXDevices());
         } else {
@@ -126,10 +125,6 @@ public class Webcam {
                 }
             }
         }
-        //if (!Screen.isOSX()) {
-        w = new Webcam("MOUSE", "Mouse", "Mouse");
-        list.add(w);
-        // }
         return list.toArray(new Webcam[list.size()]);
     }
 
@@ -210,6 +205,9 @@ public class Webcam {
         this.height = height;
     }
 
+    public Rectangle getSize(){
+        return new Rectangle(0,0,this.width,this.height);
+    }
     /**
      * @return the fps
      */

@@ -73,6 +73,7 @@ public class FFMpeg {
     private String captureY = "0";
     private String mainInput = ":0.0";
     private String mainFormat = "x11grab";
+    private String webcamFormat = "v4l2";
     //Overlay
     private String overlayInput = "";
     private final String overlayFormat = "rawvideo -pix_fmt bgr24";
@@ -428,6 +429,15 @@ public class FFMpeg {
         return c.toString();
     }
 
+    public String getBin(){
+        return bin + nonVerboseMode;
+    }
+    public String getDesktopFormat(){
+        return mainFormat;
+}
+    public String getWebcamFormat(){
+        return webcamFormat;
+    }
     private void initDefaults() {
         File folder = new File("FFMPEG");
         if (folder.exists()) {
@@ -445,8 +455,9 @@ public class FFMpeg {
                     }
                     bin = p.getProperty("BIN", "ffmpeg") + " ";
                     nonVerboseMode = p.getProperty("NONVERBOSEMODE", " -nostats -loglevel 0 ") + " ";
-                    //Main inpu
+                    //Main input
                     mainFormat = p.getProperty("DESKTOPFORMAT", "x11grab") + " ";
+                    webcamFormat = p.getProperty("WEBCAMFORMAT","v4l2");
                     // Audio
                     audioInput = p.getProperty("DEFAULTAUDIO", "default") + " ";
                     audioFormat = p.getProperty("AUDIOFORMAT", "pulse") + " ";
