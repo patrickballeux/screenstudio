@@ -48,6 +48,7 @@ public class MainVersion3 extends javax.swing.JFrame {
         mLayoutPreview.setOutputWidth((Integer) spinWidth.getValue());
         mLayoutPreview.setOutputHeight((Integer) spinHeight.getValue());
         panPreviewLayout.add(mLayoutPreview, BorderLayout.CENTER);
+        this.setTitle("ScreenStudio " + screenstudio.Version.MAIN);
     }
 
     private void initControls() {
