@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
 import screenstudio.encoder.FFMpeg;
 import screenstudio.sources.Compositor;
@@ -47,6 +48,7 @@ public class MainVersion3 extends javax.swing.JFrame {
      */
     public MainVersion3() {
         initComponents();
+        this.setIconImage(new ImageIcon(MainVersion3.class.getResource("/screenstudio/gui/images/icon.png")).getImage());
         initControls();
         fillSourceTable(null);
         mLayoutPreview = new SourceLayoutPreview(tableSources);
@@ -697,9 +699,10 @@ public class MainVersion3 extends javax.swing.JFrame {
             Microphone m = (Microphone)cboAudioMicrophones.getSelectedItem();
             mFFMpeg.setAudio((FFMpeg.AudioRate)cboAudioBitrate.getSelectedItem(),m.getDevice() );
             mFFMpeg.setPreset((FFMpeg.Presets)cboVideoPresets.getSelectedItem());
-            mFFMpeg.setOutputFormat(FFMpeg.FORMATS.FLV, FFMpeg.Presets.fast, SOMEBITS,cboRTMPServers.getSelectedItem().toString() , txtRTMPKey.getText());
-            mnuCapture.setText("Stop");
+            mFFMpeg.setOutputFormat((FFMpeg.FORMATS)cboTarget.getSelectedItem(), (FFMpeg.Presets)cboVideoPresets.getSelectedItem(), (Integer)numVideoBitrate.getValue(),"", txtRTMPKey.getText());
             new Thread(mFFMpeg).start();
+            mnuCapture.setText("Stop");
+            
         }
 
     }//GEN-LAST:event_mnuCaptureActionPerformed
