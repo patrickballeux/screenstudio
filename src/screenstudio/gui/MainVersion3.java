@@ -17,15 +17,19 @@
 package screenstudio.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.table.DefaultTableModel;
 import screenstudio.encoder.FFMpeg;
+import screenstudio.sources.Compositor;
 import screenstudio.sources.Microphone;
 import screenstudio.sources.Screen;
+import screenstudio.sources.Source;
 import screenstudio.sources.Webcam;
 import screenstudio.targets.Layout.SourceType;
 
@@ -36,6 +40,7 @@ import screenstudio.targets.Layout.SourceType;
 public class MainVersion3 extends javax.swing.JFrame {
 
     private final SourceLayoutPreview mLayoutPreview;
+    private FFMpeg mFFMpeg = null;
 
     /**
      * Creates new form MainVersion3
@@ -73,7 +78,7 @@ public class MainVersion3 extends javax.swing.JFrame {
         } catch (IOException | InterruptedException ex) {
 
         }
-        setRTMPControls((FFMpeg.FORMATS)cboTarget.getSelectedItem());
+        setRTMPControls((FFMpeg.FORMATS) cboTarget.getSelectedItem());
     }
 
     private void setRTMPControls(FFMpeg.FORMATS value) {
@@ -217,8 +222,9 @@ public class MainVersion3 extends javax.swing.JFrame {
         chkShortcutsShift = new javax.swing.JCheckBox();
         cboShortcutsKeys = new javax.swing.JComboBox<>();
         menuBar = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        jMenu2 = new javax.swing.JMenu();
+        mnuFile = new javax.swing.JMenu();
+        mnuCapture = new javax.swing.JMenuItem();
+        mnuEdit = new javax.swing.JMenu();
 
         popSourcesMoveUp.setText("Move Up");
         popSourcesMoveUp.addActionListener(new java.awt.event.ActionListener() {
@@ -583,11 +589,21 @@ public class MainVersion3 extends javax.swing.JFrame {
 
         tabs.addTab("Options", panOptions);
 
-        jMenu1.setText("File");
-        menuBar.add(jMenu1);
+        mnuFile.setText("File");
 
-        jMenu2.setText("Edit");
-        menuBar.add(jMenu2);
+        mnuCapture.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
+        mnuCapture.setText("Record");
+        mnuCapture.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuCaptureActionPerformed(evt);
+            }
+        });
+        mnuFile.add(mnuCapture);
+
+        menuBar.add(mnuFile);
+
+        mnuEdit.setText("Edit");
+        menuBar.add(mnuEdit);
 
         setJMenuBar(menuBar);
 
@@ -666,8 +682,27 @@ public class MainVersion3 extends javax.swing.JFrame {
     }//GEN-LAST:event_spinHeightStateChanged
 
     private void cboTargetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboTargetActionPerformed
-        setRTMPControls((FFMpeg.FORMATS)cboTarget.getSelectedItem());
+        setRTMPControls((FFMpeg.FORMATS) cboTarget.getSelectedItem());
     }//GEN-LAST:event_cboTargetActionPerformed
+
+    private void mnuCaptureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuCaptureActionPerformed
+        if (mFFMpeg != null) {
+            mFFMpeg.stop();
+            mFFMpeg = null;
+            mnuCapture.setText("Record");
+        } else {
+            List<Source> sources = Compositor.getSources(tableSources, (Integer) spinFPS.getValue());
+            Compositor compositor = new Compositor(sources, new Rectangle(0, 0, (Integer) spinWidth.getValue(), (Integer) spinHeight.getValue()), (Integer) spinFPS.getValue());
+            mFFMpeg = new FFMpeg(compositor);
+            Microphone m = (Microphone)cboAudioMicrophones.getSelectedItem();
+            mFFMpeg.setAudio((FFMpeg.AudioRate)cboAudioBitrate.getSelectedItem(),m.getDevice() );
+            mFFMpeg.setPreset((FFMpeg.Presets)cboVideoPresets.getSelectedItem());
+            mFFMpeg.setOutputFormat(FFMpeg.FORMATS.FLV, FFMpeg.Presets.fast, SOMEBITS,cboRTMPServers.getSelectedItem().toString() , txtRTMPKey.getText());
+            mnuCapture.setText("Stop");
+            new Thread(mFFMpeg).start();
+        }
+
+    }//GEN-LAST:event_mnuCaptureActionPerformed
 
     /**
      * @param args the command line arguments
@@ -726,13 +761,14 @@ public class MainVersion3 extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JLabel lblRTMPKey;
     private javax.swing.JLabel lblRTMPServer;
     private javax.swing.JMenuBar menuBar;
+    private javax.swing.JMenuItem mnuCapture;
+    private javax.swing.JMenu mnuEdit;
+    private javax.swing.JMenu mnuFile;
     private javax.swing.JSpinner numVideoBitrate;
     private javax.swing.JPanel panOptions;
     private javax.swing.JPanel panOutput;
