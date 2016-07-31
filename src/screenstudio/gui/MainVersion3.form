@@ -208,7 +208,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cboTargetActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;Targets.FORMATS&gt;"/>
+                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;FFMpeg.FORMATS&gt;"/>
               </AuxValues>
             </Component>
             <Container class="javax.swing.JPanel" name="panTargetSettings">

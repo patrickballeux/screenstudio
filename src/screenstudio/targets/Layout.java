@@ -50,7 +50,7 @@ public class Layout {
     private Node settings = null;
 
     public enum SourceType {
-        Desktop, Webcam, Image, LabelFile, LabelText
+        Desktop, Webcam, Image, LabelFile, LabelText,Video,Stream
     }
 
     public Layout() {
@@ -88,7 +88,7 @@ public class Layout {
 
     }
 
-    public void setOutputTarget(Targets.FORMATS value) {
+    public void setOutputTarget(FFMpeg.FORMATS value) {
         Node node = document.createAttribute("outputtarget");
         node.setNodeValue(value.name());
         output.getAttributes().setNamedItem(node);
@@ -162,7 +162,7 @@ public class Layout {
         }
     }
 
-    public void addDesktop(SourceType typeValue, String idValue, int xValue, int yValue, int wValue, int hValue, float alphaValue) {
+    public void addDesktop(SourceType typeValue, String idValue, int xValue, int yValue, int wValue, int hValue, float alphaValue,int orderValue) {
         String nodeName = "";
         switch (typeValue) {
             case Desktop:
@@ -189,12 +189,14 @@ public class Layout {
         Node id = document.createAttribute("id");
         Node type = document.createAttribute("type");
         Node alpha = document.createAttribute("alpha");
+        Node order = document.createAttribute("order");
         x.setNodeValue("" + xValue);
         y.setNodeValue("" + yValue);
         w.setNodeValue("" + wValue);
         h.setNodeValue("" + hValue);
         id.setNodeValue("" + idValue);
         alpha.setNodeValue("" + alphaValue);
+        order.setNodeValue("" + orderValue);
         switch (typeValue) {
             case LabelFile:
                 type.setNodeValue("file");
@@ -215,6 +217,7 @@ public class Layout {
         node.getAttributes().setNamedItem(id);
         node.getAttributes().setNamedItem(type);
         node.getAttributes().setNamedItem(alpha);
+        node.getAttributes().setNamedItem(order);
         root.appendChild(node);
     }
 
@@ -231,6 +234,7 @@ public class Layout {
             s.Height = new Integer(n.getAttributes().getNamedItem("h").getNodeValue());
             s.ID = n.getAttributes().getNamedItem("id").getNodeValue();
             s.Alpha = new Float(n.getAttributes().getNamedItem("alpha").getNodeValue());
+            s.Order = new Integer(n.getAttributes().getNamedItem("order").getNodeValue());
             sources[i] = s;
         }
         return sources;
@@ -249,6 +253,7 @@ public class Layout {
             s.Height = new Integer(n.getAttributes().getNamedItem("h").getNodeValue());
             s.ID = n.getAttributes().getNamedItem("id").getNodeValue();
             s.Alpha = new Float(n.getAttributes().getNamedItem("alpha").getNodeValue());
+            s.Order = new Integer(n.getAttributes().getNamedItem("order").getNodeValue());
             sources[i] = s;
         }
         return sources;
@@ -267,6 +272,7 @@ public class Layout {
             s.Height = new Integer(n.getAttributes().getNamedItem("h").getNodeValue());
             s.ID = n.getAttributes().getNamedItem("id").getNodeValue();
             s.Alpha = new Float(n.getAttributes().getNamedItem("alpha").getNodeValue());
+            s.Order = new Integer(n.getAttributes().getNamedItem("order").getNodeValue());
             sources[i] = s;
         }
         return sources;
@@ -289,6 +295,7 @@ public class Layout {
                 s.ID = n.getTextContent();
             }
             s.Alpha = new Float(n.getAttributes().getNamedItem("alpha").getNodeValue());
+            s.Order = new Integer(n.getAttributes().getNamedItem("order").getNodeValue());
             sources[i] = s;
         }
         return sources;

@@ -26,12 +26,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JTable;
-import screenstudio.sources.Compositer;
+import screenstudio.sources.Compositor;
 import screenstudio.sources.Screen;
 import screenstudio.sources.Source;
 import screenstudio.sources.SourceFFMpeg;
 import screenstudio.sources.SourceImage;
 import screenstudio.sources.Webcam;
+import screenstudio.targets.Layout.SourceType;
 
 /**
  *
@@ -41,7 +42,8 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
 
     private final JTable mSources;
     private final Rectangle outputSize = new Rectangle(0, 0, 720, 480);
-    private Compositer compositer = null;
+    private Compositor compositer = null;
+    private int mFPS = 10;
 
     /**
      * Creates new form SourceLayoutPreview
@@ -60,6 +62,10 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
 
     public void setOutputHeight(int value) {
         outputSize.setSize(outputSize.width, value);
+    }
+
+    public void setFPS(int value) {
+        mFPS = value;
     }
 
     @Override
@@ -108,14 +114,14 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                             if (sy + sh > y + h) {
                                 sh = y + h - sy;
                             }
-                            switch (mSources.getValueAt(i, 1).toString()) {
-                                case "Screen":
+                            switch ((SourceType)mSources.getValueAt(i, 1)) {
+                                case Desktop:
                                     g.setColor(Color.red);
                                     break;
-                                case "Webcam":
+                                case Webcam:
                                     g.setColor(Color.blue);
                                     break;
-                                case "Image":
+                                case Image:
                                     g.setColor(Color.ORANGE);
                                     break;
                                 default:
@@ -152,22 +158,33 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                 // Detect type of source...
                 if (source instanceof Screen) {
                     Screen screen = (Screen) source;
-                    SourceFFMpeg s = SourceFFMpeg.getDesktopInstance(screen);
+                    SourceFFMpeg s = SourceFFMpeg.getDesktopInstance(screen,mFPS);
                     s.getBounds().setBounds(new Rectangle(sx, sy, sw, sh));
                     s.setAlpha(alpha);
                     s.setZOrder(i);
+                    s.setFPS(mFPS);
                     list.add(s);
                 } else if (source instanceof Webcam) {
                     Webcam webcam = (Webcam) source;
-                    SourceFFMpeg s = SourceFFMpeg.getWebcamInstance(webcam);
+                    SourceFFMpeg s = SourceFFMpeg.getWebcamInstance(webcam,mFPS);
                     s.getBounds().setBounds(new Rectangle(sx, sy, sw, sh));
                     s.setAlpha(alpha);
                     s.setZOrder(i);
+                    s.setFPS(mFPS);
                     list.add(s);
                 } else if (source instanceof File) {
-                    if ("Image".equals(mSources.getValueAt(i, 1).toString())) {
-                        SourceImage s = new SourceImage(new Rectangle(sx, sy, sw, sh), i, alpha, (File) source);
-                        list.add(s);
+                    switch ((SourceType) mSources.getValueAt(i, 1)) {
+                        case Image:
+                            list.add(new SourceImage(new Rectangle(sx, sy, sw, sh), i, alpha, (File) source));
+                            break;
+                        case Video:
+                            SourceFFMpeg s = SourceFFMpeg.getFileInstance(new Rectangle(sx, sy, sw, sh), ((File) source), mFPS);
+                            s.setAlpha(alpha);
+                            s.setZOrder(i);
+                            list.add(s);
+                            break;
+                        case LabelFile:
+                            break;
                     }
                 }
             }
@@ -220,7 +237,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
 
     private void popStartPreviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popStartPreviewActionPerformed
         List<Source> list = getSources();
-        compositer = new Compositer(list, outputSize, 10);
+        compositer = new Compositor(list, outputSize, 10);
         new Thread(compositer).start();
         new Thread(new Runnable() {
             @Override

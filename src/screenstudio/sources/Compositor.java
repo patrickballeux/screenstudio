@@ -26,7 +26,7 @@ import java.util.logging.Logger;
  *
  * @author patrick
  */
-public class Compositer implements Runnable {
+public class Compositor implements Runnable {
 
     private final java.util.List<Source> mSources;
     private BufferedImage mImage;
@@ -34,13 +34,14 @@ public class Compositer implements Runnable {
     private final int mFPS;
     private final Rectangle mOutputSize;
 
-    public Compositer(java.util.List<Source> sources, Rectangle outputSize, int fps) {
+    public Compositor(java.util.List<Source> sources, Rectangle outputSize, int fps) {
         sources.sort((a, b) -> Integer.compare(b.getZOrder(), a.getZOrder()));
         mSources = sources;
         mOutputSize = outputSize;
         mFPS = fps;
     }
 
+    
     @Override
     public void run() {
         mStopMe = false;
@@ -71,7 +72,7 @@ public class Compositer implements Runnable {
             try {
                 Thread.sleep(1000 / mFPS);
             } catch (InterruptedException ex) {
-                Logger.getLogger(Compositer.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Compositor.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         for (Source s : mSources) {
@@ -80,10 +81,19 @@ public class Compositer implements Runnable {
         g.dispose();
     }
 
+    public int getFPS(){
+        return mFPS;
+    }
     public BufferedImage getImage() {
         return mImage;
     }
 
+    public int getWidth(){
+        return mOutputSize.width;
+    }
+    public int getHeight(){
+        return mOutputSize.height;
+    }
     public void stop() {
         mStopMe = true;
     }

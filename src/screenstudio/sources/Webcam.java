@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import screenstudio.gui.overlays.Renderer;
 
 /**
  *
@@ -61,12 +60,10 @@ public class Webcam {
 
     private int width = 320;
     private int height = 240;
-    private int fps = 10;
     private String device = null;
     private String description = "";
     private String id = "";
     private double offset = 0;
-    private Renderer.WebcamLocation location = Renderer.WebcamLocation.Top;
     private boolean mIsGreenScreen = false;
     private int mGreenSensitivity = 1;
     
@@ -74,14 +71,6 @@ public class Webcam {
         device = dev;
         description = desc.trim();
         this.id = id;
-    }
-
-    public void setLocation(Renderer.WebcamLocation l) {
-        location = l;
-    }
-
-    public Renderer.WebcamLocation getLocation() {
-        return location;
     }
 
     public int getGcreenSensitivity(){
@@ -207,19 +196,6 @@ public class Webcam {
 
     public Rectangle getSize(){
         return new Rectangle(0,0,this.width,this.height);
-    }
-    /**
-     * @return the fps
-     */
-    public int getFps() {
-        return fps;
-    }
-
-    /**
-     * @param fps the fps to set
-     */
-    public void setFps(int fps) {
-        this.fps = fps;
     }
 
     /**

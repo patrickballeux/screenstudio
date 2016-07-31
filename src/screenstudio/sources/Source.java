@@ -24,6 +24,7 @@ import java.awt.image.DataBufferByte;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import screenstudio.targets.Layout.SourceType;
 
 /**
  *
@@ -43,6 +44,8 @@ public abstract class Source implements Runnable {
 
     private boolean mStopMe = false;
 
+    protected SourceType mType = null;
+    
     protected abstract void getData(byte[] buffer) throws IOException;
 
     protected abstract void initStream() throws IOException;
@@ -56,6 +59,9 @@ public abstract class Source implements Runnable {
         mDelayTime = delayTime;
     }
 
+    public SourceType getType(){
+        return mType;
+    }
     @Override
     public void run() {
         mStopMe = false;

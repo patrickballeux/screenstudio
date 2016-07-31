@@ -25,4 +25,5 @@ public class Source {
     public int Width;
     public int Height;
     public float Alpha;
+    public int Order;
 }

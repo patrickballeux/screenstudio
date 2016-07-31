@@ -23,6 +23,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
+import screenstudio.targets.Layout;
 
 /**
  *
@@ -36,6 +37,7 @@ public class SourceImage extends Source{
         super(bounds, zOrder, alpha, 1000);
         mFile = image;
         mImageType = BufferedImage.TYPE_4BYTE_ABGR;
+        mType = Layout.SourceType.Image;
     }
 
     @Override

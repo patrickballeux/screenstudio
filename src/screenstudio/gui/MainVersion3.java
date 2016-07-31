@@ -27,7 +27,7 @@ import screenstudio.encoder.FFMpeg;
 import screenstudio.sources.Microphone;
 import screenstudio.sources.Screen;
 import screenstudio.sources.Webcam;
-import screenstudio.targets.Targets;
+import screenstudio.targets.Layout.SourceType;
 
 /**
  *
@@ -52,7 +52,7 @@ public class MainVersion3 extends javax.swing.JFrame {
     }
 
     private void initControls() {
-        cboTarget.setModel(new DefaultComboBoxModel<>(Targets.FORMATS.values()));
+        cboTarget.setModel(new DefaultComboBoxModel<>(FFMpeg.FORMATS.values()));
         cboTarget.setSelectedIndex(0);
         cboVideoPresets.setModel(new DefaultComboBoxModel<>(FFMpeg.Presets.values()));
         cboAudioBitrate.setModel(new DefaultComboBoxModel<>(FFMpeg.AudioRate.values()));
@@ -73,10 +73,10 @@ public class MainVersion3 extends javax.swing.JFrame {
         } catch (IOException | InterruptedException ex) {
 
         }
-        setRTMPControls((Targets.FORMATS)cboTarget.getSelectedItem());
+        setRTMPControls((FFMpeg.FORMATS)cboTarget.getSelectedItem());
     }
 
-    private void setRTMPControls(Targets.FORMATS value) {
+    private void setRTMPControls(FFMpeg.FORMATS value) {
         if (value != null) {
             switch (value) {
                 case BROADCAST:
@@ -97,7 +97,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                 case USTREAM:
                 case VAUGHNLIVE:
                 case YOUTUBE:
-                    cboRTMPServers.setModel(new DefaultComboBoxModel(Targets.getServerList(value)));
+                    cboRTMPServers.setModel(new DefaultComboBoxModel(FFMpeg.getServerList(value)));
                     txtRTMPKey.setText((""));
                     cboRTMPServers.setVisible(true);
                     txtRTMPKey.setVisible(true);
@@ -114,7 +114,7 @@ public class MainVersion3 extends javax.swing.JFrame {
             model.removeRow(0);
         }
         try {
-            File overlays = new File(new FFMpeg().getHome(), "Overlays");
+            File overlays = new File(new FFMpeg(null).getHome(), "Overlays");
             if (overlays.exists()) {
                 for (File img : overlays.listFiles()) {
                     if (img.getName().toLowerCase().endsWith(".png")
@@ -122,7 +122,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                             || img.getName().toLowerCase().endsWith(".gif")) {
                         Object[] row = new Object[model.getColumnCount()];
                         row[0] = false;
-                        row[1] = "Image";
+                        row[1] = SourceType.Image;
                         row[2] = img;
                         row[3] = 0;
                         row[4] = 0;
@@ -136,7 +136,7 @@ public class MainVersion3 extends javax.swing.JFrame {
             for (Webcam w : Webcam.getSources()) {
                 Object[] row = new Object[model.getColumnCount()];
                 row[0] = false;
-                row[1] = "Webcam";
+                row[1] = SourceType.Webcam;
                 row[2] = w;
                 row[3] = 0;
                 row[4] = 0;
@@ -148,7 +148,7 @@ public class MainVersion3 extends javax.swing.JFrame {
             for (Screen s : Screen.getSources()) {
                 Object[] row = new Object[model.getColumnCount()];
                 row[0] = false;
-                row[1] = "Screen";
+                row[1] = SourceType.Desktop;
                 row[2] = s;
                 row[3] = s.getSize().x;
                 row[4] = s.getSize().y;
@@ -666,7 +666,7 @@ public class MainVersion3 extends javax.swing.JFrame {
     }//GEN-LAST:event_spinHeightStateChanged
 
     private void cboTargetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboTargetActionPerformed
-        setRTMPControls((Targets.FORMATS)cboTarget.getSelectedItem());
+        setRTMPControls((FFMpeg.FORMATS)cboTarget.getSelectedItem());
     }//GEN-LAST:event_cboTargetActionPerformed
 
     /**
@@ -711,7 +711,7 @@ public class MainVersion3 extends javax.swing.JFrame {
     private javax.swing.JComboBox<Microphone> cboAudioSystems;
     private javax.swing.JComboBox<String> cboRTMPServers;
     private javax.swing.JComboBox<String> cboShortcutsKeys;
-    private javax.swing.JComboBox<Targets.FORMATS> cboTarget;
+    private javax.swing.JComboBox<FFMpeg.FORMATS> cboTarget;
     private javax.swing.JComboBox<FFMpeg.Presets> cboVideoPresets;
     private javax.swing.JCheckBox chkShortcutsControl;
     private javax.swing.JCheckBox chkShortcutsShift;

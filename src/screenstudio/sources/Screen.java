@@ -35,7 +35,6 @@ public class Screen {
     private String id = "";
     private String name = "None";
     private int screenIndex = -1;
-    private int fps = 10;
 
     @Override
     public String toString() {
@@ -51,7 +50,7 @@ public class Screen {
     }
 
     public String getDetailledLabel() {
-        return getLabel() + " (" + (int) this.size.getWidth() + "X" + (int) this.size.getHeight() + ") @" + fps + " FPS";
+        return getLabel() + " (" + (int) this.size.getWidth() + "X" + (int) this.size.getHeight() + ")";
     }
 
     public static Screen[] getSources() throws IOException, InterruptedException {
@@ -158,20 +157,6 @@ public class Screen {
      */
     public void setId(String id) {
         this.id = id;
-    }
-
-    /**
-     * @return the fps
-     */
-    public int getFps() {
-        return fps;
-    }
-
-    /**
-     * @param fps the fps to set
-     */
-    public void setFps(int fps) {
-        this.fps = fps;
     }
 
     /**
