@@ -16,7 +16,6 @@
  */
 package screenstudio.encoder;
 
-import java.awt.Color;
 import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -246,7 +245,7 @@ public class FFMpeg implements Runnable {
      * @param debugMode : If enabled, verbose mode is activated
      * @return the full command for FFMpeg
      */
-    private String getCommand(String fifoFile) {
+    private String getCommand() {
         StringBuilder c = new StringBuilder();
         // Add binary path
         c.append(bin);
@@ -258,7 +257,7 @@ public class FFMpeg implements Runnable {
         c.append(" ").append(mThreading).append(" -f ").append(compositorFormat);
         c.append(" -framerate ").append(compositor.getFPS());
         c.append(" -video_size ").append(compositor.getWidth()).append("x").append(compositor.getHeight());
-        c.append(" -i ").append(fifoFile);
+        c.append(" -i - ");
 
         // Capture Audio
         c.append(" -f ").append(audioFormat).append(" -i ").append(audioInput);
@@ -351,15 +350,12 @@ public class FFMpeg implements Runnable {
         new Thread(compositor).start();
         mDebugMode = true;
         try {
-            File fifo = File.createTempFile("screenstudio", ".raw");
-            fifo.delete();
-            Runtime.getRuntime().exec("mkfifo " + fifo.getAbsolutePath());
-            String command = getCommand(fifo.getAbsolutePath());
+            String command = getCommand();
             Process p = Runtime.getRuntime().exec(command);
             
             long frameTime = (1000000000 / compositor.getFPS());
             long nextPTS = System.nanoTime() + frameTime;
-            OutputStream out = new FileOutputStream(fifo);
+            OutputStream out = p.getOutputStream();//new FileOutputStream(fifo);
             while (!mStopMe) {
                 if (compositor.getImage() != null) {
                     byte[] data = ((DataBufferByte) compositor.getImage().getRaster().getDataBuffer()).getData();
@@ -377,7 +373,6 @@ public class FFMpeg implements Runnable {
                 }
                 nextPTS += frameTime;
             }
-            fifo.delete();
             out.close();
             p.destroy();
 

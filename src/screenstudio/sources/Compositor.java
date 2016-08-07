@@ -58,6 +58,8 @@ public class Compositor implements Runnable {
         for (Source s : mSources) {
             new Thread(s).start();
         }
+        long frameTime = (1000000000 / mFPS);
+        long nextPTS = System.nanoTime() + frameTime;
         while (!mStopMe) {
             g.clearRect(0, 0, mImage.getWidth(), mImage.getHeight());
             for (Source s : mSources) {
@@ -72,11 +74,17 @@ public class Compositor implements Runnable {
                 g = g2;
             }
             flip = !flip;
-            try {
-                Thread.sleep(1000 / mFPS);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Compositor.class.getName()).log(Level.SEVERE, null, ex);
+            while (nextPTS - System.nanoTime() > 0) {
+                long wait = nextPTS - System.nanoTime();
+                if (wait > 0) {
+                    try {
+                        Thread.sleep(wait / 1000000, (int) (wait % 1000000));
+                    } catch (Exception ex) {
+                        System.err.println("Error: Thread.sleep(" + (wait / 1000000) + "," + ((int) (wait % 1000000)) + ")");
+                    }
+                }
             }
+            nextPTS += frameTime;
         }
         for (Source s : mSources) {
             s.stop();

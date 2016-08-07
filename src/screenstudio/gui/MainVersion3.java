@@ -81,6 +81,10 @@ public class MainVersion3 extends javax.swing.JFrame {
 
         }
         setRTMPControls((FFMpeg.FORMATS) cboTarget.getSelectedItem());
+        int defaultWidth = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth();
+        int defaultHeight = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getHeight();
+        spinWidth.setValue(defaultWidth);
+        spinHeight.setValue(defaultHeight);
     }
 
     private void setRTMPControls(FFMpeg.FORMATS value) {
