@@ -19,8 +19,12 @@ package screenstudio.sources;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JTable;
+import screenstudio.targets.Layout;
 
 /**
  *
@@ -41,7 +45,6 @@ public class Compositor implements Runnable {
         mFPS = fps;
     }
 
-    
     @Override
     public void run() {
         mStopMe = false;
@@ -81,20 +84,71 @@ public class Compositor implements Runnable {
         g.dispose();
     }
 
-    public int getFPS(){
+    public int getFPS() {
         return mFPS;
     }
+
     public BufferedImage getImage() {
         return mImage;
     }
 
-    public int getWidth(){
+    public int getWidth() {
         return mOutputSize.width;
     }
-    public int getHeight(){
+
+    public int getHeight() {
         return mOutputSize.height;
     }
+
     public void stop() {
         mStopMe = true;
     }
+
+    public static List<Source> getSources(JTable sources, int fps) {
+        java.util.ArrayList<Source> list = new java.util.ArrayList();
+        for (int i = sources.getRowCount() - 1; i >= 0; i--) {
+            if ((Boolean) sources.getValueAt(i, 0)) {
+                int sx = (int) sources.getValueAt(i, 3);
+                int sy = (int) sources.getValueAt(i, 4);
+                int sw = (int) sources.getValueAt(i, 5);
+                int sh = (int) sources.getValueAt(i, 6);
+                float alpha = new Float(sources.getValueAt(i, 7).toString());
+                Object source = sources.getValueAt(i, 2);
+                // Detect type of source...
+                if (source instanceof Screen) {
+                    Screen screen = (Screen) source;
+                    SourceFFMpeg s = SourceFFMpeg.getDesktopInstance(screen, fps);
+                    s.getBounds().setBounds(new Rectangle(sx, sy, sw, sh));
+                    s.setAlpha(alpha);
+                    s.setZOrder(i);
+                    s.setFPS(fps);
+                    list.add(s);
+                } else if (source instanceof Webcam) {
+                    Webcam webcam = (Webcam) source;
+                    SourceFFMpeg s = SourceFFMpeg.getWebcamInstance(webcam, fps);
+                    s.getBounds().setBounds(new Rectangle(sx, sy, sw, sh));
+                    s.setAlpha(alpha);
+                    s.setZOrder(i);
+                    s.setFPS(fps);
+                    list.add(s);
+                } else if (source instanceof File) {
+                    switch ((Layout.SourceType) sources.getValueAt(i, 1)) {
+                        case Image:
+                            list.add(new SourceImage(new Rectangle(sx, sy, sw, sh), i, alpha, (File) source));
+                            break;
+                        case Video:
+                            SourceFFMpeg s = SourceFFMpeg.getFileInstance(new Rectangle(sx, sy, sw, sh), ((File) source), fps);
+                            s.setAlpha(alpha);
+                            s.setZOrder(i);
+                            list.add(s);
+                            break;
+                        case LabelFile:
+                            break;
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
 }

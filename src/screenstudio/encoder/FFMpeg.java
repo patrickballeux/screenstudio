@@ -19,6 +19,7 @@ package screenstudio.encoder;
 import java.awt.Color;
 import java.awt.image.DataBufferByte;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -150,7 +151,7 @@ public class FFMpeg implements Runnable {
      * @param server
      * @param key
      */
-    public void setOutputFormat(FORMATS format, Presets p,int videoBitrate,String server, String key) {
+    public void setOutputFormat(FORMATS format, Presets p, int videoBitrate, String server, String key) {
         switch (format) {
             case FLV:
                 muxer = "flv";
@@ -199,7 +200,7 @@ public class FFMpeg implements Runnable {
                 break;
         }
         preset = p.name();
-        this.videoBitrate = videoBitrate+"";
+        this.videoBitrate = videoBitrate + "";
     }
 
     /**
@@ -245,7 +246,7 @@ public class FFMpeg implements Runnable {
      * @param debugMode : If enabled, verbose mode is activated
      * @return the full command for FFMpeg
      */
-    private String getCommand() {
+    private String getCommand(String fifoFile) {
         StringBuilder c = new StringBuilder();
         // Add binary path
         c.append(bin);
@@ -257,7 +258,7 @@ public class FFMpeg implements Runnable {
         c.append(" ").append(mThreading).append(" -f ").append(compositorFormat);
         c.append(" -framerate ").append(compositor.getFPS());
         c.append(" -video_size ").append(compositor.getWidth()).append("x").append(compositor.getHeight());
-        c.append(" -i - ");
+        c.append(" -i ").append(fifoFile);
 
         // Capture Audio
         c.append(" -f ").append(audioFormat).append(" -i ").append(audioInput);
@@ -348,15 +349,22 @@ public class FFMpeg implements Runnable {
     public void run() {
         mStopMe = false;
         new Thread(compositor).start();
-        String command = getCommand();
+        mDebugMode = true;
         try {
+            File fifo = File.createTempFile("screenstudio", ".raw");
+            fifo.delete();
+            Runtime.getRuntime().exec("mkfifo " + fifo.getAbsolutePath());
+            String command = getCommand(fifo.getAbsolutePath());
             Process p = Runtime.getRuntime().exec(command);
+            
             long frameTime = (1000000000 / compositor.getFPS());
             long nextPTS = System.nanoTime() + frameTime;
-            OutputStream out = p.getOutputStream();
+            OutputStream out = new FileOutputStream(fifo);
             while (!mStopMe) {
-                byte[] data = ((DataBufferByte) compositor.getImage().getRaster().getDataBuffer()).getData();
-                out.write(data);
+                if (compositor.getImage() != null) {
+                    byte[] data = ((DataBufferByte) compositor.getImage().getRaster().getDataBuffer()).getData();
+                    out.write(data);
+                }
                 while (nextPTS - System.nanoTime() > 0) {
                     long wait = nextPTS - System.nanoTime();
                     if (wait > 0) {
@@ -369,6 +377,7 @@ public class FFMpeg implements Runnable {
                 }
                 nextPTS += frameTime;
             }
+            fifo.delete();
             out.close();
             p.destroy();
 
@@ -377,6 +386,7 @@ public class FFMpeg implements Runnable {
         }
         compositor.stop();
     }
+
     public enum FORMATS {
         TS,
         FLV,

@@ -21,17 +21,13 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JTable;
 import screenstudio.sources.Compositor;
-import screenstudio.sources.Screen;
+import static screenstudio.sources.Compositor.getSources;
 import screenstudio.sources.Source;
-import screenstudio.sources.SourceFFMpeg;
-import screenstudio.sources.SourceImage;
-import screenstudio.sources.Webcam;
 import screenstudio.targets.Layout.SourceType;
 
 /**
@@ -145,52 +141,6 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
         }
     }
 
-    public List<Source> getSources() {
-        java.util.ArrayList<Source> list = new java.util.ArrayList();
-        for (int i = mSources.getRowCount() - 1; i >= 0; i--) {
-            if ((Boolean) mSources.getValueAt(i, 0)) {
-                int sx = (int) mSources.getValueAt(i, 3);
-                int sy = (int) mSources.getValueAt(i, 4);
-                int sw = (int) mSources.getValueAt(i, 5);
-                int sh = (int) mSources.getValueAt(i, 6);
-                float alpha = new Float(mSources.getValueAt(i, 7).toString());
-                Object source = mSources.getValueAt(i, 2);
-                // Detect type of source...
-                if (source instanceof Screen) {
-                    Screen screen = (Screen) source;
-                    SourceFFMpeg s = SourceFFMpeg.getDesktopInstance(screen,mFPS);
-                    s.getBounds().setBounds(new Rectangle(sx, sy, sw, sh));
-                    s.setAlpha(alpha);
-                    s.setZOrder(i);
-                    s.setFPS(mFPS);
-                    list.add(s);
-                } else if (source instanceof Webcam) {
-                    Webcam webcam = (Webcam) source;
-                    SourceFFMpeg s = SourceFFMpeg.getWebcamInstance(webcam,mFPS);
-                    s.getBounds().setBounds(new Rectangle(sx, sy, sw, sh));
-                    s.setAlpha(alpha);
-                    s.setZOrder(i);
-                    s.setFPS(mFPS);
-                    list.add(s);
-                } else if (source instanceof File) {
-                    switch ((SourceType) mSources.getValueAt(i, 1)) {
-                        case Image:
-                            list.add(new SourceImage(new Rectangle(sx, sy, sw, sh), i, alpha, (File) source));
-                            break;
-                        case Video:
-                            SourceFFMpeg s = SourceFFMpeg.getFileInstance(new Rectangle(sx, sy, sw, sh), ((File) source), mFPS);
-                            s.setAlpha(alpha);
-                            s.setZOrder(i);
-                            list.add(s);
-                            break;
-                        case LabelFile:
-                            break;
-                    }
-                }
-            }
-        }
-        return list;
-    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -236,7 +186,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void popStartPreviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popStartPreviewActionPerformed
-        List<Source> list = getSources();
+        List<Source> list = getSources(mSources,mFPS);
         compositer = new Compositor(list, outputSize, 10);
         new Thread(compositer).start();
         new Thread(new Runnable() {
