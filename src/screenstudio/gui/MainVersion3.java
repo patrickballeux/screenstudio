@@ -26,12 +26,15 @@ import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 import screenstudio.encoder.FFMpeg;
 import screenstudio.sources.Compositor;
 import screenstudio.sources.Microphone;
 import screenstudio.sources.Screen;
 import screenstudio.sources.Source;
 import screenstudio.sources.Webcam;
+import screenstudio.targets.Layout;
 import screenstudio.targets.Layout.SourceType;
 
 /**
@@ -87,6 +90,147 @@ public class MainVersion3 extends javax.swing.JFrame {
         spinHeight.setValue(defaultHeight);
     }
 
+    private void loadLayout() {
+        File file = new File("default.xml");
+        Layout layout = new Layout();
+        try {
+            layout.load(file);
+            cboAudioBitrate.setSelectedItem(layout.getAudioBitrate());
+            for (int i = 0; i < cboAudioMicrophones.getItemCount(); i++) {
+                if (cboAudioMicrophones.getItemAt(i).getDescription().equals(layout.getAudioMicrophone())) {
+                    cboAudioMicrophones.setSelectedIndex(i);
+                    break;
+                }
+            }
+            for (int i = 0; i < cboAudioSystems.getItemCount(); i++) {
+                if (cboAudioSystems.getItemAt(i).getDescription().equals(layout.getAudioSystem())) {
+                    cboAudioSystems.setSelectedIndex(i);
+                    break;
+                }
+            }
+            spinFPS.setValue(layout.getOutputFramerate());
+            spinHeight.setValue(layout.getOutputHeight());
+            cboVideoPresets.setSelectedItem(layout.getOutputPreset());
+            txtRTMPKey.setText(layout.getOutputRTMPKey());
+            cboRTMPServers.setSelectedItem(layout.getOutputRTMPServer());
+            cboTarget.setSelectedItem(layout.getOutputTarget());
+            // layout.getOutputFolder();
+            spinWidth.setValue(layout.getOutputWidth());
+            String shortcut = layout.getShortcutCapture();
+            chkShortcutsControl.setSelected(shortcut.contains("ctrl"));
+            chkShortcutsShift.setSelected(shortcut.contains("shift"));
+            choShortcutsAlt.setSelected(shortcut.contains("alt"));
+            cboShortcutsKeys.setSelectedItem(shortcut.substring(shortcut.length() - 1));
+            numVideoBitrate.setValue(layout.getVideoBitrate());
+
+            // load sources...
+            DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
+            while (model.getRowCount() > 0) {
+                model.removeRow(0);
+            }
+            Screen[] screens = Screen.getSources();
+            Webcam[] webcams = Webcam.getSources();
+            for (screenstudio.targets.Source s : layout.getSources()) {
+                Object[] row = new Object[model.getColumnCount()];
+                row[0] = true;
+                row[1] = s.Type;
+                row[2] = "Not found!";
+                row[3] = s.X;
+                row[4] = s.Y;
+                row[5] = s.Width;
+                row[6] = s.Height;
+                row[7] = s.Alpha;
+                switch (s.Type) {
+                    case Desktop:
+                        row[0] = false;
+                        for (Screen screen : screens) {
+                            if (screen.getId().equals(s.ID)) {
+                                row[2] = screen;
+                                row[0] = true;
+                                break;
+                            }
+                        }
+                        break;
+                    case Image:
+                        row[2] = new File(s.ID);
+                        row[0] = new File(s.ID).exists();
+                        break;
+                    case LabelFile:
+                        row[2] = new File(s.ID);
+                        row[0] = new File(s.ID).exists();
+                        break;
+                    case LabelText:
+                        row[2] = s.ID;
+                        break;
+                    case Stream:
+                        row[2] = s.ID;
+                        break;
+                    case Video:
+                        row[2] = new File(s.ID);
+                        row[0] = new File(s.ID).exists();
+                        break;
+                    case Webcam:
+                        row[0] = false;
+                        for (Webcam webcam : webcams) {
+                            if (webcam.getDevice().equals(s.ID)) {
+                                row[2] = webcam;
+                                row[0] = true;
+                                break;
+                            }
+                        }
+                        break;
+                }
+                model.addRow(row);
+            }
+        } catch (IOException | ParserConfigurationException | SAXException | InterruptedException ex) {
+            Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    private void saveLayout() {
+        File file = new File("default.xml");
+        Layout layout = new Layout();
+        layout.setAudioBitrate(cboAudioBitrate.getItemAt(cboAudioBitrate.getSelectedIndex()));
+        layout.setAudioMicrophone(cboAudioMicrophones.getItemAt(cboAudioMicrophones.getSelectedIndex()).getDescription());
+        layout.setAudioSystem(cboAudioSystems.getItemAt(cboAudioSystems.getSelectedIndex()).getDescription());
+        layout.setOutputFramerate((Integer) spinFPS.getValue());
+        layout.setOutputHeight((Integer) spinHeight.getValue());
+        layout.setOutputPreset(cboVideoPresets.getItemAt(cboVideoPresets.getSelectedIndex()));
+        layout.setOutputRTMPKey(txtRTMPKey.getText());
+        if (cboRTMPServers.getSelectedIndex() != -1) {
+            layout.setOutputRTMPServer(cboRTMPServers.getSelectedItem().toString());
+        } else {
+            layout.setOutputRTMPServer("");
+        }
+        layout.setOutputTarget(cboTarget.getItemAt(cboTarget.getSelectedIndex()));
+        layout.setOutputVideoFolder(new File(""));
+        layout.setOutputWith((Integer) spinWidth.getValue());
+        String shortcut = "";
+        if (chkShortcutsControl.isSelected()) {
+            shortcut += "ctrl ";
+        }
+        if (chkShortcutsShift.isSelected()) {
+            shortcut += "shift ";
+        }
+        if (choShortcutsAlt.isSelected()) {
+            shortcut += "alt ";
+        }
+        shortcut += cboShortcutsKeys.getSelectedItem().toString();
+        layout.setShortcutsCapture(shortcut.trim());
+        layout.setVideoBitrate((Integer) numVideoBitrate.getValue());
+
+        List<Source> sources = Compositor.getSources(tableSources, (Integer) spinFPS.getValue());
+        for (Source s : sources) {
+            layout.addSource(s.getType(), s.getID(), s.getBounds().x, s.getBounds().y, s.getBounds().width, s.getBounds().height, s.getAlpha().getAlpha(), s.getZOrder());
+        }
+        try {
+            layout.save(file);
+        } catch (Exception ex) {
+            Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     private void setRTMPControls(FFMpeg.FORMATS value) {
         if (value != null) {
             switch (value) {
@@ -125,25 +269,7 @@ public class MainVersion3 extends javax.swing.JFrame {
             model.removeRow(0);
         }
         try {
-            File overlays = new File(new FFMpeg(null).getHome(), "Overlays");
-            if (overlays.exists()) {
-                for (File img : overlays.listFiles()) {
-                    if (img.getName().toLowerCase().endsWith(".png")
-                            || img.getName().toLowerCase().endsWith(".jpg")
-                            || img.getName().toLowerCase().endsWith(".gif")) {
-                        Object[] row = new Object[model.getColumnCount()];
-                        row[0] = false;
-                        row[1] = SourceType.Image;
-                        row[2] = img;
-                        row[3] = 0;
-                        row[4] = 0;
-                        row[5] = 320;
-                        row[6] = 240;
-                        row[7] = 1;
-                        model.addRow(row);
-                    }
-                }
-            }
+            
             for (Webcam w : Webcam.getSources()) {
                 Object[] row = new Object[model.getColumnCount()];
                 row[0] = false;
@@ -168,9 +294,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                 row[7] = 1;
                 model.addRow(row);
             }
-        } catch (IOException ex) {
-            Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InterruptedException ex) {
+        } catch (IOException | InterruptedException ex) {
             Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -230,6 +354,9 @@ public class MainVersion3 extends javax.swing.JFrame {
         menuBar = new javax.swing.JMenuBar();
         mnuFile = new javax.swing.JMenu();
         mnuCapture = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        mnuFileLoad = new javax.swing.JMenuItem();
+        mnuFileSave = new javax.swing.JMenuItem();
         mnuEdit = new javax.swing.JMenu();
 
         popSourcesMoveUp.setText("Move Up");
@@ -605,6 +732,25 @@ public class MainVersion3 extends javax.swing.JFrame {
             }
         });
         mnuFile.add(mnuCapture);
+        mnuFile.add(jSeparator1);
+
+        mnuFileLoad.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+        mnuFileLoad.setText("Open");
+        mnuFileLoad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuFileLoadActionPerformed(evt);
+            }
+        });
+        mnuFile.add(mnuFileLoad);
+
+        mnuFileSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+        mnuFileSave.setText("Save");
+        mnuFileSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuFileSaveActionPerformed(evt);
+            }
+        });
+        mnuFile.add(mnuFileSave);
 
         menuBar.add(mnuFile);
 
@@ -700,16 +846,24 @@ public class MainVersion3 extends javax.swing.JFrame {
             List<Source> sources = Compositor.getSources(tableSources, (Integer) spinFPS.getValue());
             Compositor compositor = new Compositor(sources, new Rectangle(0, 0, (Integer) spinWidth.getValue(), (Integer) spinHeight.getValue()), (Integer) spinFPS.getValue());
             mFFMpeg = new FFMpeg(compositor);
-            Microphone m = (Microphone)cboAudioMicrophones.getSelectedItem();
-            mFFMpeg.setAudio((FFMpeg.AudioRate)cboAudioBitrate.getSelectedItem(),m.getDevice() );
-            mFFMpeg.setPreset((FFMpeg.Presets)cboVideoPresets.getSelectedItem());
-            mFFMpeg.setOutputFormat((FFMpeg.FORMATS)cboTarget.getSelectedItem(), (FFMpeg.Presets)cboVideoPresets.getSelectedItem(), (Integer)numVideoBitrate.getValue(),"", txtRTMPKey.getText());
+            Microphone m = (Microphone) cboAudioMicrophones.getSelectedItem();
+            mFFMpeg.setAudio((FFMpeg.AudioRate) cboAudioBitrate.getSelectedItem(), m.getDevice());
+            mFFMpeg.setPreset((FFMpeg.Presets) cboVideoPresets.getSelectedItem());
+            mFFMpeg.setOutputFormat((FFMpeg.FORMATS) cboTarget.getSelectedItem(), (FFMpeg.Presets) cboVideoPresets.getSelectedItem(), (Integer) numVideoBitrate.getValue(), "", txtRTMPKey.getText());
             new Thread(mFFMpeg).start();
             mnuCapture.setText("Stop");
-            
+
         }
 
     }//GEN-LAST:event_mnuCaptureActionPerformed
+
+    private void mnuFileSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFileSaveActionPerformed
+        saveLayout();
+    }//GEN-LAST:event_mnuFileSaveActionPerformed
+
+    private void mnuFileLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFileLoadActionPerformed
+        loadLayout();
+    }//GEN-LAST:event_mnuFileLoadActionPerformed
 
     /**
      * @param args the command line arguments
@@ -769,6 +923,7 @@ public class MainVersion3 extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JLabel lblRTMPKey;
     private javax.swing.JLabel lblRTMPServer;
@@ -776,6 +931,8 @@ public class MainVersion3 extends javax.swing.JFrame {
     private javax.swing.JMenuItem mnuCapture;
     private javax.swing.JMenu mnuEdit;
     private javax.swing.JMenu mnuFile;
+    private javax.swing.JMenuItem mnuFileLoad;
+    private javax.swing.JMenuItem mnuFileSave;
     private javax.swing.JSpinner numVideoBitrate;
     private javax.swing.JPanel panOptions;
     private javax.swing.JPanel panOutput;

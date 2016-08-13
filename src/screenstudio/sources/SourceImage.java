@@ -34,7 +34,7 @@ public class SourceImage extends Source{
     private final File mFile;
     private byte[] data = null;
     public SourceImage(Rectangle bounds, int zOrder, float alpha,File image) {
-        super(bounds, zOrder, alpha, 1000);
+        super(bounds, zOrder, alpha, 1000,image.getAbsolutePath());
         mFile = image;
         mImageType = BufferedImage.TYPE_4BYTE_ABGR;
         mType = Layout.SourceType.Image;

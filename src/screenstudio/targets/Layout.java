@@ -29,9 +29,20 @@ package screenstudio.targets;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Result;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -50,7 +61,7 @@ public class Layout {
     private Node settings = null;
 
     public enum SourceType {
-        Desktop, Webcam, Image, LabelFile, LabelText,Video,Stream
+        Desktop, Webcam, Image, LabelFile, LabelText, Video, Stream
     }
 
     public Layout() {
@@ -74,11 +85,16 @@ public class Layout {
         node.setNodeValue("" + value);
         output.getAttributes().setNamedItem(node);
     }
-
+    public int getOutputWidth(){
+        return new Integer(output.getAttributes().getNamedItem("outputwidth").getNodeValue());
+    }
     public void setOutputHeight(int value) {
         Node node = document.createAttribute("outputheight");
         node.setNodeValue("" + value);
         output.getAttributes().setNamedItem(node);
+    }
+    public int getOutputHeight(){
+        return new Integer(output.getAttributes().getNamedItem("outputheight").getNodeValue());
     }
 
     public void setOutputFramerate(int value) {
@@ -87,30 +103,45 @@ public class Layout {
         output.getAttributes().setNamedItem(node);
 
     }
-
+    public int getOutputFramerate(){
+        return new Integer(output.getAttributes().getNamedItem("outputframerate").getNodeValue());
+    }
+ 
     public void setOutputTarget(FFMpeg.FORMATS value) {
         Node node = document.createAttribute("outputtarget");
         node.setNodeValue(value.name());
         output.getAttributes().setNamedItem(node);
 
     }
-
+   public FFMpeg.FORMATS getOutputTarget(){
+        return FFMpeg.FORMATS.valueOf(output.getAttributes().getNamedItem("outputtarget").getNodeValue());
+    }
+ 
     public void setVideoBitrate(int value) {
         Node node = document.createAttribute("videobitrate");
         node.setNodeValue("" + value);
         output.getAttributes().setNamedItem(node);
     }
+    public int getVideoBitrate(){
+        return new Integer(output.getAttributes().getNamedItem("videobitrate").getNodeValue());
+    }
 
     public void setAudioBitrate(FFMpeg.AudioRate value) {
         Node node = document.createAttribute("audiobitrate");
         node.setNodeValue(value.name());
-        output.getAttributes().setNamedItem(node);
+        audios.getAttributes().setNamedItem(node);
+    }
+    public FFMpeg.AudioRate getAudioBitrate(){
+        return FFMpeg.AudioRate.valueOf(audios.getAttributes().getNamedItem("audiobitrate").getNodeValue());
     }
 
     public void setOutputPreset(FFMpeg.Presets value) {
         Node node = document.createAttribute("outputpreset");
         node.setNodeValue(value.name());
         output.getAttributes().setNamedItem(node);
+    }
+    public FFMpeg.Presets getOutputPreset(){
+        return FFMpeg.Presets.valueOf(output.getAttributes().getNamedItem("outputpreset").getNodeValue());
     }
 
     public void setOutputRTMPServer(String value) {
@@ -119,6 +150,9 @@ public class Layout {
         output.getAttributes().setNamedItem(node);
 
     }
+    public String getOutputRTMPServer(){
+        return output.getAttributes().getNamedItem("rtmpserver").getNodeValue();
+    }
 
     public void setOutputRTMPKey(String value) {
         Node node = document.createAttribute("rtmpkey");
@@ -126,26 +160,35 @@ public class Layout {
         output.getAttributes().setNamedItem(node);
 
     }
+    public String getOutputRTMPKey(){
+        return output.getAttributes().getNamedItem("rtmpkey").getNodeValue();
+    }
 
     public void setAudioMicrophone(String value) {
         Node node = document.createAttribute("microphone");
         node.setNodeValue(value);
-        output.getAttributes().setNamedItem(node);
+        audios.getAttributes().setNamedItem(node);
 
     }
-
+    public String getAudioMicrophone(){
+        return audios.getAttributes().getNamedItem("microphone").getNodeValue();
+    }
     public void setAudioSystem(String value) {
         Node node = document.createAttribute("audiosystem");
         node.setNodeValue(value);
-        output.getAttributes().setNamedItem(node);
-
+        audios.getAttributes().setNamedItem(node);
+    }
+    public String getAudioSystem(){
+        return audios.getAttributes().getNamedItem("audiosystem").getNodeValue();
     }
 
     public void setShortcutsCapture(String value) {
         Node node = document.createAttribute("shortcutcapture");
         node.setNodeValue(value);
-        output.getAttributes().setNamedItem(node);
-
+        settings.getAttributes().setNamedItem(node);
+    }
+    public String getShortcutCapture(){
+        return settings.getAttributes().getNamedItem("shortcutcapture").getNodeValue();
     }
 
     public void setOutputVideoFolder(File value) {
@@ -153,6 +196,9 @@ public class Layout {
         node.setNodeValue(value.getAbsolutePath());
         output.getAttributes().setNamedItem(node);
 
+    }
+    public File getOutputVideoFolder(){
+        return new File(output.getAttributes().getNamedItem("outputvideofolder").getNodeValue());
     }
 
     public void reset() {
@@ -162,7 +208,7 @@ public class Layout {
         }
     }
 
-    public void addDesktop(SourceType typeValue, String idValue, int xValue, int yValue, int wValue, int hValue, float alphaValue,int orderValue) {
+    public void addSource(SourceType typeValue, String idValue, int xValue, int yValue, int wValue, int hValue, float alphaValue, int orderValue) {
         String nodeName = "";
         switch (typeValue) {
             case Desktop:
@@ -221,7 +267,7 @@ public class Layout {
         root.appendChild(node);
     }
 
-    public Source[] getDesktops() {
+    private Source[] getDesktops() {
         NodeList nodes = document.getElementsByTagName("desktop");
         Source[] sources = new Source[nodes.getLength()];
         for (int i = 0; i < sources.length; i++) {
@@ -240,7 +286,7 @@ public class Layout {
         return sources;
     }
 
-    public Source[] getWebcams() {
+    private Source[] getWebcams() {
         NodeList nodes = document.getElementsByTagName("webcam");
         Source[] sources = new Source[nodes.getLength()];
         for (int i = 0; i < sources.length; i++) {
@@ -259,7 +305,16 @@ public class Layout {
         return sources;
     }
 
-    public Source[] getImages() {
+    public ArrayList<Source> getSources(){
+        ArrayList<Source> list = new ArrayList<>();
+        list.addAll(Arrays.asList(getImages()));
+        list.addAll(Arrays.asList(getWebcams()));
+        list.addAll(Arrays.asList(getDesktops()));
+        list.addAll(Arrays.asList(getLabels()));
+        list.sort((Source o1, Source o2) -> o1.Order - o2.Order);
+        return list;
+    }
+    private Source[] getImages() {
         NodeList nodes = document.getElementsByTagName("image");
         Source[] sources = new Source[nodes.getLength()];
         for (int i = 0; i < sources.length; i++) {
@@ -278,7 +333,7 @@ public class Layout {
         return sources;
     }
 
-    public Source[] getLabels() {
+    private Source[] getLabels() {
         NodeList nodes = document.getElementsByTagName("label");
         Source[] sources = new Source[nodes.getLength()];
         for (int i = 0; i < sources.length; i++) {
@@ -309,10 +364,10 @@ public class Layout {
         settings = document.getElementsByTagName("settings").item(0);
     }
 
-    public void save(File file) throws FileNotFoundException, IOException {
+    public void save(File file) throws TransformerConfigurationException, TransformerException {
         document.normalizeDocument();
-        try (java.io.FileWriter out = new java.io.FileWriter(file)) {
-            out.write(document.toString());
-        }
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        Result fileOutput = new StreamResult(file);
+        transformer.transform(new DOMSource(document), fileOutput);
     }
 }

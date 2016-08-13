@@ -44,6 +44,8 @@ public abstract class Source implements Runnable {
 
     private boolean mStopMe = false;
 
+    private String mID = "";
+    
     protected SourceType mType = null;
     
     protected abstract void getData(byte[] buffer) throws IOException;
@@ -52,13 +54,18 @@ public abstract class Source implements Runnable {
 
     protected abstract void disposeStream() throws IOException;
 
-    protected Source(Rectangle bounds, int zOrder, float alpha, int delayTime) {
+    
+    protected Source(Rectangle bounds, int zOrder, float alpha, int delayTime,String id) {
         mBounds = bounds;
         mZ = zOrder;
         mAlpha = mAlpha.derive(alpha);
         mDelayTime = delayTime;
+        mID = id;
     }
 
+    public String getID(){
+        return mID;
+    }
     public SourceType getType(){
         return mType;
     }

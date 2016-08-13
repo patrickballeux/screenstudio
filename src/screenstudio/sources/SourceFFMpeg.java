@@ -43,8 +43,8 @@ public class SourceFFMpeg extends Source{
         Stream
     }
     
-    public SourceFFMpeg(Rectangle captureSize,Rectangle outputSize, int fps, String input,SourceType type) {
-        super(outputSize, 1, 1, 0);
+    public SourceFFMpeg(Rectangle captureSize,Rectangle outputSize, int fps, String input,SourceType type,String id) {
+        super(outputSize, 1, 1, 0,id);
         mInput = input;
         mFPS = fps;
         mCaptureSize = captureSize;
@@ -99,16 +99,16 @@ public class SourceFFMpeg extends Source{
     
     public static SourceFFMpeg getDesktopInstance(Screen display,int fps){
         String  input = " -f " + new FFMpeg(null).getDesktopFormat() + " -video_size " + display.getWidth() + "x" + display.getHeight() + " -i " + display.getId();
-        return new SourceFFMpeg(display.getSize(),new Rectangle(display.getSize()),fps,input,SourceType.Desktop);
+        return new SourceFFMpeg(display.getSize(),new Rectangle(display.getSize()),fps,input,SourceType.Desktop,display.getId());
     }
     public static SourceFFMpeg getWebcamInstance(Webcam webcam, int fps){
         String input = " -f " + new FFMpeg(null).getWebcamFormat() + " -i " + webcam.getDevice();
-        return new SourceFFMpeg(webcam.getSize(),new Rectangle(webcam.getSize()),fps,input,SourceType.Webcam);
+        return new SourceFFMpeg(webcam.getSize(),new Rectangle(webcam.getSize()),fps,input,SourceType.Webcam,webcam.getDevice());
     }
     public static SourceFFMpeg getFileInstance(Rectangle bounds,java.io.File file, int fps){
-        return new SourceFFMpeg(bounds,bounds,fps,"-i " + file.getAbsolutePath(),SourceType.Video);
+        return new SourceFFMpeg(bounds,bounds,fps,"-i " + file.getAbsolutePath(),SourceType.Video,file.getAbsolutePath());
     }
     public static SourceFFMpeg getStreamInstance(Rectangle bounds,String url, int fps){
-        return new SourceFFMpeg(bounds,bounds,fps,"-i " + url,SourceType.Stream);
+        return new SourceFFMpeg(bounds,bounds,fps,"-i " + url,SourceType.Stream,url);
     }
 }
