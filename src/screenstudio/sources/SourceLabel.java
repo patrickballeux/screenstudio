@@ -16,6 +16,7 @@
  */
 package screenstudio.sources;
 
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -47,8 +48,9 @@ public class SourceLabel extends Source{
 
     public void setText(String value){
         mLabel.setText(value);
-        mLabel.paint(mImage.createGraphics());
-        
+        Graphics2D g = mImage.createGraphics();
+        g.clearRect(0,0,mImage.getWidth(),mImage.getHeight() );
+        mLabel.paint(g);
     }
     @Override
     protected void getData(byte[] buffer) throws IOException {
@@ -57,7 +59,9 @@ public class SourceLabel extends Source{
 
     @Override
     protected void initStream() throws IOException {
-        mLabel.paint(mImage.createGraphics());
+        Graphics2D g = mImage.createGraphics();
+        g.clearRect(0,0,mImage.getWidth(),mImage.getHeight() );
+        mLabel.paint(g);
     }
 
     @Override
