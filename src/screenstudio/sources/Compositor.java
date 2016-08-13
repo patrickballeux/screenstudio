@@ -46,32 +46,21 @@ public class Compositor implements Runnable {
     @Override
     public void run() {
         mStopMe = false;
-        boolean flip = false;
         mImage = new BufferedImage(mOutputSize.width, mOutputSize.height, BufferedImage.TYPE_3BYTE_BGR);
-        BufferedImage mImage1 = new BufferedImage(mOutputSize.width, mOutputSize.height, BufferedImage.TYPE_3BYTE_BGR);
-        BufferedImage mImage2 = new BufferedImage(mOutputSize.width, mOutputSize.height, BufferedImage.TYPE_3BYTE_BGR);
-        Graphics2D g1 = mImage1.createGraphics();
-        Graphics2D g2 = mImage2.createGraphics();
-        Graphics2D g = g1;
+        
         for (Source s : mSources) {
             new Thread(s).start();
         }
         long frameTime = (1000000000 / mFPS);
         long nextPTS = System.nanoTime() + frameTime;
         while (!mStopMe) {
-            g.clearRect(0, 0, mImage.getWidth(), mImage.getHeight());
+            BufferedImage img = new BufferedImage(mOutputSize.width, mOutputSize.height, BufferedImage.TYPE_3BYTE_BGR);
+            Graphics2D g = img.createGraphics();
             for (Source s : mSources) {
                 g.setComposite(s.getAlpha());
                 g.drawImage(s.getImage(), s.getBounds().x, s.getBounds().y, null);
             }
-            if (flip) {
-                mImage = mImage2;
-                g = g1;
-            } else {
-                mImage = mImage1;
-                g = g2;
-            }
-            flip = !flip;
+            mImage = img;
             while (nextPTS - System.nanoTime() > 0) {
                 long wait = nextPTS - System.nanoTime();
                 if (wait > 0) {
@@ -87,8 +76,7 @@ public class Compositor implements Runnable {
         for (Source s : mSources) {
             s.stop();
         }
-        g.dispose();
-    }
+   }
 
     public int getFPS() {
         return mFPS;

@@ -202,7 +202,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                 while (compositer != null) {
                     repaint();
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(200);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(SourceLayoutPreview.class.getName()).log(Level.SEVERE, null, ex);
                     }
