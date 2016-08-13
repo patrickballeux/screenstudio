@@ -412,15 +412,16 @@ public class FFMpeg implements Runnable {
 
     public static String[] getServerList(FORMATS format) {
         String[] list = new String[0];
-        File folder = new File("RTMP");
-        if (folder.exists()) {
-            File file = new File(folder, format.name() + ".properties");
-            if (file.exists()) {
+        switch (format){
+            case HITBOX:
+            case TWITCH:
+            case VAUGHNLIVE:
+            case YOUTUBE:
                 Properties p = new Properties();
                 InputStream in;
                 try {
                     java.util.ArrayList<String> l = new java.util.ArrayList<>();
-                    in = file.toURI().toURL().openStream();
+                    in = FFMpeg.class.getResourceAsStream("/screenstudio/targets/rtmp/" + format.name() + ".properties");
                     p.load(in);
                     in.close();
                     p.values().stream().forEach((server) -> {
@@ -433,8 +434,8 @@ public class FFMpeg implements Runnable {
                 } catch (IOException ex) {
                     Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
-            }
+                break;
+                
         }
         return list;
     }
