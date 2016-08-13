@@ -18,7 +18,6 @@ package screenstudio.encoder;
 
 import java.awt.image.DataBufferByte;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -71,7 +70,6 @@ public class FFMpeg implements Runnable {
     private File mHome = new File(".");
     private String mThreading = "";
     private String output = "Capture/capture.mp4";
-    private File defaultCaptureFolder = new File(".");
     private boolean mStopMe = false;
     private boolean mDebugMode = false;
 
@@ -96,12 +94,7 @@ public class FFMpeg implements Runnable {
      */
     public FFMpeg(Compositor c) {
         //Creating default folder for capturing videos...
-        defaultCaptureFolder = new File("Capture");
         initDefaults();
-        if (!defaultCaptureFolder.exists()) {
-            defaultCaptureFolder.mkdir();
-        }
-        output = new File(defaultCaptureFolder, "capture.flv").getAbsolutePath();
         compositor = c;
     }
 
@@ -150,31 +143,31 @@ public class FFMpeg implements Runnable {
      * @param server
      * @param key
      */
-    public void setOutputFormat(FORMATS format, Presets p, int videoBitrate, String server, String key) {
+    public void setOutputFormat(FORMATS format, Presets p, int videoBitrate, String server, String key,File outputFolder) {
         switch (format) {
             case FLV:
                 muxer = "flv";
                 videoEncoder = "libx264";
                 audioEncoder = "libmp3lame";
-                output = new File(defaultCaptureFolder, generateRandomName() + ".flv").getAbsolutePath();
+                output = new File(outputFolder, generateRandomName() + ".flv").getAbsolutePath();
                 break;
             case MP4:
                 muxer = "mp4";
                 videoEncoder = "libx264";
                 audioEncoder = "mp3";
-                output = new File(defaultCaptureFolder, generateRandomName() + ".mp4").getAbsolutePath();
+                output = new File(outputFolder, generateRandomName() + ".mp4").getAbsolutePath();
                 break;
             case MOV:
                 muxer = "mov";
                 videoEncoder = "libx264";
                 audioEncoder = "mp3";
-                output = new File(defaultCaptureFolder, generateRandomName() + ".mov").getAbsolutePath();
+                output = new File(outputFolder, generateRandomName() + ".mov").getAbsolutePath();
                 break;
             case TS:
                 muxer = "mpegts";
                 videoEncoder = "mpeg2video";
                 audioEncoder = "mp2";
-                output = new File(defaultCaptureFolder, generateRandomName() + ".ts").getAbsolutePath();
+                output = new File(outputFolder, generateRandomName() + ".ts").getAbsolutePath();
                 break;
             case RTMP:
             case HITBOX:
@@ -276,8 +269,10 @@ public class FFMpeg implements Runnable {
         c.append(" -ab ").append(audioBitrate).append("k").append(" -ar ").append(audioRate);
         c.append(" -vcodec ").append(videoEncoder);
         c.append(" -acodec ").append(audioEncoder);
-        if (preset.length() > 0) {
-            c.append(" -preset ").append(preset);
+        if (videoEncoder.equals("libx264")) {
+            if (preset.length() > 0) {
+                c.append(" -preset ").append(preset);
+            }
         }
         String buffer = " -g " + (compositor.getFPS() * 2);
         c.append(buffer).append(" -f ").append(muxer).append(" ");
@@ -331,7 +326,6 @@ public class FFMpeg implements Runnable {
                     if (!mHome.exists()) {
                         mHome.mkdirs();
                     }
-                    defaultCaptureFolder = new File(mHome, "Capture");
                     mThreading = p.getProperty("THREADING", mThreading);
 
                 } catch (MalformedURLException ex) {
@@ -352,7 +346,7 @@ public class FFMpeg implements Runnable {
         try {
             String command = getCommand();
             Process p = Runtime.getRuntime().exec(command);
-            
+
             long frameTime = (1000000000 / compositor.getFPS());
             long nextPTS = System.nanoTime() + frameTime;
             OutputStream out = p.getOutputStream();//new FileOutputStream(fifo);
@@ -412,7 +406,7 @@ public class FFMpeg implements Runnable {
 
     public static String[] getServerList(FORMATS format) {
         String[] list = new String[0];
-        switch (format){
+        switch (format) {
             case HITBOX:
             case TWITCH:
             case VAUGHNLIVE:
@@ -435,7 +429,7 @@ public class FFMpeg implements Runnable {
                     Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 break;
-                
+
         }
         return list;
     }

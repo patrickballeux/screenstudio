@@ -25,6 +25,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
@@ -45,6 +47,7 @@ public class MainVersion3 extends javax.swing.JFrame {
 
     private final SourceLayoutPreview mLayoutPreview;
     private FFMpeg mFFMpeg = null;
+    private File mVideoOutputFolder = new File("");
 
     /**
      * Creates new form MainVersion3
@@ -88,6 +91,33 @@ public class MainVersion3 extends javax.swing.JFrame {
         int defaultHeight = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getHeight();
         spinWidth.setValue(defaultWidth);
         spinHeight.setValue(defaultHeight);
+        lblVideoFolder.setText(mVideoOutputFolder.getAbsolutePath());
+        lblVideoFolder.setToolTipText(mVideoOutputFolder.getAbsolutePath());
+    }
+
+    private void updateControls(boolean enabled) {
+
+        cboTarget.setEnabled(enabled);
+        cboVideoPresets.setEnabled(enabled);
+        cboAudioBitrate.setEnabled(enabled);
+        cboRTMPServers.setEnabled(enabled);
+        txtRTMPKey.setEnabled(enabled);
+        cboAudioMicrophones.setEnabled(enabled);
+        cboAudioSystems.setEnabled(enabled);
+        cboAudioMicrophones.setEnabled(enabled);
+        cboAudioSystems.setEnabled(enabled);
+        txtRTMPKey.setEnabled(enabled);
+        cboRTMPServers.setEnabled(enabled);
+        chkShortcutsControl.setEnabled(enabled);
+        chkShortcutsShift.setEnabled(enabled);
+        choShortcutsAlt.setEnabled(enabled);
+        spinWidth.setEnabled(enabled);
+        spinHeight.setEnabled(enabled);
+        numVideoBitrate.setEnabled(enabled);
+        spinFPS.setEnabled(enabled);
+        btnSetVideoFolder.setEnabled(enabled);
+        mnuFileLoad.setEnabled(enabled);
+        mnuFileSave.setEnabled(enabled);
     }
 
     private void loadLayout() {
@@ -114,7 +144,9 @@ public class MainVersion3 extends javax.swing.JFrame {
             txtRTMPKey.setText(layout.getOutputRTMPKey());
             cboRTMPServers.setSelectedItem(layout.getOutputRTMPServer());
             cboTarget.setSelectedItem(layout.getOutputTarget());
-            // layout.getOutputFolder();
+            mVideoOutputFolder = layout.getOutputVideoFolder();
+            lblVideoFolder.setText(mVideoOutputFolder.getAbsolutePath());
+            lblVideoFolder.setToolTipText(mVideoOutputFolder.getAbsolutePath());
             spinWidth.setValue(layout.getOutputWidth());
             String shortcut = layout.getShortcutCapture();
             chkShortcutsControl.setSelected(shortcut.contains("ctrl"));
@@ -204,7 +236,7 @@ public class MainVersion3 extends javax.swing.JFrame {
             layout.setOutputRTMPServer("");
         }
         layout.setOutputTarget(cboTarget.getItemAt(cboTarget.getSelectedIndex()));
-        layout.setOutputVideoFolder(new File(""));
+        layout.setOutputVideoFolder(mVideoOutputFolder);
         layout.setOutputWith((Integer) spinWidth.getValue());
         String shortcut = "";
         if (chkShortcutsControl.isSelected()) {
@@ -269,7 +301,7 @@ public class MainVersion3 extends javax.swing.JFrame {
             model.removeRow(0);
         }
         try {
-            
+
             for (Webcam w : Webcam.getSources()) {
                 Object[] row = new Object[model.getColumnCount()];
                 row[0] = false;
@@ -310,6 +342,7 @@ public class MainVersion3 extends javax.swing.JFrame {
     private void initComponents() {
 
         popSources = new javax.swing.JPopupMenu();
+        popSourcesAddImage = new javax.swing.JMenuItem();
         popSourcesMoveUp = new javax.swing.JMenuItem();
         popSourcesMoveDown = new javax.swing.JMenuItem();
         tabs = new javax.swing.JTabbedPane();
@@ -328,7 +361,6 @@ public class MainVersion3 extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         lblRTMPServer = new javax.swing.JLabel();
         lblRTMPKey = new javax.swing.JLabel();
-        btnOutputSettingsDefault = new javax.swing.JButton();
         numVideoBitrate = new javax.swing.JSpinner();
         cboVideoPresets = new javax.swing.JComboBox<>();
         cboAudioBitrate = new javax.swing.JComboBox<>();
@@ -351,6 +383,9 @@ public class MainVersion3 extends javax.swing.JFrame {
         choShortcutsAlt = new javax.swing.JCheckBox();
         chkShortcutsShift = new javax.swing.JCheckBox();
         cboShortcutsKeys = new javax.swing.JComboBox<>();
+        panSettingsVideos = new javax.swing.JPanel();
+        lblVideoFolder = new javax.swing.JLabel();
+        btnSetVideoFolder = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
         mnuFile = new javax.swing.JMenu();
         mnuCapture = new javax.swing.JMenuItem();
@@ -358,6 +393,14 @@ public class MainVersion3 extends javax.swing.JFrame {
         mnuFileLoad = new javax.swing.JMenuItem();
         mnuFileSave = new javax.swing.JMenuItem();
         mnuEdit = new javax.swing.JMenu();
+
+        popSourcesAddImage.setText("Add Image...");
+        popSourcesAddImage.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                popSourcesAddImageActionPerformed(evt);
+            }
+        });
+        popSources.add(popSourcesAddImage);
 
         popSourcesMoveUp.setText("Move Up");
         popSourcesMoveUp.addActionListener(new java.awt.event.ActionListener() {
@@ -420,8 +463,6 @@ public class MainVersion3 extends javax.swing.JFrame {
 
         lblRTMPKey.setText("RTMP Secret Key");
 
-        btnOutputSettingsDefault.setText("Use Default");
-
         numVideoBitrate.setModel(new javax.swing.SpinnerNumberModel(1000, 300, 9000, 100));
 
         javax.swing.GroupLayout panTargetSettingsLayout = new javax.swing.GroupLayout(panTargetSettings);
@@ -431,9 +472,6 @@ public class MainVersion3 extends javax.swing.JFrame {
             .addGroup(panTargetSettingsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panTargetSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panTargetSettingsLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnOutputSettingsDefault))
                     .addGroup(panTargetSettingsLayout.createSequentialGroup()
                         .addGroup(panTargetSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE)
@@ -454,7 +492,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                         .addComponent(lblRTMPKey, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtRTMPKey, javax.swing.GroupLayout.PREFERRED_SIZE, 435, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panTargetSettingsLayout.setVerticalGroup(
             panTargetSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -479,9 +517,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                 .addGroup(panTargetSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblRTMPKey)
                     .addComponent(txtRTMPKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 63, Short.MAX_VALUE)
-                .addComponent(btnOutputSettingsDefault)
-                .addContainerGap())
+                .addContainerGap(13, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout panOutputLayout = new javax.swing.GroupLayout(panOutput);
@@ -536,7 +572,7 @@ public class MainVersion3 extends javax.swing.JFrame {
 
         panSources.setLayout(new java.awt.BorderLayout());
 
-        jSplitPane1.setDividerLocation(200);
+        jSplitPane1.setDividerLocation(100);
         jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
         panPreviewLayout.setBorder(javax.swing.BorderFactory.createTitledBorder("Layout"));
@@ -699,6 +735,39 @@ public class MainVersion3 extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        panSettingsVideos.setBorder(javax.swing.BorderFactory.createTitledBorder("Video Folders"));
+
+        lblVideoFolder.setText(" ");
+
+        btnSetVideoFolder.setText("Browse");
+        btnSetVideoFolder.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSetVideoFolderActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout panSettingsVideosLayout = new javax.swing.GroupLayout(panSettingsVideos);
+        panSettingsVideos.setLayout(panSettingsVideosLayout);
+        panSettingsVideosLayout.setHorizontalGroup(
+            panSettingsVideosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panSettingsVideosLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panSettingsVideosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panSettingsVideosLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnSetVideoFolder))
+                    .addComponent(lblVideoFolder, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        panSettingsVideosLayout.setVerticalGroup(
+            panSettingsVideosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panSettingsVideosLayout.createSequentialGroup()
+                .addComponent(lblVideoFolder)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnSetVideoFolder)
+                .addContainerGap())
+        );
+
         javax.swing.GroupLayout panOptionsLayout = new javax.swing.GroupLayout(panOptions);
         panOptions.setLayout(panOptionsLayout);
         panOptionsLayout.setHorizontalGroup(
@@ -707,7 +776,8 @@ public class MainVersion3 extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(panOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panSettingsShortCuts, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(panSettingsShortCuts, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(panSettingsVideos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         panOptionsLayout.setVerticalGroup(
@@ -717,7 +787,9 @@ public class MainVersion3 extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panSettingsShortCuts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(199, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(panSettingsVideos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(20, Short.MAX_VALUE))
         );
 
         tabs.addTab("Options", panOptions);
@@ -772,7 +844,7 @@ public class MainVersion3 extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(tabs, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
+                .addComponent(tabs, javax.swing.GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -842,6 +914,7 @@ public class MainVersion3 extends javax.swing.JFrame {
             mFFMpeg.stop();
             mFFMpeg = null;
             mnuCapture.setText("Record");
+            updateControls(true);
         } else {
             List<Source> sources = Compositor.getSources(tableSources, (Integer) spinFPS.getValue());
             Compositor compositor = new Compositor(sources, new Rectangle(0, 0, (Integer) spinWidth.getValue(), (Integer) spinHeight.getValue()), (Integer) spinFPS.getValue());
@@ -849,10 +922,10 @@ public class MainVersion3 extends javax.swing.JFrame {
             Microphone m = (Microphone) cboAudioMicrophones.getSelectedItem();
             mFFMpeg.setAudio((FFMpeg.AudioRate) cboAudioBitrate.getSelectedItem(), m.getDevice());
             mFFMpeg.setPreset((FFMpeg.Presets) cboVideoPresets.getSelectedItem());
-            mFFMpeg.setOutputFormat((FFMpeg.FORMATS) cboTarget.getSelectedItem(), (FFMpeg.Presets) cboVideoPresets.getSelectedItem(), (Integer) numVideoBitrate.getValue(), "", txtRTMPKey.getText());
+            mFFMpeg.setOutputFormat((FFMpeg.FORMATS) cboTarget.getSelectedItem(), (FFMpeg.Presets) cboVideoPresets.getSelectedItem(), (Integer) numVideoBitrate.getValue(), "", txtRTMPKey.getText(), mVideoOutputFolder);
             new Thread(mFFMpeg).start();
             mnuCapture.setText("Stop");
-
+            updateControls(false);
         }
 
     }//GEN-LAST:event_mnuCaptureActionPerformed
@@ -864,6 +937,52 @@ public class MainVersion3 extends javax.swing.JFrame {
     private void mnuFileLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFileLoadActionPerformed
         loadLayout();
     }//GEN-LAST:event_mnuFileLoadActionPerformed
+
+    private void btnSetVideoFolderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSetVideoFolderActionPerformed
+        JFileChooser chooser = new JFileChooser(mVideoOutputFolder);
+        chooser.setAcceptAllFileFilterUsed(false);
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.showOpenDialog(this);
+        if (chooser.getSelectedFile() != null) {
+            mVideoOutputFolder = chooser.getSelectedFile();
+            lblVideoFolder.setText(mVideoOutputFolder.getAbsolutePath());
+            lblVideoFolder.setToolTipText(mVideoOutputFolder.getAbsolutePath());
+        }
+    }//GEN-LAST:event_btnSetVideoFolderActionPerformed
+
+    private void popSourcesAddImageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popSourcesAddImageActionPerformed
+        JFileChooser chooser = new JFileChooser(mVideoOutputFolder);
+        chooser.setAcceptAllFileFilterUsed(false);
+        chooser.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                return f.isDirectory() || f.getName().toUpperCase().endsWith(".PNG") || f.getName().toUpperCase().endsWith(".JPG") || f.getName().toUpperCase().endsWith(".GIF") || f.getName().toUpperCase().endsWith(".BMP");
+            }
+
+            @Override
+            public String getDescription() {
+                return "Image Files";
+            }
+        });
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.showOpenDialog(this);
+        if (chooser.getSelectedFile() != null) {
+            File image = chooser.getSelectedFile();
+            //add new source...
+            DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
+            Object[] row = new Object[model.getColumnCount()];
+            row[0] = true;
+            row[1] = SourceType.Image;
+            row[2] = image;
+            row[3] = 0;
+            row[4] = 0;
+            row[5] = 200;
+            row[6] = 200;
+            row[7] = 1.0f;
+            model.addRow(row);
+        }
+
+    }//GEN-LAST:event_popSourcesAddImageActionPerformed
 
     /**
      * @param args the command line arguments
@@ -901,7 +1020,7 @@ public class MainVersion3 extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnOutputSettingsDefault;
+    private javax.swing.JButton btnSetVideoFolder;
     private javax.swing.JComboBox<FFMpeg.AudioRate> cboAudioBitrate;
     private javax.swing.JComboBox<Microphone> cboAudioMicrophones;
     private javax.swing.JComboBox<Microphone> cboAudioSystems;
@@ -927,6 +1046,7 @@ public class MainVersion3 extends javax.swing.JFrame {
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JLabel lblRTMPKey;
     private javax.swing.JLabel lblRTMPServer;
+    private javax.swing.JLabel lblVideoFolder;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem mnuCapture;
     private javax.swing.JMenu mnuEdit;
@@ -938,9 +1058,11 @@ public class MainVersion3 extends javax.swing.JFrame {
     private javax.swing.JPanel panOutput;
     private javax.swing.JPanel panPreviewLayout;
     private javax.swing.JPanel panSettingsShortCuts;
+    private javax.swing.JPanel panSettingsVideos;
     private javax.swing.JPanel panSources;
     private javax.swing.JPanel panTargetSettings;
     private javax.swing.JPopupMenu popSources;
+    private javax.swing.JMenuItem popSourcesAddImage;
     private javax.swing.JMenuItem popSourcesMoveDown;
     private javax.swing.JMenuItem popSourcesMoveUp;
     private javax.swing.JScrollPane scrollSources;
