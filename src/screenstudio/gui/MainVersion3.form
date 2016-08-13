@@ -16,6 +16,24 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="popSourcesAddImageActionPerformed"/>
           </Events>
         </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="popSourcesAddWebcam">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Add Webcam..."/>
+          </Properties>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="popSourcesAddLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Add Label..."/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="popSourcesAddLabelActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="popSourcesAddDesktop">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Add Desktop..."/>
+          </Properties>
+        </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="popSourcesMoveUp">
           <Properties>
             <Property name="text" type="java.lang.String" value="Move Up"/>

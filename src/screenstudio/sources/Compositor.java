@@ -21,8 +21,6 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JTable;
 import screenstudio.targets.Layout;
 
@@ -153,6 +151,8 @@ public class Compositor implements Runnable {
                         case LabelFile:
                             break;
                     }
+                } else if (source instanceof String) {
+                    list.add(new SourceLabel(new Rectangle(sx, sy, sw, sh), i, alpha, source.toString()));
                 }
             }
         }

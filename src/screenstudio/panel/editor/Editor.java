@@ -27,15 +27,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 
 /**
  *
  * @author patrick
  */
-public class Editor extends javax.swing.JFrame {
+public class Editor extends javax.swing.JDialog {
 
     String mUserContent = "";
     File currentFile = null;
+    String returnContent = "";
     boolean isModified = false;
 
     /**
@@ -67,6 +69,32 @@ public class Editor extends javax.swing.JFrame {
         setSize(700, 500);
     }
 
+    public Editor(String content,JFrame owner) {
+        super(owner);
+        initComponents();
+        currentFile = null;
+        returnContent= content;
+        try {
+            this.setIconImage(new ImageIcon(this.getClass().getResource("icon.png").toURI().toURL()).getImage());
+        } catch (URISyntaxException | MalformedURLException ex) {
+            Logger.getLogger(Editor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        mUserContent = "";
+        txtEditor.setText(content);
+        txtEditor.setText(capitalizeKeyworkds(txtEditor.getText()));
+        try {
+            lblPreview.setText(replaceTags(txtEditor.getText()));
+        } catch (RuntimeException ex) {
+            //do nothing...
+        }
+        lblPreview.setPreferredSize(new Dimension(200 + (lblPreview.getBorder().getBorderInsets(lblPreview).right * 2), 300));
+        setSize(600, 300);
+    }
+
+    public String getText() {
+        return txtEditor.getText();
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -95,6 +123,7 @@ public class Editor extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Screen Studio Panel Editor");
+        setModal(true);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -223,7 +252,7 @@ public class Editor extends javax.swing.JFrame {
             text = new String(data).trim();
         } catch (IOException ex) {
             Logger.getLogger(Editor.class.getName()).log(Level.SEVERE, null, ex);
-        }        
+        }
         return text;
     }
 
@@ -238,9 +267,6 @@ public class Editor extends javax.swing.JFrame {
         retValue = retValue.replaceAll("@RECORDINGTIME", "17 min");
         retValue = retValue.replaceAll("@STARTTIME", formatTime.format(new Date(System.currentTimeMillis() - 600000)));
         retValue = retValue.replaceAll("@REMAININGTIME", "23 min");
-        String parentPath = "file://" +currentFile.getParentFile().getAbsolutePath() + "";
-        parentPath = parentPath.replaceAll("\\.\\/","");
-        retValue = retValue.replaceAll("\\.\\/",parentPath + "/");
         return retValue;
     }
     private void mnuFileOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFileOpenActionPerformed
@@ -306,6 +332,7 @@ public class Editor extends javax.swing.JFrame {
 
     private void mnuFileExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFileExitActionPerformed
         //Add validation if content was not saved...
+        returnContent = txtEditor.getText();
         this.dispose();
     }//GEN-LAST:event_mnuFileExitActionPerformed
 
@@ -336,9 +363,9 @@ public class Editor extends javax.swing.JFrame {
     }//GEN-LAST:event_txtEditorKeyReleased
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        if (isModified) {
+        if (this.currentFile != null && isModified) {
             // warn saving...
-            EditorWarning confirm = new EditorWarning(this, true);
+            EditorWarning confirm = new EditorWarning(null, true);
             confirm.setLocationRelativeTo(this);
             confirm.setVisible(true);
             if (confirm.getReturnStatus() == EditorWarning.RET_OK) {
@@ -395,7 +422,7 @@ public class Editor extends javax.swing.JFrame {
         lblPreview.setPreferredSize(new Dimension(500, 200));
         this.add(lblPreview, BorderLayout.SOUTH);
         this.doLayout();
-         this.revalidate();
+        this.revalidate();
     }//GEN-LAST:event_mnuViewBannerActionPerformed
 
     private final static String[] TAGS = {

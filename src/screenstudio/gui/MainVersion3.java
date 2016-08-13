@@ -26,11 +26,13 @@ import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import screenstudio.encoder.FFMpeg;
+import screenstudio.panel.editor.Editor;
 import screenstudio.sources.Compositor;
 import screenstudio.sources.Microphone;
 import screenstudio.sources.Screen;
@@ -343,6 +345,9 @@ public class MainVersion3 extends javax.swing.JFrame {
 
         popSources = new javax.swing.JPopupMenu();
         popSourcesAddImage = new javax.swing.JMenuItem();
+        popSourcesAddWebcam = new javax.swing.JMenuItem();
+        popSourcesAddLabel = new javax.swing.JMenuItem();
+        popSourcesAddDesktop = new javax.swing.JMenuItem();
         popSourcesMoveUp = new javax.swing.JMenuItem();
         popSourcesMoveDown = new javax.swing.JMenuItem();
         tabs = new javax.swing.JTabbedPane();
@@ -401,6 +406,20 @@ public class MainVersion3 extends javax.swing.JFrame {
             }
         });
         popSources.add(popSourcesAddImage);
+
+        popSourcesAddWebcam.setText("Add Webcam...");
+        popSources.add(popSourcesAddWebcam);
+
+        popSourcesAddLabel.setText("Add Label...");
+        popSourcesAddLabel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                popSourcesAddLabelActionPerformed(evt);
+            }
+        });
+        popSources.add(popSourcesAddLabel);
+
+        popSourcesAddDesktop.setText("Add Desktop...");
+        popSources.add(popSourcesAddDesktop);
 
         popSourcesMoveUp.setText("Move Up");
         popSourcesMoveUp.addActionListener(new java.awt.event.ActionListener() {
@@ -890,6 +909,16 @@ public class MainVersion3 extends javax.swing.JFrame {
     }//GEN-LAST:event_tableSourcesKeyPressed
 
     private void tableSourcesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableSourcesMouseClicked
+        if (evt.getClickCount() == 2){
+            int rowIndex = tableSources.getSelectedRow();
+            if (tableSources.getValueAt(rowIndex, 1) == SourceType.LabelText){
+                Editor ed = new Editor(tableSources.getValueAt(rowIndex, 2).toString(),this);
+                ed.setModal(true);
+                ed.setVisible(true);
+                tableSources.setValueAt(ed.getText(),rowIndex,2);
+                tableSources.repaint();
+            }
+        }
         mLayoutPreview.repaint();
     }//GEN-LAST:event_tableSourcesMouseClicked
 
@@ -984,6 +1013,20 @@ public class MainVersion3 extends javax.swing.JFrame {
 
     }//GEN-LAST:event_popSourcesAddImageActionPerformed
 
+    private void popSourcesAddLabelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popSourcesAddLabelActionPerformed
+        DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
+        Object[] row = new Object[model.getColumnCount()];
+        row[0] = true;
+        row[1] = SourceType.LabelText;
+        row[2] = "<HTML><BODY>New Label...</BODY><HTML>";
+        row[3] = 0;
+        row[4] = 0;
+        row[5] = 300;
+        row[6] = 100;
+        row[7] = 1.0f;
+        model.addRow(row);        
+    }//GEN-LAST:event_popSourcesAddLabelActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1062,7 +1105,10 @@ public class MainVersion3 extends javax.swing.JFrame {
     private javax.swing.JPanel panSources;
     private javax.swing.JPanel panTargetSettings;
     private javax.swing.JPopupMenu popSources;
+    private javax.swing.JMenuItem popSourcesAddDesktop;
     private javax.swing.JMenuItem popSourcesAddImage;
+    private javax.swing.JMenuItem popSourcesAddLabel;
+    private javax.swing.JMenuItem popSourcesAddWebcam;
     private javax.swing.JMenuItem popSourcesMoveDown;
     private javax.swing.JMenuItem popSourcesMoveUp;
     private javax.swing.JScrollPane scrollSources;

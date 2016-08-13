@@ -130,7 +130,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                                 g.drawRect(sx, sy, sw, sh);
                             }
                             g.setColor(Color.white);
-                            g.drawString(mSources.getValueAt(i, 2).toString(), sx + 5, sy + 15);
+                            g.drawString(stripHTML(mSources.getValueAt(i, 2).toString()), sx + 5, sy + 15);
                         }
                     }
                 }
@@ -141,6 +141,13 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
         }
     }
 
+    private String stripHTML(String text){
+        String retValue = text.replaceAll("\\<[^>]*>","");
+        if (retValue.length() > 30){
+            retValue = retValue.substring(0,30);
+        }
+        return retValue;
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
