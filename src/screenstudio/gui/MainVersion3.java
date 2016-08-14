@@ -219,6 +219,7 @@ public class MainVersion3 extends javax.swing.JFrame {
             Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        panPreviewLayout.repaint();
     }
 
     private void saveLayout() {
