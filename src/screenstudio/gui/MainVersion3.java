@@ -627,10 +627,11 @@ public class MainVersion3 extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tableSources.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
+        tableSources.setColumnSelectionAllowed(true);
         tableSources.setComponentPopupMenu(popSources);
-        tableSources.setOpaque(false);
+        tableSources.setFillsViewportHeight(true);
         tableSources.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        tableSources.setSurrendersFocusOnKeystroke(true);
         tableSources.getTableHeader().setResizingAllowed(false);
         tableSources.getTableHeader().setReorderingAllowed(false);
         tableSources.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -651,23 +652,30 @@ public class MainVersion3 extends javax.swing.JFrame {
         scrollSources.setViewportView(tableSources);
         tableSources.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         if (tableSources.getColumnModel().getColumnCount() > 0) {
-            tableSources.getColumnModel().getColumn(0).setResizable(false);
+            tableSources.getColumnModel().getColumn(0).setMinWidth(25);
             tableSources.getColumnModel().getColumn(0).setPreferredWidth(25);
-            tableSources.getColumnModel().getColumn(1).setResizable(false);
+            tableSources.getColumnModel().getColumn(0).setMaxWidth(25);
+            tableSources.getColumnModel().getColumn(1).setMinWidth(100);
             tableSources.getColumnModel().getColumn(1).setPreferredWidth(100);
+            tableSources.getColumnModel().getColumn(1).setMaxWidth(100);
             tableSources.getColumnModel().getColumn(2).setMinWidth(150);
             tableSources.getColumnModel().getColumn(2).setPreferredWidth(150);
             tableSources.getColumnModel().getColumn(2).setMaxWidth(2000);
-            tableSources.getColumnModel().getColumn(3).setResizable(false);
-            tableSources.getColumnModel().getColumn(3).setPreferredWidth(100);
-            tableSources.getColumnModel().getColumn(4).setResizable(false);
-            tableSources.getColumnModel().getColumn(4).setPreferredWidth(100);
-            tableSources.getColumnModel().getColumn(5).setResizable(false);
-            tableSources.getColumnModel().getColumn(5).setPreferredWidth(100);
-            tableSources.getColumnModel().getColumn(6).setResizable(false);
-            tableSources.getColumnModel().getColumn(6).setPreferredWidth(100);
-            tableSources.getColumnModel().getColumn(7).setResizable(false);
-            tableSources.getColumnModel().getColumn(7).setPreferredWidth(100);
+            tableSources.getColumnModel().getColumn(3).setMinWidth(50);
+            tableSources.getColumnModel().getColumn(3).setPreferredWidth(50);
+            tableSources.getColumnModel().getColumn(3).setMaxWidth(50);
+            tableSources.getColumnModel().getColumn(4).setMinWidth(50);
+            tableSources.getColumnModel().getColumn(4).setPreferredWidth(50);
+            tableSources.getColumnModel().getColumn(4).setMaxWidth(50);
+            tableSources.getColumnModel().getColumn(5).setMinWidth(50);
+            tableSources.getColumnModel().getColumn(5).setPreferredWidth(50);
+            tableSources.getColumnModel().getColumn(5).setMaxWidth(50);
+            tableSources.getColumnModel().getColumn(6).setMinWidth(50);
+            tableSources.getColumnModel().getColumn(6).setPreferredWidth(50);
+            tableSources.getColumnModel().getColumn(6).setMaxWidth(50);
+            tableSources.getColumnModel().getColumn(7).setMinWidth(50);
+            tableSources.getColumnModel().getColumn(7).setPreferredWidth(50);
+            tableSources.getColumnModel().getColumn(7).setMaxWidth(50);
         }
 
         jSplitPane1.setLeftComponent(scrollSources);
@@ -738,7 +746,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                 .addComponent(chkShortcutsShift)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(cboShortcutsKeys, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(242, Short.MAX_VALUE))
+                .addContainerGap(347, Short.MAX_VALUE))
         );
         panSettingsShortCutsLayout.setVerticalGroup(
             panSettingsShortCutsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
