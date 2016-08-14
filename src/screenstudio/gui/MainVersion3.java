@@ -590,7 +590,7 @@ public class MainVersion3 extends javax.swing.JFrame {
 
         panSources.setLayout(new java.awt.BorderLayout());
 
-        jSplitPane1.setDividerLocation(100);
+        jSplitPane1.setDividerLocation(150);
         jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
         panPreviewLayout.setBorder(javax.swing.BorderFactory.createTitledBorder("Layout"));
@@ -626,7 +626,6 @@ public class MainVersion3 extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        tableSources.setColumnSelectionAllowed(true);
         tableSources.setComponentPopupMenu(popSources);
         tableSources.setOpaque(false);
         tableSources.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);

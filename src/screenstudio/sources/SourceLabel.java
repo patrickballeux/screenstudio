@@ -16,7 +16,7 @@
  */
 package screenstudio.sources;
 
-import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -39,6 +39,7 @@ public class SourceLabel extends Source{
         mLabel.setText(text);
         mLabel.setHorizontalAlignment(JLabel.LEFT);
         mLabel.setVerticalAlignment(JLabel.TOP);
+        mLabel.setFont(new Font(mLabel.getFont().getName(),mLabel.getFont().getStyle(),bounds.height-20));
         this.mType = Layout.SourceType.LabelText;
         this.mImageType = BufferedImage.TYPE_4BYTE_ABGR;
         mImage = new BufferedImage(bounds.width, bounds.height, mImageType);

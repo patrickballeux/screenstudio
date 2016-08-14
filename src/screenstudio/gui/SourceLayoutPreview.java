@@ -17,6 +17,7 @@
 package screenstudio.gui;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
@@ -97,6 +98,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                 if (mSources != null) {
                     for (int i = mSources.getRowCount() - 1; i >= 0; i--) {
                         if ((Boolean) mSources.getValueAt(i, 0)) {
+                            g.setFont(getFont());
                             int sx = (int) mSources.getValueAt(i, 3);
                             int sy = (int) mSources.getValueAt(i, 4);
                             int sw = (int) mSources.getValueAt(i, 5);
@@ -121,6 +123,10 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                                 case Image:
                                     g.setColor(Color.ORANGE);
                                     break;
+                                case LabelText:
+                                    g.setColor(Color.darkGray);
+                                    g.setFont(new Font(g.getFont().getFontName(),g.getFont().getStyle(),sh - 10));
+                                    break;
                                 default:
                                     g.setColor(Color.gray);
                                     break;
@@ -131,13 +137,13 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                                 g.drawRect(sx, sy, sw, sh);
                             }
                             g.setColor(Color.white);
-                            g.drawString(stripHTML(mSources.getValueAt(i, 2).toString()), sx + 5, sy + 15);
+                            g.drawString(stripHTML(mSources.getValueAt(i, 2).toString()), sx + 5, sy + sh - 10);
                         }
                     }
                 }
                 //draw output format that will be used...
                 g.setColor(Color.WHITE);
-                g.drawString("Output : " + outputSize.width + "X" + outputSize.height, x + 5, y + h - 10);
+                g.drawString("Output : " + outputSize.width + "X" + outputSize.height, x + 5, y + 20);
             }
         }
     }
