@@ -141,6 +141,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                         }
                     }
                 }
+                g.setFont(getFont());
                 //draw output format that will be used...
                 g.setColor(Color.WHITE);
                 g.drawString("Output : " + outputSize.width + "X" + outputSize.height, x + 5, y + 20);
@@ -151,7 +152,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
     private String stripHTML(String text) {
         String retValue = text.replaceAll("\\<[^>]*>", "");
         if (retValue.length() > 30) {
-            retValue = retValue.substring(0, 30);
+            retValue = "..." + retValue.substring(retValue.length()-31, retValue.length()-1);
         }
         return retValue;
     }

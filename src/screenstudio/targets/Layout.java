@@ -249,8 +249,6 @@ public class Layout {
                 break;
             case LabelText:
                 type.setNodeValue("text");
-                id.setNodeValue("text");
-                node.setNodeValue(idValue);
                 break;
             default:
                 type.setNodeValue("");
@@ -347,7 +345,6 @@ public class Layout {
             s.ID = n.getAttributes().getNamedItem("id").getNodeValue();
             if (n.getAttributes().getNamedItem("type").getNodeValue().equalsIgnoreCase("text")) {
                 s.Type = SourceType.LabelText;
-                s.ID = n.getTextContent();
             }
             s.Alpha = new Float(n.getAttributes().getNamedItem("alpha").getNodeValue());
             s.Order = new Integer(n.getAttributes().getNamedItem("order").getNodeValue());
