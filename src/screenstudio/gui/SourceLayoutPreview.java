@@ -19,6 +19,7 @@ package screenstudio.gui;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -110,7 +111,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                             if (sy + sh > y + h) {
                                 sh = y + h - sy;
                             }
-                            switch ((SourceType)mSources.getValueAt(i, 1)) {
+                            switch ((SourceType) mSources.getValueAt(i, 1)) {
                                 case Desktop:
                                     g.setColor(Color.red);
                                     break;
@@ -141,10 +142,10 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
         }
     }
 
-    private String stripHTML(String text){
-        String retValue = text.replaceAll("\\<[^>]*>","");
-        if (retValue.length() > 30){
-            retValue = retValue.substring(0,30);
+    private String stripHTML(String text) {
+        String retValue = text.replaceAll("\\<[^>]*>", "");
+        if (retValue.length() > 30) {
+            retValue = retValue.substring(0, 30);
         }
         return retValue;
     }
@@ -179,6 +180,11 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
         popPreview.add(popStopPreview);
 
         setComponentPopupMenu(popPreview);
+        addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                formMouseDragged(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -193,7 +199,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void popStartPreviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popStartPreviewActionPerformed
-        List<Source> list = getSources(mSources,mFPS);
+        List<Source> list = getSources(mSources, mFPS);
         compositer = new Compositor(list, outputSize, 10);
         new Thread(compositer).start();
         new Thread(new Runnable() {
@@ -218,6 +224,44 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
         repaint();
     }//GEN-LAST:event_popStopPreviewActionPerformed
 
+    private void formMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseDragged
+        if (mSources.getSelectedRow() != -1) {
+            int rowIndex = mSources.getSelectedRow();
+            //int currentX = (Integer) mSources.getValueAt(rowIndex, 3);
+            //int currentY = (Integer) mSources.getValueAt(rowIndex, 4);
+            Point pos = getTranslatedPosition(evt.getX(), evt.getY());
+            mSources.setValueAt(pos.x,rowIndex,3);
+            mSources.setValueAt(pos.y,rowIndex,4);
+            //System.out.println("Dragging " + mSources.getValueAt(rowIndex, 2).toString());
+            mSources.repaint();
+            repaint();
+        }
+    }//GEN-LAST:event_formMouseDragged
+
+    private Point getTranslatedPosition(int mouseX, int mouseY) {
+        int w = outputSize.width;
+        int h = outputSize.height;
+        int newX = 0;
+        int newY = 0;
+                
+        double ratio = outputSize.getWidth() / outputSize.getHeight();
+        if (h > getHeight() - 1) {
+            h = getHeight() - 1;
+            w = (int) (h * ratio);
+        }
+        if (w > getWidth()) {
+            w = getWidth();
+            h = (int) (w / ratio) - 1;
+        }
+        int x = (getWidth() - w) / 2;
+        int y = 0;
+        // inside the area...
+        if (mouseX > x && mouseY > y && mouseX < x+w && mouseY < y+h){
+            newX = (int)((mouseX - x) * (outputSize.getWidth()/(double)w ));
+            newY = (int)((mouseY - y) * (outputSize.getHeight()/(double)h ));
+        }
+        return new Point(newX-10,newY-10);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPopupMenu popPreview;
