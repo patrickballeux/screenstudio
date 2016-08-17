@@ -18,6 +18,8 @@ package screenstudio.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -26,6 +28,7 @@ import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.xml.parsers.ParserConfigurationException;
@@ -57,7 +60,6 @@ public class MainVersion3 extends javax.swing.JFrame {
         initComponents();
         this.setIconImage(new ImageIcon(MainVersion3.class.getResource("/screenstudio/gui/images/icon.png")).getImage());
         initControls();
-        fillSourceTable(null);
         mLayoutPreview = new SourceLayoutPreview(tableSources);
         mLayoutPreview.setOutputWidth((Integer) spinWidth.getValue());
         mLayoutPreview.setOutputHeight((Integer) spinHeight.getValue());
@@ -66,6 +68,10 @@ public class MainVersion3 extends javax.swing.JFrame {
     }
 
     private void initControls() {
+        DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
+        while (model.getRowCount() > 0) {
+            model.removeRow(0);
+        }
         cboTarget.setModel(new DefaultComboBoxModel<>(FFMpeg.FORMATS.values()));
         cboTarget.setSelectedIndex(0);
         cboVideoPresets.setModel(new DefaultComboBoxModel<>(FFMpeg.Presets.values()));
@@ -94,6 +100,8 @@ public class MainVersion3 extends javax.swing.JFrame {
         spinHeight.setValue(defaultHeight);
         lblVideoFolder.setText(mVideoOutputFolder.getAbsolutePath());
         lblVideoFolder.setToolTipText(mVideoOutputFolder.getAbsolutePath());
+        updateMenuWebcams();
+        updateMenuDesktops();
     }
 
     private void updateControls(boolean enabled) {
@@ -297,41 +305,84 @@ public class MainVersion3 extends javax.swing.JFrame {
         }
     }
 
-    private void fillSourceTable(File folder) {
-        DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
-        while (model.getRowCount() > 0) {
-            model.removeRow(0);
-        }
-        try {
+    private void updateMenuWebcams() {
 
+        mnuMainWebcams.removeAll();
+        try {
             for (Webcam w : Webcam.getSources()) {
-                Object[] row = new Object[model.getColumnCount()];
-                row[0] = false;
-                row[1] = SourceType.Webcam;
-                row[2] = w;
-                row[3] = 0;
-                row[4] = 0;
-                row[5] = w.getWidth();
-                row[6] = w.getHeight();
-                row[7] = 1;
-                model.addRow(row);
-            }
-            for (Screen s : Screen.getSources()) {
-                Object[] row = new Object[model.getColumnCount()];
-                row[0] = false;
-                row[1] = SourceType.Desktop;
-                row[2] = s;
-                row[3] = s.getSize().x;
-                row[4] = s.getSize().y;
-                row[5] = s.getWidth();
-                row[6] = s.getHeight();
-                row[7] = 1;
-                model.addRow(row);
+                JMenuItem menu = new JMenuItem(w.getDescription());
+                menu.setActionCommand(w.getDevice());
+                menu.addActionListener((ActionEvent e) -> {
+                    DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
+                    Object[] row = new Object[model.getColumnCount()];
+                    try {
+                        for (Webcam webcam : Webcam.getSources()) {
+                            if (webcam.getDevice().equals(e.getActionCommand())) {
+                                row[0] = true;
+                                row[1] = SourceType.Webcam;
+                                row[2] = webcam;
+                                row[3] = 0;
+                                row[4] = 0;
+                                row[5] = webcam.getWidth();
+                                row[6] = webcam.getHeight();
+                                row[7] = 1;
+                                model.addRow(row);
+                                mLayoutPreview.repaint();
+                                tabs.setSelectedComponent(panSources);
+                                break;
+
+                            }
+                        }
+                    } catch (IOException | InterruptedException ex) {
+                        Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
+
+                mnuMainWebcams.add(menu);
             }
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
 
+    private void updateMenuDesktops() {
+
+        mnuMainDestops.removeAll();
+        try {
+            for (Screen s : Screen.getSources()) {
+                JMenuItem menu = new JMenuItem(s.getDetailledLabel());
+                menu.setActionCommand(s.getId());
+                menu.addActionListener((ActionEvent e) -> {
+                    DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
+                    Object[] row = new Object[model.getColumnCount()];
+                    try {
+                        for (Screen screen : Screen.getSources()) {
+                            if (screen.getId().equals(e.getActionCommand())) {
+                                row[0] = true;
+                                row[1] = SourceType.Desktop;
+                                row[2] = screen;
+                                row[3] = 0;
+                                row[4] = 0;
+                                row[5] = screen.getWidth();
+                                row[6] = screen.getHeight();
+                                row[7] = 1;
+                                model.addRow(row);
+                                mLayoutPreview.repaint();
+                                tabs.setSelectedComponent(panSources);
+                                break;
+                            }
+
+                        }
+                    } catch (IOException | InterruptedException ex) {
+                        Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
+
+                mnuMainDestops.add(menu);
+            }
+        } catch (IOException | InterruptedException ex) {
+            Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -343,13 +394,6 @@ public class MainVersion3 extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        popSources = new javax.swing.JPopupMenu();
-        popSourcesAddImage = new javax.swing.JMenuItem();
-        popSourcesAddWebcam = new javax.swing.JMenuItem();
-        popSourcesAddLabel = new javax.swing.JMenuItem();
-        popSourcesAddDesktop = new javax.swing.JMenuItem();
-        popSourcesMoveUp = new javax.swing.JMenuItem();
-        popSourcesMoveDown = new javax.swing.JMenuItem();
         tabs = new javax.swing.JTabbedPane();
         panOutput = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -398,44 +442,13 @@ public class MainVersion3 extends javax.swing.JFrame {
         mnuFileLoad = new javax.swing.JMenuItem();
         mnuFileSave = new javax.swing.JMenuItem();
         mnuEdit = new javax.swing.JMenu();
-
-        popSourcesAddImage.setText("Add Image...");
-        popSourcesAddImage.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                popSourcesAddImageActionPerformed(evt);
-            }
-        });
-        popSources.add(popSourcesAddImage);
-
-        popSourcesAddWebcam.setText("Add Webcam...");
-        popSources.add(popSourcesAddWebcam);
-
-        popSourcesAddLabel.setText("Add Label...");
-        popSourcesAddLabel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                popSourcesAddLabelActionPerformed(evt);
-            }
-        });
-        popSources.add(popSourcesAddLabel);
-
-        popSourcesAddDesktop.setText("Add Desktop...");
-        popSources.add(popSourcesAddDesktop);
-
-        popSourcesMoveUp.setText("Move Up");
-        popSourcesMoveUp.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                popSourcesMoveUpActionPerformed(evt);
-            }
-        });
-        popSources.add(popSourcesMoveUp);
-
-        popSourcesMoveDown.setText("Move Down");
-        popSourcesMoveDown.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                popSourcesMoveDownActionPerformed(evt);
-            }
-        });
-        popSources.add(popSourcesMoveDown);
+        mnuMainWebcams = new javax.swing.JMenu();
+        mnuMainDestops = new javax.swing.JMenu();
+        mnuMainAddImage = new javax.swing.JMenuItem();
+        mnuMainAddLabel = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
+        mnuMainMoveUp = new javax.swing.JMenuItem();
+        mnuMainMoveDown = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("ScreenStudio");
@@ -594,7 +607,8 @@ public class MainVersion3 extends javax.swing.JFrame {
         jSplitPane1.setDividerLocation(150);
         jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
-        panPreviewLayout.setBorder(javax.swing.BorderFactory.createTitledBorder("Layout"));
+        panPreviewLayout.setBackground(new java.awt.Color(51, 51, 51));
+        panPreviewLayout.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Layout", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 12), new java.awt.Color(255, 255, 255))); // NOI18N
         panPreviewLayout.setLayout(new java.awt.BorderLayout());
         jSplitPane1.setRightComponent(panPreviewLayout);
 
@@ -629,7 +643,6 @@ public class MainVersion3 extends javax.swing.JFrame {
         });
         tableSources.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
         tableSources.setColumnSelectionAllowed(true);
-        tableSources.setComponentPopupMenu(popSources);
         tableSources.setFillsViewportHeight(true);
         tableSources.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tableSources.getTableHeader().setResizingAllowed(false);
@@ -661,21 +674,21 @@ public class MainVersion3 extends javax.swing.JFrame {
             tableSources.getColumnModel().getColumn(2).setMinWidth(150);
             tableSources.getColumnModel().getColumn(2).setPreferredWidth(150);
             tableSources.getColumnModel().getColumn(2).setMaxWidth(2000);
-            tableSources.getColumnModel().getColumn(3).setMinWidth(50);
-            tableSources.getColumnModel().getColumn(3).setPreferredWidth(50);
-            tableSources.getColumnModel().getColumn(3).setMaxWidth(50);
-            tableSources.getColumnModel().getColumn(4).setMinWidth(50);
-            tableSources.getColumnModel().getColumn(4).setPreferredWidth(50);
-            tableSources.getColumnModel().getColumn(4).setMaxWidth(50);
-            tableSources.getColumnModel().getColumn(5).setMinWidth(50);
-            tableSources.getColumnModel().getColumn(5).setPreferredWidth(50);
-            tableSources.getColumnModel().getColumn(5).setMaxWidth(50);
-            tableSources.getColumnModel().getColumn(6).setMinWidth(50);
-            tableSources.getColumnModel().getColumn(6).setPreferredWidth(50);
-            tableSources.getColumnModel().getColumn(6).setMaxWidth(50);
-            tableSources.getColumnModel().getColumn(7).setMinWidth(50);
-            tableSources.getColumnModel().getColumn(7).setPreferredWidth(50);
-            tableSources.getColumnModel().getColumn(7).setMaxWidth(50);
+            tableSources.getColumnModel().getColumn(3).setMinWidth(60);
+            tableSources.getColumnModel().getColumn(3).setPreferredWidth(60);
+            tableSources.getColumnModel().getColumn(3).setMaxWidth(60);
+            tableSources.getColumnModel().getColumn(4).setMinWidth(60);
+            tableSources.getColumnModel().getColumn(4).setPreferredWidth(60);
+            tableSources.getColumnModel().getColumn(4).setMaxWidth(60);
+            tableSources.getColumnModel().getColumn(5).setMinWidth(60);
+            tableSources.getColumnModel().getColumn(5).setPreferredWidth(60);
+            tableSources.getColumnModel().getColumn(5).setMaxWidth(60);
+            tableSources.getColumnModel().getColumn(6).setMinWidth(60);
+            tableSources.getColumnModel().getColumn(6).setPreferredWidth(60);
+            tableSources.getColumnModel().getColumn(6).setMaxWidth(60);
+            tableSources.getColumnModel().getColumn(7).setMinWidth(60);
+            tableSources.getColumnModel().getColumn(7).setPreferredWidth(60);
+            tableSources.getColumnModel().getColumn(7).setMaxWidth(60);
         }
 
         jSplitPane1.setLeftComponent(scrollSources);
@@ -817,7 +830,7 @@ public class MainVersion3 extends javax.swing.JFrame {
 
         tabs.addTab("Options", panOptions);
 
-        mnuFile.setText("File");
+        mnuFile.setText("Layout");
 
         mnuCapture.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
         mnuCapture.setText("Record");
@@ -849,7 +862,49 @@ public class MainVersion3 extends javax.swing.JFrame {
 
         menuBar.add(mnuFile);
 
-        mnuEdit.setText("Edit");
+        mnuEdit.setText("Sources");
+
+        mnuMainWebcams.setText("Webcams");
+        mnuEdit.add(mnuMainWebcams);
+
+        mnuMainDestops.setText("Desktops");
+        mnuEdit.add(mnuMainDestops);
+
+        mnuMainAddImage.setText("Add Image...");
+        mnuMainAddImage.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuMainAddImageActionPerformed(evt);
+            }
+        });
+        mnuEdit.add(mnuMainAddImage);
+
+        mnuMainAddLabel.setText("Add Label");
+        mnuMainAddLabel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuMainAddLabelActionPerformed(evt);
+            }
+        });
+        mnuEdit.add(mnuMainAddLabel);
+        mnuEdit.add(jSeparator3);
+
+        mnuMainMoveUp.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_UP, java.awt.event.InputEvent.ALT_MASK));
+        mnuMainMoveUp.setText("Move Up");
+        mnuMainMoveUp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuMainMoveUpActionPerformed(evt);
+            }
+        });
+        mnuEdit.add(mnuMainMoveUp);
+
+        mnuMainMoveDown.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DOWN, java.awt.event.InputEvent.ALT_MASK));
+        mnuMainMoveDown.setText("Move Down");
+        mnuMainMoveDown.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuMainMoveDownActionPerformed(evt);
+            }
+        });
+        mnuEdit.add(mnuMainMoveDown);
+
         menuBar.add(mnuEdit);
 
         setJMenuBar(menuBar);
@@ -880,46 +935,18 @@ public class MainVersion3 extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_tableSourcesPropertyChange
 
-    private void popSourcesMoveUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popSourcesMoveUpActionPerformed
-        if (tableSources.getSelectedRow() != -1 && tableSources.getSelectedRow() > 0) {
-            Object[] row = new Object[tableSources.getColumnCount()];
-            for (int i = 0; i < row.length; i++) {
-                row[i] = tableSources.getValueAt(tableSources.getSelectedRow(), i);
-                tableSources.setValueAt(tableSources.getValueAt(tableSources.getSelectedRow() - 1, i), tableSources.getSelectedRow(), i);
-                tableSources.setValueAt(row[i], tableSources.getSelectedRow() - 1, i);
-            }
-            int index = tableSources.getSelectedRow() - 1;
-            tableSources.setRowSelectionInterval(index, index);
-            mLayoutPreview.repaint();
-        }
-    }//GEN-LAST:event_popSourcesMoveUpActionPerformed
-
-    private void popSourcesMoveDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popSourcesMoveDownActionPerformed
-        if (tableSources.getSelectedRow() != -1 && tableSources.getSelectedRow() < tableSources.getRowCount() - 1) {
-            Object[] row = new Object[tableSources.getColumnCount()];
-            for (int i = 0; i < row.length; i++) {
-                row[i] = tableSources.getValueAt(tableSources.getSelectedRow(), i);
-                tableSources.setValueAt(tableSources.getValueAt(tableSources.getSelectedRow() + 1, i), tableSources.getSelectedRow(), i);
-                tableSources.setValueAt(row[i], tableSources.getSelectedRow() + 1, i);
-            }
-            int index = tableSources.getSelectedRow() + 1;
-            tableSources.setRowSelectionInterval(index, index);
-            mLayoutPreview.repaint();
-        }
-    }//GEN-LAST:event_popSourcesMoveDownActionPerformed
-
     private void tableSourcesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableSourcesKeyPressed
         mLayoutPreview.repaint();
     }//GEN-LAST:event_tableSourcesKeyPressed
 
     private void tableSourcesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableSourcesMouseClicked
-        if (evt.getClickCount() == 2){
+        if (evt.getClickCount() == 2) {
             int rowIndex = tableSources.getSelectedRow();
-            if (tableSources.getValueAt(rowIndex, 1) == SourceType.LabelText){
-                Editor ed = new Editor(tableSources.getValueAt(rowIndex, 2).toString(),this);
+            if (tableSources.getValueAt(rowIndex, 1) == SourceType.LabelText) {
+                Editor ed = new Editor(tableSources.getValueAt(rowIndex, 2).toString(), this);
                 ed.setModal(true);
                 ed.setVisible(true);
-                tableSources.setValueAt(ed.getText(),rowIndex,2);
+                tableSources.setValueAt(ed.getText(), rowIndex, 2);
                 tableSources.repaint();
             }
         }
@@ -952,8 +979,23 @@ public class MainVersion3 extends javax.swing.JFrame {
             List<Source> sources = Compositor.getSources(tableSources, (Integer) spinFPS.getValue());
             Compositor compositor = new Compositor(sources, new Rectangle(0, 0, (Integer) spinWidth.getValue(), (Integer) spinHeight.getValue()), (Integer) spinFPS.getValue());
             mFFMpeg = new FFMpeg(compositor);
-            Microphone m = (Microphone) cboAudioMicrophones.getSelectedItem();
-            mFFMpeg.setAudio((FFMpeg.AudioRate) cboAudioBitrate.getSelectedItem(), m.getDevice());
+            String audio = "default";
+            Microphone mic = null;
+            Microphone sys = null;
+            if (cboAudioMicrophones.getSelectedIndex() > 0) {
+                mic = (Microphone) cboAudioMicrophones.getSelectedItem();
+            }
+            if (cboAudioSystems.getSelectedIndex() > 0) {
+                sys = (Microphone) cboAudioSystems.getSelectedItem();
+            }
+            try {
+                audio = Microphone.getVirtualAudio(mic, sys);
+            } catch (IOException ex) {
+                Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            mFFMpeg.setAudio((FFMpeg.AudioRate) cboAudioBitrate.getSelectedItem(), audio);
             mFFMpeg.setPreset((FFMpeg.Presets) cboVideoPresets.getSelectedItem());
             mFFMpeg.setOutputFormat((FFMpeg.FORMATS) cboTarget.getSelectedItem(), (FFMpeg.Presets) cboVideoPresets.getSelectedItem(), (Integer) numVideoBitrate.getValue(), "", txtRTMPKey.getText(), mVideoOutputFolder);
             new Thread(mFFMpeg).start();
@@ -983,7 +1025,7 @@ public class MainVersion3 extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnSetVideoFolderActionPerformed
 
-    private void popSourcesAddImageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popSourcesAddImageActionPerformed
+    private void mnuMainAddImageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuMainAddImageActionPerformed
         JFileChooser chooser = new JFileChooser(mVideoOutputFolder);
         chooser.setAcceptAllFileFilterUsed(false);
         chooser.setFileFilter(new FileFilter() {
@@ -1014,10 +1056,11 @@ public class MainVersion3 extends javax.swing.JFrame {
             row[7] = 1.0f;
             model.addRow(row);
         }
+        mLayoutPreview.repaint();
+        tabs.setSelectedComponent(panSources);
+    }//GEN-LAST:event_mnuMainAddImageActionPerformed
 
-    }//GEN-LAST:event_popSourcesAddImageActionPerformed
-
-    private void popSourcesAddLabelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popSourcesAddLabelActionPerformed
+    private void mnuMainAddLabelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuMainAddLabelActionPerformed
         DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
         Object[] row = new Object[model.getColumnCount()];
         row[0] = true;
@@ -1028,8 +1071,40 @@ public class MainVersion3 extends javax.swing.JFrame {
         row[5] = 300;
         row[6] = 100;
         row[7] = 1.0f;
-        model.addRow(row);        
-    }//GEN-LAST:event_popSourcesAddLabelActionPerformed
+        model.addRow(row);
+        mLayoutPreview.repaint();
+        tabs.setSelectedComponent(panSources);
+    }//GEN-LAST:event_mnuMainAddLabelActionPerformed
+
+    private void mnuMainMoveUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuMainMoveUpActionPerformed
+        if (tableSources.getSelectedRow() != -1 && tableSources.getSelectedRow() > 0) {
+            Object[] row = new Object[tableSources.getColumnCount()];
+            for (int i = 0; i < row.length; i++) {
+                row[i] = tableSources.getValueAt(tableSources.getSelectedRow(), i);
+                tableSources.setValueAt(tableSources.getValueAt(tableSources.getSelectedRow() - 1, i), tableSources.getSelectedRow(), i);
+                tableSources.setValueAt(row[i], tableSources.getSelectedRow() - 1, i);
+            }
+            int index = tableSources.getSelectedRow() - 1;
+            tableSources.setRowSelectionInterval(index, index);
+            mLayoutPreview.repaint();
+            tabs.setSelectedComponent(panSources);
+        }
+    }//GEN-LAST:event_mnuMainMoveUpActionPerformed
+
+    private void mnuMainMoveDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuMainMoveDownActionPerformed
+        if (tableSources.getSelectedRow() != -1 && tableSources.getSelectedRow() < tableSources.getRowCount() - 1) {
+            Object[] row = new Object[tableSources.getColumnCount()];
+            for (int i = 0; i < row.length; i++) {
+                row[i] = tableSources.getValueAt(tableSources.getSelectedRow(), i);
+                tableSources.setValueAt(tableSources.getValueAt(tableSources.getSelectedRow() + 1, i), tableSources.getSelectedRow(), i);
+                tableSources.setValueAt(row[i], tableSources.getSelectedRow() + 1, i);
+            }
+            int index = tableSources.getSelectedRow() + 1;
+            tableSources.setRowSelectionInterval(index, index);
+            mLayoutPreview.repaint();
+            tabs.setSelectedComponent(panSources);
+        }
+    }//GEN-LAST:event_mnuMainMoveDownActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1089,6 +1164,7 @@ public class MainVersion3 extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JLabel lblRTMPKey;
     private javax.swing.JLabel lblRTMPServer;
@@ -1099,6 +1175,12 @@ public class MainVersion3 extends javax.swing.JFrame {
     private javax.swing.JMenu mnuFile;
     private javax.swing.JMenuItem mnuFileLoad;
     private javax.swing.JMenuItem mnuFileSave;
+    private javax.swing.JMenuItem mnuMainAddImage;
+    private javax.swing.JMenuItem mnuMainAddLabel;
+    private javax.swing.JMenu mnuMainDestops;
+    private javax.swing.JMenuItem mnuMainMoveDown;
+    private javax.swing.JMenuItem mnuMainMoveUp;
+    private javax.swing.JMenu mnuMainWebcams;
     private javax.swing.JSpinner numVideoBitrate;
     private javax.swing.JPanel panOptions;
     private javax.swing.JPanel panOutput;
@@ -1108,13 +1190,6 @@ public class MainVersion3 extends javax.swing.JFrame {
     private javax.swing.JPanel panSettingsVideos;
     private javax.swing.JPanel panSources;
     private javax.swing.JPanel panTargetSettings;
-    private javax.swing.JPopupMenu popSources;
-    private javax.swing.JMenuItem popSourcesAddDesktop;
-    private javax.swing.JMenuItem popSourcesAddImage;
-    private javax.swing.JMenuItem popSourcesAddLabel;
-    private javax.swing.JMenuItem popSourcesAddWebcam;
-    private javax.swing.JMenuItem popSourcesMoveDown;
-    private javax.swing.JMenuItem popSourcesMoveUp;
     private javax.swing.JScrollPane scrollSources;
     private javax.swing.JSpinner spinFPS;
     private javax.swing.JSpinner spinHeight;

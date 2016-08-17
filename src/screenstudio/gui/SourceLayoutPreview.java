@@ -93,12 +93,15 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                     g.drawImage(img.getScaledInstance(w, h, Image.SCALE_FAST), x, y, this);
                 }
             } else {
+                int fontSize = h / 25;
+                Font font = new Font(getFont().getFontName(),getFont().getStyle(),fontSize);
+                g.setFont(font);
                 g.setColor(Color.BLACK);
                 g.fillRect(x, y, w, h);
                 if (mSources != null) {
                     for (int i = mSources.getRowCount() - 1; i >= 0; i--) {
                         if ((Boolean) mSources.getValueAt(i, 0)) {
-                            g.setFont(getFont());
+                            g.setFont(font);
                             int sx = (int) mSources.getValueAt(i, 3);
                             int sy = (int) mSources.getValueAt(i, 4);
                             int sw = (int) mSources.getValueAt(i, 5);
@@ -125,7 +128,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                                     break;
                                 case LabelText:
                                     g.setColor(Color.darkGray);
-                                    g.setFont(new Font(g.getFont().getFontName(),g.getFont().getStyle(),sh - 10));
+                                    g.setFont(new Font(font.getFontName(),font.getStyle(),sh - 10));
                                     break;
                                 default:
                                     g.setColor(Color.gray);
@@ -141,7 +144,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                         }
                     }
                 }
-                g.setFont(getFont());
+                g.setFont(font);
                 //draw output format that will be used...
                 g.setColor(Color.WHITE);
                 g.drawString("Output : " + outputSize.width + "X" + outputSize.height, x + 5, y + 20);
@@ -186,6 +189,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
         });
         popPreview.add(popStopPreview);
 
+        setBackground(new java.awt.Color(51, 51, 51));
         setComponentPopupMenu(popPreview);
         addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseDragged(java.awt.event.MouseEvent evt) {
