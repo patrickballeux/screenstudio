@@ -19,7 +19,6 @@ package screenstudio.gui;
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -28,6 +27,7 @@ import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableModel;
@@ -52,6 +52,7 @@ public class MainVersion3 extends javax.swing.JFrame {
     private final SourceLayoutPreview mLayoutPreview;
     private FFMpeg mFFMpeg = null;
     private File mVideoOutputFolder = new File("");
+    private long mRecordingTimestamp = 0;
 
     /**
      * Creates new form MainVersion3
@@ -435,6 +436,8 @@ public class MainVersion3 extends javax.swing.JFrame {
         panSettingsVideos = new javax.swing.JPanel();
         lblVideoFolder = new javax.swing.JLabel();
         btnSetVideoFolder = new javax.swing.JButton();
+        panStatus = new javax.swing.JPanel();
+        lblMessages = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
         mnuFile = new javax.swing.JMenu();
         mnuCapture = new javax.swing.JMenuItem();
@@ -449,9 +452,16 @@ public class MainVersion3 extends javax.swing.JFrame {
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
         mnuMainMoveUp = new javax.swing.JMenuItem();
         mnuMainMoveDown = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        mnuMainRemove = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("ScreenStudio");
+        addWindowStateListener(new java.awt.event.WindowStateListener() {
+            public void windowStateChanged(java.awt.event.WindowEvent evt) {
+                formWindowStateChanged(evt);
+            }
+        });
 
         jLabel1.setText("Output Format");
 
@@ -549,7 +559,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                 .addGroup(panTargetSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblRTMPKey)
                     .addComponent(txtRTMPKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout panOutputLayout = new javax.swing.GroupLayout(panOutput);
@@ -613,7 +623,7 @@ public class MainVersion3 extends javax.swing.JFrame {
         jSplitPane1.setRightComponent(panPreviewLayout);
 
         scrollSources.setBackground(new java.awt.Color(255, 255, 255));
-        scrollSources.setBorder(javax.swing.BorderFactory.createTitledBorder("Devices"));
+        scrollSources.setBorder(javax.swing.BorderFactory.createTitledBorder("Video Sources"));
 
         tableSources.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -759,7 +769,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                 .addComponent(chkShortcutsShift)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(cboShortcutsKeys, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(347, Short.MAX_VALUE))
+                .addContainerGap(371, Short.MAX_VALUE))
         );
         panSettingsShortCutsLayout.setVerticalGroup(
             panSettingsShortCutsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -829,6 +839,17 @@ public class MainVersion3 extends javax.swing.JFrame {
         );
 
         tabs.addTab("Options", panOptions);
+
+        getContentPane().add(tabs, java.awt.BorderLayout.CENTER);
+
+        panStatus.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        panStatus.setPreferredSize(new java.awt.Dimension(767, 20));
+        panStatus.setLayout(new javax.swing.BoxLayout(panStatus, javax.swing.BoxLayout.LINE_AXIS));
+
+        lblMessages.setText("Welcome to ScreenStudio");
+        panStatus.add(lblMessages);
+
+        getContentPane().add(panStatus, java.awt.BorderLayout.SOUTH);
 
         mnuFile.setText("Layout");
 
@@ -904,27 +925,20 @@ public class MainVersion3 extends javax.swing.JFrame {
             }
         });
         mnuEdit.add(mnuMainMoveDown);
+        mnuEdit.add(jSeparator2);
+
+        mnuMainRemove.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
+        mnuMainRemove.setText("Remove Source");
+        mnuMainRemove.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuMainRemoveActionPerformed(evt);
+            }
+        });
+        mnuEdit.add(mnuMainRemove);
 
         menuBar.add(mnuEdit);
 
         setJMenuBar(menuBar);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(tabs)
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(tabs, javax.swing.GroupLayout.DEFAULT_SIZE, 317, Short.MAX_VALUE)
-                .addContainerGap())
-        );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -969,9 +983,22 @@ public class MainVersion3 extends javax.swing.JFrame {
         setRTMPControls((FFMpeg.FORMATS) cboTarget.getSelectedItem());
     }//GEN-LAST:event_cboTargetActionPerformed
 
+
     private void mnuCaptureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuCaptureActionPerformed
         if (mFFMpeg != null) {
+            if (mFFMpeg.getState() == FFMpeg.RunningState.Error) {
+                lblMessages.setText(mFFMpeg.getLastErrorMessage());
+            } else {
+                lblMessages.setText("Stopped...");
+            }
             mFFMpeg.stop();
+            try {
+                Microphone.getVirtualAudio(null, null);
+            } catch (IOException ex) {
+                Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+            }
             mFFMpeg = null;
             mnuCapture.setText("Record");
             updateControls(true);
@@ -999,8 +1026,30 @@ public class MainVersion3 extends javax.swing.JFrame {
             mFFMpeg.setPreset((FFMpeg.Presets) cboVideoPresets.getSelectedItem());
             mFFMpeg.setOutputFormat((FFMpeg.FORMATS) cboTarget.getSelectedItem(), (FFMpeg.Presets) cboVideoPresets.getSelectedItem(), (Integer) numVideoBitrate.getValue(), "", txtRTMPKey.getText(), mVideoOutputFolder);
             new Thread(mFFMpeg).start();
+            lblMessages.setText("Recording...");
             mnuCapture.setText("Stop");
             updateControls(false);
+            this.setExtendedState(JFrame.ICONIFIED);
+            mRecordingTimestamp = System.currentTimeMillis();
+            new Thread(() -> {
+                while (mFFMpeg != null) {
+                    long seconds = (System.currentTimeMillis() - mRecordingTimestamp) / 1000;
+                    if (seconds < 60) {
+                        setTitle("Recording! (" + seconds + " sec)");
+                    } else {
+                        setTitle("Recording! (" + (seconds / 60) + " min " + (seconds % 60) + " sec)");
+                    }
+                    if (mFFMpeg.getState() == FFMpeg.RunningState.Error) {
+                        setExtendedState(JFrame.NORMAL);
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                setTitle("ScreenStudio " + screenstudio.Version.MAIN);
+            }).start();
         }
 
     }//GEN-LAST:event_mnuCaptureActionPerformed
@@ -1106,6 +1155,21 @@ public class MainVersion3 extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_mnuMainMoveDownActionPerformed
 
+    private void formWindowStateChanged(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowStateChanged
+        if (mFFMpeg != null && evt.getOldState() == JFrame.ICONIFIED) {
+            mnuCapture.doClick();
+        }
+    }//GEN-LAST:event_formWindowStateChanged
+
+    private void mnuMainRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuMainRemoveActionPerformed
+        if (tableSources.getSelectedRow() != -1) {
+            int index = tableSources.getSelectedRow() ;
+            DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
+            model.removeRow(index);
+            mLayoutPreview.repaint();
+        }
+    }//GEN-LAST:event_mnuMainRemoveActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1164,8 +1228,10 @@ public class MainVersion3 extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JSplitPane jSplitPane1;
+    private javax.swing.JLabel lblMessages;
     private javax.swing.JLabel lblRTMPKey;
     private javax.swing.JLabel lblRTMPServer;
     private javax.swing.JLabel lblVideoFolder;
@@ -1180,6 +1246,7 @@ public class MainVersion3 extends javax.swing.JFrame {
     private javax.swing.JMenu mnuMainDestops;
     private javax.swing.JMenuItem mnuMainMoveDown;
     private javax.swing.JMenuItem mnuMainMoveUp;
+    private javax.swing.JMenuItem mnuMainRemove;
     private javax.swing.JMenu mnuMainWebcams;
     private javax.swing.JSpinner numVideoBitrate;
     private javax.swing.JPanel panOptions;
@@ -1189,6 +1256,7 @@ public class MainVersion3 extends javax.swing.JFrame {
     private javax.swing.JPanel panSettingsShortCuts;
     private javax.swing.JPanel panSettingsVideos;
     private javax.swing.JPanel panSources;
+    private javax.swing.JPanel panStatus;
     private javax.swing.JPanel panTargetSettings;
     private javax.swing.JScrollPane scrollSources;
     private javax.swing.JSpinner spinFPS;

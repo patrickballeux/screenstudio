@@ -61,6 +61,16 @@ public class FFMpeg implements Runnable {
         Audio48K
     }
 
+    public enum RunningState {
+        Running,
+        Stopped,
+        Error
+
+    }
+
+    private RunningState state = RunningState.Stopped;
+    private String lastErrorMessage = "";
+
     private String bin = "ffmpeg  ";
     private String nonVerboseMode = " -nostats -loglevel 0 ";
     private String desktopFormat = "x11grab";
@@ -134,6 +144,14 @@ public class FFMpeg implements Runnable {
         audioInput = input;
     }
 
+    public RunningState getState() {
+        return state;
+    }
+
+    public String getLastErrorMessage() {
+        return lastErrorMessage;
+    }
+
     /**
      * Set the output format of the video file/stream
      *
@@ -143,7 +161,7 @@ public class FFMpeg implements Runnable {
      * @param server
      * @param key
      */
-    public void setOutputFormat(FORMATS format, Presets p, int videoBitrate, String server, String key,File outputFolder) {
+    public void setOutputFormat(FORMATS format, Presets p, int videoBitrate, String server, String key, File outputFolder) {
         switch (format) {
             case FLV:
                 muxer = "flv";
@@ -343,6 +361,7 @@ public class FFMpeg implements Runnable {
         mStopMe = false;
         new Thread(compositor).start();
         mDebugMode = true;
+        state = RunningState.Running;
         try {
             String command = getCommand();
             Process p = Runtime.getRuntime().exec(command);
@@ -369,8 +388,11 @@ public class FFMpeg implements Runnable {
             }
             out.close();
             p.destroy();
+            state = RunningState.Stopped;
 
         } catch (IOException ex) {
+            state = RunningState.Error;
+            lastErrorMessage = ex.getMessage();
             Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
         }
         compositor.stop();
