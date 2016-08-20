@@ -806,6 +806,7 @@ public class MainVersion3 extends javax.swing.JFrame {
 
         mnuCapture.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
         mnuCapture.setText("Record");
+        mnuCapture.setToolTipText("<html><body>\nStart recording/streaming using CTRL-R.  \n<BR><B>ScreenStudio</B> will automatically hide in the taskbar of your system.  \n<BR>To stop the recording, simply restore the <B>ScreenStudio</B> window.\n</body></html>");
         mnuCapture.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuCaptureActionPerformed(evt);
@@ -816,6 +817,7 @@ public class MainVersion3 extends javax.swing.JFrame {
 
         mnuFileLoad.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
         mnuFileLoad.setText("Open");
+        mnuFileLoad.setToolTipText("<HTML><BODY>\nOpen a <B>ScreenStudio</B> XML layout file\n</BODY></HTML>");
         mnuFileLoad.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuFileLoadActionPerformed(evt);
@@ -825,6 +827,7 @@ public class MainVersion3 extends javax.swing.JFrame {
 
         mnuFileSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
         mnuFileSave.setText("Save");
+        mnuFileSave.setToolTipText("<HTML><BODY>\nSave the current layour to a <B>ScreenStudio</B> XML layout file\n</BODY></HTML>");
         mnuFileSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuFileSaveActionPerformed(evt);

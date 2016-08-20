@@ -15,6 +15,7 @@
                   <KeyStroke key="Ctrl+R"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Record"/>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&lt;body&gt;&#xa;Start recording/streaming using CTRL-R.  &#xa;&lt;BR&gt;&lt;B&gt;ScreenStudio&lt;/B&gt; will automatically hide in the taskbar of your system.  &#xa;&lt;BR&gt;To stop the recording, simply restore the &lt;B&gt;ScreenStudio&lt;/B&gt; window.&#xa;&lt;/body&gt;&lt;/html&gt;"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnuCaptureActionPerformed"/>
@@ -28,6 +29,7 @@
                   <KeyStroke key="Ctrl+O"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Open"/>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;HTML&gt;&lt;BODY&gt;&#xa;Open a &lt;B&gt;ScreenStudio&lt;/B&gt; XML layout file&#xa;&lt;/BODY&gt;&lt;/HTML&gt;"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnuFileLoadActionPerformed"/>
@@ -39,6 +41,7 @@
                   <KeyStroke key="Ctrl+S"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Save"/>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;HTML&gt;&lt;BODY&gt;&#xa;Save the current layour to a &lt;B&gt;ScreenStudio&lt;/B&gt; XML layout file&#xa;&lt;/BODY&gt;&lt;/HTML&gt;"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnuFileSaveActionPerformed"/>
