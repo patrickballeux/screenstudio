@@ -968,53 +968,64 @@ public class MainVersion3 extends javax.swing.JFrame {
             mnuCapture.setText("Record");
             updateControls(true);
         } else {
-            List<Source> sources = Compositor.getSources(tableSources, (Integer) spinFPS.getValue());
-            Compositor compositor = new Compositor(sources, new Rectangle(0, 0, (Integer) spinWidth.getValue(), (Integer) spinHeight.getValue()), (Integer) spinFPS.getValue());
-            mFFMpeg = new FFMpeg(compositor);
-            String audio = "default";
-            Microphone mic = null;
-            Microphone sys = null;
-            if (cboAudioMicrophones.getSelectedIndex() > 0) {
-                mic = (Microphone) cboAudioMicrophones.getSelectedItem();
+            boolean abort = false;
+            if (tableSources.getRowCount() == 0) {
+                lblMessages.setText("No video source to display...");
+                abort = true;
             }
-            if (cboAudioSystems.getSelectedIndex() > 0) {
-                sys = (Microphone) cboAudioSystems.getSelectedItem();
+            if (cboAudioMicrophones.getSelectedIndex() == 0 && cboAudioSystems.getSelectedIndex() == 0) {
+                lblMessages.setText("No audio source selected...");
+                abort = true;
             }
-            try {
-                audio = Microphone.getVirtualAudio(mic, sys);
-            } catch (IOException ex) {
-                Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            mFFMpeg.setAudio((FFMpeg.AudioRate) cboAudioBitrate.getSelectedItem(), audio, (Float) spinAudioDelay.getValue());
-            mFFMpeg.setPreset((FFMpeg.Presets) cboVideoPresets.getSelectedItem());
-            mFFMpeg.setOutputFormat((FFMpeg.FORMATS) cboTarget.getSelectedItem(), (FFMpeg.Presets) cboVideoPresets.getSelectedItem(), (Integer) numVideoBitrate.getValue(), "", txtRTMPKey.getText(), mVideoOutputFolder);
-            new Thread(mFFMpeg).start();
-            lblMessages.setText("Recording...");
-            mnuCapture.setText("Stop");
-            updateControls(false);
-            this.setExtendedState(JFrame.ICONIFIED);
-            mRecordingTimestamp = System.currentTimeMillis();
-            new Thread(() -> {
-                while (mFFMpeg != null) {
-                    long seconds = (System.currentTimeMillis() - mRecordingTimestamp) / 1000;
-                    if (seconds < 60) {
-                        setTitle("Recording! (" + seconds + " sec)");
-                    } else {
-                        setTitle("Recording! (" + (seconds / 60) + " min " + (seconds % 60) + " sec)");
-                    }
-                    if (mFFMpeg.getState() == FFMpeg.RunningState.Error) {
-                        setExtendedState(JFrame.NORMAL);
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+            if (!abort) {
+                List<Source> sources = Compositor.getSources(tableSources, (Integer) spinFPS.getValue());
+                Compositor compositor = new Compositor(sources, new Rectangle(0, 0, (Integer) spinWidth.getValue(), (Integer) spinHeight.getValue()), (Integer) spinFPS.getValue());
+                mFFMpeg = new FFMpeg(compositor);
+                String audio = "default";
+                Microphone mic = null;
+                Microphone sys = null;
+                if (cboAudioMicrophones.getSelectedIndex() > 0) {
+                    mic = (Microphone) cboAudioMicrophones.getSelectedItem();
                 }
-                setTitle("ScreenStudio " + screenstudio.Version.MAIN);
-            }).start();
+                if (cboAudioSystems.getSelectedIndex() > 0) {
+                    sys = (Microphone) cboAudioSystems.getSelectedItem();
+                }
+                try {
+                    audio = Microphone.getVirtualAudio(mic, sys);
+                } catch (IOException ex) {
+                    Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                mFFMpeg.setAudio((FFMpeg.AudioRate) cboAudioBitrate.getSelectedItem(), audio, (Float) spinAudioDelay.getValue());
+                mFFMpeg.setPreset((FFMpeg.Presets) cboVideoPresets.getSelectedItem());
+                mFFMpeg.setOutputFormat((FFMpeg.FORMATS) cboTarget.getSelectedItem(), (FFMpeg.Presets) cboVideoPresets.getSelectedItem(), (Integer) numVideoBitrate.getValue(), "", txtRTMPKey.getText(), mVideoOutputFolder);
+                new Thread(mFFMpeg).start();
+                lblMessages.setText("Recording...");
+                mnuCapture.setText("Stop");
+                updateControls(false);
+                this.setExtendedState(JFrame.ICONIFIED);
+                mRecordingTimestamp = System.currentTimeMillis();
+                new Thread(() -> {
+                    while (mFFMpeg != null) {
+                        long seconds = (System.currentTimeMillis() - mRecordingTimestamp) / 1000;
+                        if (seconds < 60) {
+                            setTitle("Recording! (" + seconds + " sec)");
+                        } else {
+                            setTitle("Recording! (" + (seconds / 60) + " min " + (seconds % 60) + " sec)");
+                        }
+                        if (mFFMpeg.getState() == FFMpeg.RunningState.Error) {
+                            setExtendedState(JFrame.NORMAL);
+                        }
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                    setTitle("ScreenStudio " + screenstudio.Version.MAIN);
+                }).start();
+            } 
         }
 
     }//GEN-LAST:event_mnuCaptureActionPerformed
