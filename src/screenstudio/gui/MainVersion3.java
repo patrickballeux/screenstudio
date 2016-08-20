@@ -201,7 +201,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                         row[0] = new File(s.ID).exists();
                         break;
                     case LabelText:
-                        row[2] = s.ID;
+                        row[2] = new LabelText(s.ID);
                         break;
                     case Stream:
                         row[2] = s.ID;
@@ -922,10 +922,10 @@ public class MainVersion3 extends javax.swing.JFrame {
         if (evt.getClickCount() == 2) {
             int rowIndex = tableSources.getSelectedRow();
             if (tableSources.getValueAt(rowIndex, 1) == SourceType.LabelText) {
-                Editor ed = new Editor(tableSources.getValueAt(rowIndex, 2).toString(), this);
+                Editor ed = new Editor(((LabelText)tableSources.getValueAt(rowIndex, 2)).getText(), this);
                 ed.setModal(true);
                 ed.setVisible(true);
-                tableSources.setValueAt(ed.getText(), rowIndex, 2);
+                tableSources.setValueAt(new LabelText(ed.getText()), rowIndex, 2);
                 tableSources.repaint();
             }
         }
@@ -1145,7 +1145,7 @@ public class MainVersion3 extends javax.swing.JFrame {
         Object[] row = new Object[model.getColumnCount()];
         row[0] = true;
         row[1] = SourceType.LabelText;
-        row[2] = "<HTML><BODY>New Label...</BODY><HTML>";
+        row[2] = new LabelText("<HTML><BODY>New Label...</BODY><HTML>");
         row[3] = 0;
         row[4] = 0;
         row[5] = 300;

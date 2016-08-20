@@ -156,8 +156,8 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
 
     private String stripHTML(String text) {
         String retValue = text.replaceAll("\\<[^>]*>", "");
-        if (retValue.length() > 30) {
-            retValue = "..." + retValue.substring(retValue.length()-31, retValue.length()-1);
+        if (retValue.length() > 25) {
+            retValue = "..." + retValue.substring(retValue.length()-25, retValue.length());
         }
         return retValue;
     }

@@ -22,9 +22,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JTable;
+import screenstudio.gui.LabelText;
 import screenstudio.targets.Layout;
 
 /**
@@ -143,8 +142,8 @@ public class Compositor implements Runnable {
                         case LabelFile:
                             break;
                     }
-                } else if (source instanceof String) {
-                    list.add(new SourceLabel(new Rectangle(sx, sy, sw, sh), i, alpha, source.toString()));
+                } else if (source instanceof LabelText) {
+                    list.add(new SourceLabel(new Rectangle(sx, sy, sw, sh), i, alpha, ((LabelText)source).getText()));
                 }
             }
         }
