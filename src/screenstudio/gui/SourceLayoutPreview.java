@@ -90,13 +90,13 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
             }
             x = (getWidth() - w) / 2;
             if (compositer != null) {
-                BufferedImage img = new BufferedImage(outputSize.width,outputSize.height,BufferedImage.TYPE_3BYTE_BGR);
+                BufferedImage img = new BufferedImage(outputSize.width, outputSize.height, BufferedImage.TYPE_3BYTE_BGR);
                 byte[] data = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
-                System.arraycopy(compositer.getData(), 0, data, 0,data.length);
+                System.arraycopy(compositer.getData(), 0, data, 0, data.length);
                 g.drawImage(img.getScaledInstance(w, h, Image.SCALE_FAST), x, y, this);
             } else {
                 int fontSize = h / 25;
-                Font font = new Font(getFont().getFontName(),getFont().getStyle(),fontSize);
+                Font font = new Font(getFont().getFontName(), getFont().getStyle(), fontSize);
                 g.setFont(font);
                 g.setColor(Color.BLACK);
                 g.fillRect(x, y, w, h);
@@ -130,7 +130,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                                     break;
                                 case LabelText:
                                     g.setColor(Color.darkGray);
-                                    g.setFont(new Font(font.getFontName(),font.getStyle(),sh - 10));
+                                    g.setFont(new Font(font.getFontName(), font.getStyle(), sh - 10));
                                     break;
                                 default:
                                     g.setColor(Color.gray);
@@ -157,7 +157,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
     private String stripHTML(String text) {
         String retValue = text.replaceAll("\\<[^>]*>", "");
         if (retValue.length() > 25) {
-            retValue = "..." + retValue.substring(retValue.length()-25, retValue.length());
+            retValue = "..." + retValue.substring(retValue.length() - 25, retValue.length());
         }
         return retValue;
     }
@@ -252,8 +252,8 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
             //int currentX = (Integer) mSources.getValueAt(rowIndex, 3);
             //int currentY = (Integer) mSources.getValueAt(rowIndex, 4);
             Point pos = getTranslatedPosition(evt.getX(), evt.getY());
-            mSources.setValueAt(pos.x,rowIndex,3);
-            mSources.setValueAt(pos.y,rowIndex,4);
+            mSources.setValueAt(pos.x, rowIndex, 3);
+            mSources.setValueAt(pos.y, rowIndex, 4);
             //System.out.println("Dragging " + mSources.getValueAt(rowIndex, 2).toString());
             mSources.repaint();
             repaint();
@@ -273,7 +273,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
         int h = outputSize.height;
         int newX = 0;
         int newY = 0;
-                
+
         double ratio = outputSize.getWidth() / outputSize.getHeight();
         if (h > getHeight() - 1) {
             h = getHeight() - 1;
@@ -286,11 +286,11 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
         int x = (getWidth() - w) / 2;
         int y = 0;
         // inside the area...
-        if (mouseX > x && mouseY > y && mouseX < x+w && mouseY < y+h){
-            newX = (int)((mouseX - x) * (outputSize.getWidth()/(double)w ));
-            newY = (int)((mouseY - y) * (outputSize.getHeight()/(double)h ));
+        if (mouseX > x && mouseY > y && mouseX < x + w && mouseY < y + h) {
+            newX = (int) ((mouseX - x) * (outputSize.getWidth() / (double) w));
+            newY = (int) ((mouseY - y) * (outputSize.getHeight() / (double) h));
         }
-        return new Point(newX-10,newY-10);
+        return new Point(newX - 10, newY - 10);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

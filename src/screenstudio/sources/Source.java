@@ -21,6 +21,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferInt;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -69,28 +70,22 @@ public abstract class Source implements Runnable {
     public SourceType getType(){
         return mType;
     }
+    protected void setDelayTime(int ms){
+        mDelayTime = ms;
+    }
     @Override
     public void run() {
         mStopMe = false;
         BufferedImage mImage3ByteBRG = new BufferedImage(mBounds.width, mBounds.height, mImageType);
-        BufferedImage mImageBuffer1 = new BufferedImage(mBounds.width, mBounds.height, BufferedImage.TYPE_INT_ARGB);
-        BufferedImage mImageBuffer2 = new BufferedImage(mBounds.width, mBounds.height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g1 = mImageBuffer1.createGraphics();
-        Graphics2D g2 = mImageBuffer2.createGraphics();
         byte[] buffer = ((DataBufferByte) mImage3ByteBRG.getRaster().getDataBuffer()).getData();
         try {
             initStream();
             while (!mStopMe) {
-
+                BufferedImage img = new BufferedImage(mBounds.width, mBounds.height, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g =img.createGraphics();
                 getData(buffer);
-                if (mImageFlip) {
-                    g1.drawImage(mImage3ByteBRG, 0, 0, null);
-                    mImage = mImageBuffer1;
-                } else {
-                    g2.drawImage(mImage3ByteBRG, 0, 0, null);
-                    mImage = mImageBuffer2;
-                }
-                mImageFlip = !mImageFlip;
+                g.drawImage(mImage3ByteBRG, 0, 0, null);
+                mImage = img;
                 if (mDelayTime > 0) {
                     try {
                         Thread.sleep(mDelayTime);
@@ -108,8 +103,6 @@ public abstract class Source implements Runnable {
         } catch (IOException ex) {
             Logger.getLogger(Source.class.getName()).log(Level.SEVERE, null, ex);
         }
-        g1.dispose();
-        g2.dispose();
     }
 
     public void stop() {
@@ -117,6 +110,7 @@ public abstract class Source implements Runnable {
     }
 
     public BufferedImage getImage() {
+        
         return mImage;
     }
 

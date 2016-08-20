@@ -43,12 +43,13 @@ public class Compositor implements Runnable {
         mSources = sources;
         mOutputSize = outputSize;
         mFPS = fps;
-        mData = new byte[mOutputSize.width*mOutputSize.height*3];
+        mData = new byte[mOutputSize.width * mOutputSize.height * 3];
     }
 
-    public byte[] getData(){
+    public byte[] getData() {
         return mData;
     }
+
     @Override
     public void run() {
         mStopMe = false;
@@ -62,12 +63,14 @@ public class Compositor implements Runnable {
         byte[] data = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
         mData = new byte[data.length];
         while (!mStopMe) {
+            java.util.Arrays.fill(data, (byte) 0);
             for (Source s : mSources) {
                 g.setComposite(s.getAlpha());
                 g.drawImage(s.getImage(), s.getBounds().x, s.getBounds().y, null);
             }
-            mData = new byte[data.length];
-            System.arraycopy(data, 0, mData,0, mData.length);
+            byte[] mBuffer = new byte[data.length];
+            System.arraycopy(data, 0, mBuffer, 0, mBuffer.length);
+            mData = mBuffer;
             while (nextPTS - System.nanoTime() > 0) {
                 long wait = nextPTS - System.nanoTime();
                 if (wait > 0) {
@@ -83,7 +86,7 @@ public class Compositor implements Runnable {
         for (Source s : mSources) {
             s.stop();
         }
-   }
+    }
 
     public int getFPS() {
         return mFPS;
@@ -143,7 +146,7 @@ public class Compositor implements Runnable {
                             break;
                     }
                 } else if (source instanceof LabelText) {
-                    list.add(new SourceLabel(new Rectangle(sx, sy, sw, sh), i, alpha, ((LabelText)source).getText()));
+                    list.add(new SourceLabel(new Rectangle(sx, sy, sw, sh), i, alpha, ((LabelText) source).getText()));
                 }
             }
         }

@@ -23,18 +23,24 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import screenstudio.targets.Layout;
 
 /**
  *
  * @author patrick
  */
-public class SourceImage extends Source{
+public class SourceImage extends Source {
 
     private final File mFile;
     private byte[] data = null;
-    public SourceImage(Rectangle bounds, int zOrder, float alpha,File image) {
-        super(bounds, zOrder, alpha, 1000,image.getAbsolutePath());
+    private BufferedImage[] images;
+    private int currentIndex = 0;
+
+    public SourceImage(Rectangle bounds, int zOrder, float alpha, File image) {
+        super(bounds, zOrder, alpha, 1000, image.getAbsolutePath());
         mFile = image;
         mImageType = BufferedImage.TYPE_4BYTE_ABGR;
         mType = Layout.SourceType.Image;
@@ -42,21 +48,49 @@ public class SourceImage extends Source{
 
     @Override
     protected void getData(byte[] buffer) throws IOException {
+        currentIndex++;
+        if (currentIndex >= images.length) currentIndex = 0;
+        data = ((DataBufferByte) images[currentIndex].getRaster().getDataBuffer()).getData();
         System.arraycopy(data, 0, buffer, 0, buffer.length);
     }
 
     @Override
     protected void initStream() throws IOException {
-        BufferedImage image = javax.imageio.ImageIO.read(mFile);
-        BufferedImage buffer = new BufferedImage(mBounds.width,mBounds.height,mImageType);
-        Graphics2D g = buffer.createGraphics();
-        g.drawImage(image.getScaledInstance(mBounds.width, mBounds.height, Image.SCALE_SMOOTH),0,0,null);
-        data = ((DataBufferByte) buffer.getRaster().getDataBuffer()).getData();
+        if (mFile.getName().toUpperCase().endsWith(".GIF")) {
+            images = readGif(mFile);
+            super.setDelayTime(100);
+        } else {
+            BufferedImage buffer = javax.imageio.ImageIO.read(mFile);
+            images = new BufferedImage[1];
+            images[0] = new BufferedImage(mBounds.width, mBounds.height, mImageType);
+            images[0].createGraphics().drawImage(buffer.getScaledInstance(mBounds.width, mBounds.height, Image.SCALE_SMOOTH), 0, 0, null);
+            data = ((DataBufferByte) images[0].getRaster().getDataBuffer()).getData();
+        }
     }
 
     @Override
     protected void disposeStream() throws IOException {
         //nothing to do
     }
-    
+
+    private BufferedImage[] readGif(File input) {
+        BufferedImage[] images = new BufferedImage[0];
+        try {
+            ImageReader reader = ImageIO.getImageReadersByFormatName("gif").next();
+            ImageInputStream stream = ImageIO.createImageInputStream(input);
+            reader.setInput(stream);
+            int count = reader.getNumImages(true);
+            images = new BufferedImage[count];
+            for (int index = 0; index < count; index++) {
+                BufferedImage frame = reader.read(index);
+                images[index] = new BufferedImage(mBounds.width, mBounds.height, mImageType);
+                images[index].createGraphics().drawImage(frame.getScaledInstance(mBounds.width, mBounds.height, Image.SCALE_SMOOTH), 0, 0, null);
+                data = ((DataBufferByte) images[index].getRaster().getDataBuffer()).getData();
+            }
+
+        } catch (IOException ex) {
+
+        }
+        return images;
+    }
 }
