@@ -127,8 +127,7 @@ public class MainVersion3 extends javax.swing.JFrame {
         mnuFileSave.setEnabled(enabled);
     }
 
-    private void loadLayout() {
-        File file = new File("default.xml");
+    private void loadLayout(File file) {
         Layout layout = new Layout();
         try {
             layout.load(file);
@@ -223,8 +222,7 @@ public class MainVersion3 extends javax.swing.JFrame {
         panPreviewLayout.repaint();
     }
 
-    private void saveLayout() {
-        File file = new File("default.xml");
+    private void saveLayout(File file) {
         Layout layout = new Layout();
         layout.setAudioBitrate(cboAudioBitrate.getItemAt(cboAudioBitrate.getSelectedIndex()));
         layout.setAudioMicrophone(cboAudioMicrophones.getItemAt(cboAudioMicrophones.getSelectedIndex()).getDescription());
@@ -698,7 +696,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                     .addComponent(jLabel9))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cboAudioMicrophones, 0, 549, Short.MAX_VALUE)
+                    .addComponent(cboAudioMicrophones, 0, 420, Short.MAX_VALUE)
                     .addComponent(cboAudioSystems, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -983,11 +981,50 @@ public class MainVersion3 extends javax.swing.JFrame {
     }//GEN-LAST:event_mnuCaptureActionPerformed
 
     private void mnuFileSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFileSaveActionPerformed
-        saveLayout();
+        JFileChooser chooser = new JFileChooser();
+        chooser.setAcceptAllFileFilterUsed(false);
+        chooser.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                return f.isDirectory() || f.getName().toUpperCase().endsWith(".XML");
+            }
+
+            @Override
+            public String getDescription() {
+                return "ScreenStudio XML Layout";
+            }
+        });
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.showSaveDialog(this);
+        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            if (chooser.getSelectedFile() != null) {
+                saveLayout(chooser.getSelectedFile());
+            }
+        }
+
     }//GEN-LAST:event_mnuFileSaveActionPerformed
 
     private void mnuFileLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFileLoadActionPerformed
-        loadLayout();
+        JFileChooser chooser = new JFileChooser();
+        chooser.setAcceptAllFileFilterUsed(false);
+        chooser.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                return f.isDirectory() || f.getName().toUpperCase().endsWith(".XML");
+            }
+
+            @Override
+            public String getDescription() {
+                return "ScreenStudio XML Layout";
+            }
+        });
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            if (chooser.getSelectedFile() != null) {
+                loadLayout(chooser.getSelectedFile());
+            }
+        }
+
     }//GEN-LAST:event_mnuFileLoadActionPerformed
 
     private void btnSetVideoFolderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSetVideoFolderActionPerformed
@@ -1091,7 +1128,7 @@ public class MainVersion3 extends javax.swing.JFrame {
 
     private void mnuMainRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuMainRemoveActionPerformed
         if (tableSources.getSelectedRow() != -1) {
-            int index = tableSources.getSelectedRow() ;
+            int index = tableSources.getSelectedRow();
             DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
             model.removeRow(index);
             mLayoutPreview.repaint();
