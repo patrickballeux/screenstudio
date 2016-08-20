@@ -16,7 +16,6 @@
  */
 package screenstudio.encoder;
 
-import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -82,6 +81,7 @@ public class FFMpeg implements Runnable {
     private String output = "Capture/capture.mp4";
     private boolean mStopMe = false;
     private boolean mDebugMode = false;
+    private String mITSOffset = "";
 
     private final String compositorFormat = "rawvideo -pix_fmt bgr24";
     private final Compositor compositor;
@@ -126,7 +126,7 @@ public class FFMpeg implements Runnable {
      * @param rate : Audio rate for the output
      * @param input : device to use
      */
-    public void setAudio(AudioRate rate, String input) {
+    public void setAudio(AudioRate rate, String input,Float offset) {
         switch (rate) {
             case Audio44K:
                 audioRate = "44100";
@@ -142,6 +142,12 @@ public class FFMpeg implements Runnable {
                 break;
         }
         audioInput = input;
+        if (offset != 0){
+            mITSOffset = " -itsoffset " + offset.toString() + " ";
+        } else {
+            mITSOffset = "";
+        }
+        
     }
 
     public RunningState getState() {
@@ -271,7 +277,7 @@ public class FFMpeg implements Runnable {
         c.append(" -i - ");
 
         // Capture Audio
-        c.append(" -f ").append(audioFormat).append(" -i ").append(audioInput);
+        c.append(" -f ").append(audioFormat).append(mITSOffset).append(" -i ").append(audioInput);
         // Enabled strict settings
         if (strictSetting.length() > 0) {
             c.append(" -strict ").append(strictSetting);
@@ -361,10 +367,9 @@ public class FFMpeg implements Runnable {
         try {
             String command = getCommand();
             Process p = Runtime.getRuntime().exec(command);
-
+            OutputStream out = p.getOutputStream();
             long frameTime = (1000000000 / compositor.getFPS());
             long nextPTS = System.nanoTime() + frameTime;
-            OutputStream out = p.getOutputStream();//new FileOutputStream(fifo);
             while (!mStopMe) {
                 out.write(compositor.getData());
                 while (nextPTS - System.nanoTime() > 0) {

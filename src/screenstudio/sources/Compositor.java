@@ -38,7 +38,6 @@ public class Compositor implements Runnable {
     private final int mFPS;
     private final Rectangle mOutputSize;
     private byte[] mData;
-    private boolean drawing = false;
 
     public Compositor(java.util.List<Source> sources, Rectangle outputSize, int fps) {
         sources.sort((a, b) -> Integer.compare(b.getZOrder(), a.getZOrder()));
@@ -49,13 +48,6 @@ public class Compositor implements Runnable {
     }
 
     public byte[] getData(){
-        while(drawing){
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Compositor.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
         return mData;
     }
     @Override
@@ -75,10 +67,8 @@ public class Compositor implements Runnable {
                 g.setComposite(s.getAlpha());
                 g.drawImage(s.getImage(), s.getBounds().x, s.getBounds().y, null);
             }
-            drawing = true;
             mData = new byte[data.length];
             System.arraycopy(data, 0, mData,0, mData.length);
-            drawing = false;
             while (nextPTS - System.nanoTime() > 0) {
                 long wait = nextPTS - System.nanoTime();
                 if (wait > 0) {

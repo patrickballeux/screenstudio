@@ -105,6 +105,9 @@ public class MainVersion3 extends javax.swing.JFrame {
         lblVideoFolder.setToolTipText(mVideoOutputFolder.getAbsolutePath());
         updateMenuWebcams();
         updateMenuDesktops();
+        // get audio sync
+        java.util.prefs.Preferences p = java.util.prefs.Preferences.userRoot().node("screenstudio");
+        spinAudioDelay.setValue(p.getFloat("audiodelay", 0));
     }
 
     private void updateControls(boolean enabled) {
@@ -407,6 +410,8 @@ public class MainVersion3 extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         cboAudioMicrophones = new javax.swing.JComboBox<>();
         cboAudioSystems = new javax.swing.JComboBox<>();
+        jLabel10 = new javax.swing.JLabel();
+        spinAudioDelay = new javax.swing.JSpinner();
         panSettingsVideos = new javax.swing.JPanel();
         lblVideoFolder = new javax.swing.JLabel();
         btnSetVideoFolder = new javax.swing.JButton();
@@ -687,6 +692,16 @@ public class MainVersion3 extends javax.swing.JFrame {
 
         jLabel9.setText("Audio System Input");
 
+        jLabel10.setText("Audio Delay");
+
+        spinAudioDelay.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(-5.0f), Float.valueOf(5.0f), Float.valueOf(0.1f)));
+        spinAudioDelay.setEditor(new javax.swing.JSpinner.NumberEditor(spinAudioDelay, "#.#"));
+        spinAudioDelay.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                spinAudioDelayPropertyChange(evt);
+            }
+        });
+
         javax.swing.GroupLayout panSettingsAudiosLayout = new javax.swing.GroupLayout(panSettingsAudios);
         panSettingsAudios.setLayout(panSettingsAudiosLayout);
         panSettingsAudiosLayout.setHorizontalGroup(
@@ -695,11 +710,15 @@ public class MainVersion3 extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel8)
-                    .addComponent(jLabel9))
+                    .addComponent(jLabel9)
+                    .addComponent(jLabel10))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cboAudioMicrophones, 0, 420, Short.MAX_VALUE)
-                    .addComponent(cboAudioSystems, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(cboAudioMicrophones, 0, 549, Short.MAX_VALUE)
+                    .addComponent(cboAudioSystems, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(panSettingsAudiosLayout.createSequentialGroup()
+                        .addComponent(spinAudioDelay, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panSettingsAudiosLayout.setVerticalGroup(
@@ -712,6 +731,10 @@ public class MainVersion3 extends javax.swing.JFrame {
                 .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
                     .addComponent(cboAudioSystems, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10)
+                    .addComponent(spinAudioDelay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -761,9 +784,9 @@ public class MainVersion3 extends javax.swing.JFrame {
             .addGroup(panOptionsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(panSettingsAudios, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panSettingsVideos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(135, Short.MAX_VALUE))
+                .addContainerGap(284, Short.MAX_VALUE))
         );
 
         tabs.addTab("Options", panOptions);
@@ -950,7 +973,7 @@ public class MainVersion3 extends javax.swing.JFrame {
             } catch (InterruptedException ex) {
                 Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
             }
-            mFFMpeg.setAudio((FFMpeg.AudioRate) cboAudioBitrate.getSelectedItem(), audio);
+            mFFMpeg.setAudio((FFMpeg.AudioRate) cboAudioBitrate.getSelectedItem(), audio,(Float)spinAudioDelay.getValue());
             mFFMpeg.setPreset((FFMpeg.Presets) cboVideoPresets.getSelectedItem());
             mFFMpeg.setOutputFormat((FFMpeg.FORMATS) cboTarget.getSelectedItem(), (FFMpeg.Presets) cboVideoPresets.getSelectedItem(), (Integer) numVideoBitrate.getValue(), "", txtRTMPKey.getText(), mVideoOutputFolder);
             new Thread(mFFMpeg).start();
@@ -1153,6 +1176,16 @@ public class MainVersion3 extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_mnuMainRemoveActionPerformed
 
+    private void spinAudioDelayPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_spinAudioDelayPropertyChange
+        java.util.prefs.Preferences p = java.util.prefs.Preferences.userRoot().node("screenstudio");
+        p.putFloat("audiodelay", (Float)spinAudioDelay.getValue());
+        try {
+            p.flush();
+        } catch (BackingStoreException ex) {
+            Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_spinAudioDelayPropertyChange
+
     /**
      * @param args the command line arguments
      */
@@ -1197,6 +1230,7 @@ public class MainVersion3 extends javax.swing.JFrame {
     private javax.swing.JComboBox<FFMpeg.FORMATS> cboTarget;
     private javax.swing.JComboBox<FFMpeg.Presets> cboVideoPresets;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1236,6 +1270,7 @@ public class MainVersion3 extends javax.swing.JFrame {
     private javax.swing.JPanel panStatus;
     private javax.swing.JPanel panTargetSettings;
     private javax.swing.JScrollPane scrollSources;
+    private javax.swing.JSpinner spinAudioDelay;
     private javax.swing.JSpinner spinFPS;
     private javax.swing.JSpinner spinHeight;
     private javax.swing.JSpinner spinWidth;
