@@ -696,9 +696,9 @@ public class MainVersion3 extends javax.swing.JFrame {
 
         spinAudioDelay.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(-5.0f), Float.valueOf(5.0f), Float.valueOf(0.1f)));
         spinAudioDelay.setEditor(new javax.swing.JSpinner.NumberEditor(spinAudioDelay, "#.#"));
-        spinAudioDelay.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                spinAudioDelayPropertyChange(evt);
+        spinAudioDelay.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                spinAudioDelayStateChanged(evt);
             }
         });
 
@@ -973,7 +973,7 @@ public class MainVersion3 extends javax.swing.JFrame {
             } catch (InterruptedException ex) {
                 Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
             }
-            mFFMpeg.setAudio((FFMpeg.AudioRate) cboAudioBitrate.getSelectedItem(), audio,(Float)spinAudioDelay.getValue());
+            mFFMpeg.setAudio((FFMpeg.AudioRate) cboAudioBitrate.getSelectedItem(), audio, (Float) spinAudioDelay.getValue());
             mFFMpeg.setPreset((FFMpeg.Presets) cboVideoPresets.getSelectedItem());
             mFFMpeg.setOutputFormat((FFMpeg.FORMATS) cboTarget.getSelectedItem(), (FFMpeg.Presets) cboVideoPresets.getSelectedItem(), (Integer) numVideoBitrate.getValue(), "", txtRTMPKey.getText(), mVideoOutputFolder);
             new Thread(mFFMpeg).start();
@@ -1025,14 +1025,14 @@ public class MainVersion3 extends javax.swing.JFrame {
         if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             if (chooser.getSelectedFile() != null) {
                 saveLayout(chooser.getSelectedFile());
-                p.put("lastfolder",chooser.getSelectedFile().getParent());
+                p.put("lastfolder", chooser.getSelectedFile().getParent());
                 try {
                     p.flush();
                 } catch (BackingStoreException ex) {
                     Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        }       
+        }
 
     }//GEN-LAST:event_mnuFileSaveActionPerformed
 
@@ -1057,7 +1057,7 @@ public class MainVersion3 extends javax.swing.JFrame {
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             if (chooser.getSelectedFile() != null) {
                 loadLayout(chooser.getSelectedFile());
-                p.put("lastfolder",chooser.getSelectedFile().getParent());
+                p.put("lastfolder", chooser.getSelectedFile().getParent());
                 try {
                     p.flush();
                 } catch (BackingStoreException ex) {
@@ -1176,15 +1176,15 @@ public class MainVersion3 extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_mnuMainRemoveActionPerformed
 
-    private void spinAudioDelayPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_spinAudioDelayPropertyChange
+    private void spinAudioDelayStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spinAudioDelayStateChanged
         java.util.prefs.Preferences p = java.util.prefs.Preferences.userRoot().node("screenstudio");
-        p.putFloat("audiodelay", (Float)spinAudioDelay.getValue());
+        p.putFloat("audiodelay", (Float) spinAudioDelay.getValue());
         try {
             p.flush();
         } catch (BackingStoreException ex) {
             Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_spinAudioDelayPropertyChange
+    }//GEN-LAST:event_spinAudioDelayStateChanged
 
     /**
      * @param args the command line arguments
