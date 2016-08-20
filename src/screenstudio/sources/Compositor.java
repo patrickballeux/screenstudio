@@ -19,8 +19,11 @@ package screenstudio.sources;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JTable;
 import screenstudio.targets.Layout;
 
@@ -31,36 +34,51 @@ import screenstudio.targets.Layout;
 public class Compositor implements Runnable {
 
     private final java.util.List<Source> mSources;
-    private BufferedImage mImage;
     private boolean mStopMe = false;
     private final int mFPS;
     private final Rectangle mOutputSize;
+    private byte[] mData;
+    private boolean drawing = false;
 
     public Compositor(java.util.List<Source> sources, Rectangle outputSize, int fps) {
         sources.sort((a, b) -> Integer.compare(b.getZOrder(), a.getZOrder()));
         mSources = sources;
         mOutputSize = outputSize;
         mFPS = fps;
+        mData = new byte[mOutputSize.width*mOutputSize.height*3];
     }
 
+    public byte[] getData(){
+        while(drawing){
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Compositor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return mData;
+    }
     @Override
     public void run() {
         mStopMe = false;
-        mImage = new BufferedImage(mOutputSize.width, mOutputSize.height, BufferedImage.TYPE_3BYTE_BGR);
-        
         for (Source s : mSources) {
             new Thread(s).start();
         }
         long frameTime = (1000000000 / mFPS);
         long nextPTS = System.nanoTime() + frameTime;
+        BufferedImage img = new BufferedImage(mOutputSize.width, mOutputSize.height, BufferedImage.TYPE_3BYTE_BGR);
+        Graphics2D g = img.createGraphics();
+        byte[] data = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
+        mData = new byte[data.length];
         while (!mStopMe) {
-            BufferedImage img = new BufferedImage(mOutputSize.width, mOutputSize.height, BufferedImage.TYPE_3BYTE_BGR);
-            Graphics2D g = img.createGraphics();
             for (Source s : mSources) {
                 g.setComposite(s.getAlpha());
                 g.drawImage(s.getImage(), s.getBounds().x, s.getBounds().y, null);
             }
-            mImage = img;
+            drawing = true;
+            mData = new byte[data.length];
+            System.arraycopy(data, 0, mData,0, mData.length);
+            drawing = false;
             while (nextPTS - System.nanoTime() > 0) {
                 long wait = nextPTS - System.nanoTime();
                 if (wait > 0) {
@@ -80,10 +98,6 @@ public class Compositor implements Runnable {
 
     public int getFPS() {
         return mFPS;
-    }
-
-    public BufferedImage getImage() {
-        return mImage;
     }
 
     public int getWidth() {

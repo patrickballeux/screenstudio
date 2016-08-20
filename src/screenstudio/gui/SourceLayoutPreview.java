@@ -17,12 +17,14 @@
 package screenstudio.gui;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -88,10 +90,10 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
             }
             x = (getWidth() - w) / 2;
             if (compositer != null) {
-                BufferedImage img = compositer.getImage();
-                if (img != null) {
-                    g.drawImage(img.getScaledInstance(w, h, Image.SCALE_FAST), x, y, this);
-                }
+                BufferedImage img = new BufferedImage(outputSize.width,outputSize.height,BufferedImage.TYPE_3BYTE_BGR);
+                byte[] data = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
+                System.arraycopy(compositer.getData(), 0, data, 0,data.length);
+                g.drawImage(img.getScaledInstance(w, h, Image.SCALE_FAST), x, y, this);
             } else {
                 int fontSize = h / 25;
                 Font font = new Font(getFont().getFontName(),getFont().getStyle(),fontSize);
@@ -196,6 +198,14 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                 formMouseDragged(evt);
             }
         });
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                formMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                formMouseReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -248,6 +258,14 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
             repaint();
         }
     }//GEN-LAST:event_formMouseDragged
+
+    private void formMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMousePressed
+        this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    }//GEN-LAST:event_formMousePressed
+
+    private void formMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseReleased
+        this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_formMouseReleased
 
     private Point getTranslatedPosition(int mouseX, int mouseY) {
         int w = outputSize.width;

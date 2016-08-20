@@ -118,9 +118,6 @@ public class MainVersion3 extends javax.swing.JFrame {
         cboAudioSystems.setEnabled(enabled);
         txtRTMPKey.setEnabled(enabled);
         cboRTMPServers.setEnabled(enabled);
-        chkShortcutsControl.setEnabled(enabled);
-        chkShortcutsShift.setEnabled(enabled);
-        choShortcutsAlt.setEnabled(enabled);
         spinWidth.setEnabled(enabled);
         spinHeight.setEnabled(enabled);
         numVideoBitrate.setEnabled(enabled);
@@ -158,11 +155,6 @@ public class MainVersion3 extends javax.swing.JFrame {
             lblVideoFolder.setText(mVideoOutputFolder.getAbsolutePath());
             lblVideoFolder.setToolTipText(mVideoOutputFolder.getAbsolutePath());
             spinWidth.setValue(layout.getOutputWidth());
-            String shortcut = layout.getShortcutCapture();
-            chkShortcutsControl.setSelected(shortcut.contains("ctrl"));
-            chkShortcutsShift.setSelected(shortcut.contains("shift"));
-            choShortcutsAlt.setSelected(shortcut.contains("alt"));
-            cboShortcutsKeys.setSelectedItem(shortcut.substring(shortcut.length() - 1));
             numVideoBitrate.setValue(layout.getVideoBitrate());
 
             // load sources...
@@ -249,18 +241,6 @@ public class MainVersion3 extends javax.swing.JFrame {
         layout.setOutputTarget(cboTarget.getItemAt(cboTarget.getSelectedIndex()));
         layout.setOutputVideoFolder(mVideoOutputFolder);
         layout.setOutputWith((Integer) spinWidth.getValue());
-        String shortcut = "";
-        if (chkShortcutsControl.isSelected()) {
-            shortcut += "ctrl ";
-        }
-        if (chkShortcutsShift.isSelected()) {
-            shortcut += "shift ";
-        }
-        if (choShortcutsAlt.isSelected()) {
-            shortcut += "alt ";
-        }
-        shortcut += cboShortcutsKeys.getSelectedItem().toString();
-        layout.setShortcutsCapture(shortcut.trim());
         layout.setVideoBitrate((Integer) numVideoBitrate.getValue());
 
         List<Source> sources = Compositor.getSources(tableSources, (Integer) spinFPS.getValue());
@@ -427,12 +407,6 @@ public class MainVersion3 extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         cboAudioMicrophones = new javax.swing.JComboBox<>();
         cboAudioSystems = new javax.swing.JComboBox<>();
-        panSettingsShortCuts = new javax.swing.JPanel();
-        jLabel10 = new javax.swing.JLabel();
-        chkShortcutsControl = new javax.swing.JCheckBox();
-        choShortcutsAlt = new javax.swing.JCheckBox();
-        chkShortcutsShift = new javax.swing.JCheckBox();
-        cboShortcutsKeys = new javax.swing.JComboBox<>();
         panSettingsVideos = new javax.swing.JPanel();
         lblVideoFolder = new javax.swing.JLabel();
         btnSetVideoFolder = new javax.swing.JButton();
@@ -724,7 +698,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                     .addComponent(jLabel9))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cboAudioMicrophones, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(cboAudioMicrophones, 0, 549, Short.MAX_VALUE)
                     .addComponent(cboAudioSystems, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -738,49 +712,6 @@ public class MainVersion3 extends javax.swing.JFrame {
                 .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
                     .addComponent(cboAudioSystems, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        panSettingsShortCuts.setBorder(javax.swing.BorderFactory.createTitledBorder("Shortcuts"));
-
-        jLabel10.setText("Capture/Stop");
-
-        chkShortcutsControl.setText("Control");
-
-        choShortcutsAlt.setText("Alt");
-
-        chkShortcutsShift.setText("Shift");
-
-        cboShortcutsKeys.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" }));
-        cboShortcutsKeys.setSelectedIndex(17);
-
-        javax.swing.GroupLayout panSettingsShortCutsLayout = new javax.swing.GroupLayout(panSettingsShortCuts);
-        panSettingsShortCuts.setLayout(panSettingsShortCutsLayout);
-        panSettingsShortCutsLayout.setHorizontalGroup(
-            panSettingsShortCutsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panSettingsShortCutsLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel10)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(chkShortcutsControl)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(choShortcutsAlt)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(chkShortcutsShift)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(cboShortcutsKeys, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(371, Short.MAX_VALUE))
-        );
-        panSettingsShortCutsLayout.setVerticalGroup(
-            panSettingsShortCutsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panSettingsShortCutsLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panSettingsShortCutsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel10)
-                    .addComponent(chkShortcutsControl)
-                    .addComponent(choShortcutsAlt)
-                    .addComponent(chkShortcutsShift)
-                    .addComponent(cboShortcutsKeys, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -822,7 +753,6 @@ public class MainVersion3 extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(panOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panSettingsAudios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panSettingsShortCuts, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(panSettingsVideos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -831,11 +761,9 @@ public class MainVersion3 extends javax.swing.JFrame {
             .addGroup(panOptionsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(panSettingsAudios, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panSettingsShortCuts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(panSettingsVideos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(135, Short.MAX_VALUE))
         );
 
         tabs.addTab("Options", panOptions);
@@ -1211,14 +1139,9 @@ public class MainVersion3 extends javax.swing.JFrame {
     private javax.swing.JComboBox<Microphone> cboAudioMicrophones;
     private javax.swing.JComboBox<Microphone> cboAudioSystems;
     private javax.swing.JComboBox<String> cboRTMPServers;
-    private javax.swing.JComboBox<String> cboShortcutsKeys;
     private javax.swing.JComboBox<FFMpeg.FORMATS> cboTarget;
     private javax.swing.JComboBox<FFMpeg.Presets> cboVideoPresets;
-    private javax.swing.JCheckBox chkShortcutsControl;
-    private javax.swing.JCheckBox chkShortcutsShift;
-    private javax.swing.JCheckBox choShortcutsAlt;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1253,7 +1176,6 @@ public class MainVersion3 extends javax.swing.JFrame {
     private javax.swing.JPanel panOutput;
     private javax.swing.JPanel panPreviewLayout;
     private javax.swing.JPanel panSettingsAudios;
-    private javax.swing.JPanel panSettingsShortCuts;
     private javax.swing.JPanel panSettingsVideos;
     private javax.swing.JPanel panSources;
     private javax.swing.JPanel panStatus;

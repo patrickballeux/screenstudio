@@ -315,45 +315,41 @@ public class FFMpeg implements Runnable {
     }
 
     private void initDefaults() {
-        File folder = new File("FFMPEG");
-        if (folder.exists()) {
-            File file;
-            if (Screen.isOSX()) {
-                file = new File(folder, "osx.properties");
-            } else {
-                file = new File(folder, "default.properties");
-            }
-            if (file.exists()) {
-                try {
-                    Properties p = new Properties();
-                    try (InputStream in = file.toURI().toURL().openStream()) {
-                        p.load(in);
-                    }
-                    bin = p.getProperty("BIN", "ffmpeg") + " ";
-                    nonVerboseMode = p.getProperty("NONVERBOSEMODE", " -nostats -loglevel 0 ") + " ";
-                    //Main input
-                    desktopFormat = p.getProperty("DESKTOPFORMAT", "x11grab") + " ";
-                    webcamFormat = p.getProperty("WEBCAMFORMAT", "v4l2");
-                    // Audio
-                    audioInput = p.getProperty("DEFAULTAUDIO", "default") + " ";
-                    audioFormat = p.getProperty("AUDIOFORMAT", "pulse") + " ";
-                    //Output
-                    strictSetting = p.getProperty("STRICTSETTINGS", "-2") + " ";
-                    //HOME
-                    mHome = new File(p.getProperty("HOME", ".").replaceAll("~", System.getProperty("user.home")));
-                    if (!mHome.exists()) {
-                        mHome.mkdirs();
-                    }
-                    mThreading = p.getProperty("THREADING", mThreading);
 
-                } catch (MalformedURLException ex) {
-                    Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (IOException ex) {
-                    Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-            }
+        InputStream in = null;
+        if (Screen.isOSX()) {
+            in = FFMpeg.class.getResourceAsStream("/screenstudio/encoder/osx.properties");
+        } else {
+            in = FFMpeg.class.getResourceAsStream("/screenstudio/encoder/default.properties");
         }
+
+        try {
+            Properties p = new Properties();
+            p.load(in);
+            bin = p.getProperty("BIN", "ffmpeg") + " ";
+            nonVerboseMode = p.getProperty("NONVERBOSEMODE", " -nostats -loglevel 0 ") + " ";
+            //Main input
+            desktopFormat = p.getProperty("DESKTOPFORMAT", "x11grab") + " ";
+            webcamFormat = p.getProperty("WEBCAMFORMAT", "v4l2");
+            // Audio
+            audioInput = p.getProperty("DEFAULTAUDIO", "default") + " ";
+            audioFormat = p.getProperty("AUDIOFORMAT", "pulse") + " ";
+            //Output
+            strictSetting = p.getProperty("STRICTSETTINGS", "-2") + " ";
+            //HOME
+            mHome = new File(p.getProperty("HOME", ".").replaceAll("~", System.getProperty("user.home")));
+            if (!mHome.exists()) {
+                mHome.mkdirs();
+            }
+            mThreading = p.getProperty("THREADING", mThreading);
+            in.close();
+
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     @Override
@@ -370,10 +366,7 @@ public class FFMpeg implements Runnable {
             long nextPTS = System.nanoTime() + frameTime;
             OutputStream out = p.getOutputStream();//new FileOutputStream(fifo);
             while (!mStopMe) {
-                if (compositor.getImage() != null) {
-                    byte[] data = ((DataBufferByte) compositor.getImage().getRaster().getDataBuffer()).getData();
-                    out.write(data);
-                }
+                out.write(compositor.getData());
                 while (nextPTS - System.nanoTime() > 0) {
                     long wait = nextPTS - System.nanoTime();
                     if (wait > 0) {
