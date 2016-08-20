@@ -30,6 +30,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
+import javax.swing.ToolTipManager;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.xml.parsers.ParserConfigurationException;
@@ -68,6 +69,8 @@ public class MainVersion3 extends javax.swing.JFrame {
         panPreviewLayout.add(mLayoutPreview, BorderLayout.CENTER);
         this.setTitle("ScreenStudio " + screenstudio.Version.MAIN);
         this.setSize(700, 400);
+        ToolTipManager.sharedInstance().setDismissDelay(8000);
+        ToolTipManager.sharedInstance().setInitialDelay(2000);
     }
 
     private void initControls() {
@@ -296,6 +299,7 @@ public class MainVersion3 extends javax.swing.JFrame {
             for (Webcam w : Webcam.getSources()) {
                 JMenuItem menu = new JMenuItem(w.getDescription());
                 menu.setActionCommand(w.getDevice());
+                menu.setToolTipText("Device: " + w.getDevice());
                 menu.addActionListener((ActionEvent e) -> {
                     DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
                     Object[] row = new Object[model.getColumnCount()];
@@ -336,6 +340,7 @@ public class MainVersion3 extends javax.swing.JFrame {
             for (Screen s : Screen.getSources()) {
                 JMenuItem menu = new JMenuItem(s.getDetailledLabel());
                 menu.setActionCommand(s.getId());
+                menu.setToolTipText("Size: " + s.getDetailledLabel());
                 menu.addActionListener((ActionEvent e) -> {
                     DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
                     Object[] row = new Object[model.getColumnCount()];
@@ -695,6 +700,7 @@ public class MainVersion3 extends javax.swing.JFrame {
         jLabel10.setText("Audio Delay");
 
         spinAudioDelay.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(-5.0f), Float.valueOf(5.0f), Float.valueOf(0.1f)));
+        spinAudioDelay.setToolTipText("<HTML><BODY>\nApply a delay (in seconds) to the audio.\n<BR><I>If video is late, apply a positive value...</I>\n</BODY></HTML>");
         spinAudioDelay.setEditor(new javax.swing.JSpinner.NumberEditor(spinAudioDelay, "#.#"));
         spinAudioDelay.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -846,6 +852,7 @@ public class MainVersion3 extends javax.swing.JFrame {
         mnuEdit.add(mnuMainDestops);
 
         mnuMainAddImage.setText("Add Image...");
+        mnuMainAddImage.setToolTipText("Browse your hard disk to add a source image file");
         mnuMainAddImage.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuMainAddImageActionPerformed(evt);
@@ -854,6 +861,7 @@ public class MainVersion3 extends javax.swing.JFrame {
         mnuEdit.add(mnuMainAddImage);
 
         mnuMainAddLabel.setText("Add Label");
+        mnuMainAddLabel.setToolTipText("<HTML><BODY>\nAdd a new text label.  \n<BR>Double-click on the source to edit the content.\n</BODY></HTML>");
         mnuMainAddLabel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuMainAddLabelActionPerformed(evt);
@@ -864,6 +872,7 @@ public class MainVersion3 extends javax.swing.JFrame {
 
         mnuMainMoveUp.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_UP, java.awt.event.InputEvent.ALT_MASK));
         mnuMainMoveUp.setText("Move Up");
+        mnuMainMoveUp.setToolTipText("Move the currently selected source to a higher layer");
         mnuMainMoveUp.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuMainMoveUpActionPerformed(evt);
@@ -873,6 +882,7 @@ public class MainVersion3 extends javax.swing.JFrame {
 
         mnuMainMoveDown.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DOWN, java.awt.event.InputEvent.ALT_MASK));
         mnuMainMoveDown.setText("Move Down");
+        mnuMainMoveDown.setToolTipText("Move the currently selected source to a lower layer");
         mnuMainMoveDown.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuMainMoveDownActionPerformed(evt);
@@ -883,6 +893,7 @@ public class MainVersion3 extends javax.swing.JFrame {
 
         mnuMainRemove.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
         mnuMainRemove.setText("Remove Source");
+        mnuMainRemove.setToolTipText("Remove the currently selected source");
         mnuMainRemove.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuMainRemoveActionPerformed(evt);

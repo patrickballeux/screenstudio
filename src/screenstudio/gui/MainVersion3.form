@@ -67,6 +67,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="mnuMainAddImage">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Add Image..."/>
+                <Property name="toolTipText" type="java.lang.String" value="Browse your hard disk to add a source image file"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnuMainAddImageActionPerformed"/>
@@ -75,6 +76,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="mnuMainAddLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Add Label"/>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;HTML&gt;&lt;BODY&gt;&#xa;Add a new text label.  &#xa;&lt;BR&gt;Double-click on the source to edit the content.&#xa;&lt;/BODY&gt;&lt;/HTML&gt;"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnuMainAddLabelActionPerformed"/>
@@ -88,6 +90,7 @@
                   <KeyStroke key="Alt+UP"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Move Up"/>
+                <Property name="toolTipText" type="java.lang.String" value="Move the currently selected source to a higher layer"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnuMainMoveUpActionPerformed"/>
@@ -99,6 +102,7 @@
                   <KeyStroke key="Alt+DOWN"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Move Down"/>
+                <Property name="toolTipText" type="java.lang.String" value="Move the currently selected source to a lower layer"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnuMainMoveDownActionPerformed"/>
@@ -112,6 +116,7 @@
                   <KeyStroke key="DELETE"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Remove Source"/>
+                <Property name="toolTipText" type="java.lang.String" value="Remove the currently selected source"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnuMainRemoveActionPerformed"/>
@@ -683,6 +688,7 @@
                     <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                       <SpinnerModel initial="0.0" maximum="5.0" minimum="-5.0" numberType="java.lang.Float" stepSize="0.1" type="number"/>
                     </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="&lt;HTML&gt;&lt;BODY&gt;&#xa;Apply a delay (in seconds) to the audio.&#xa;&lt;BR&gt;&lt;I&gt;If video is late, apply a positive value...&lt;/I&gt;&#xa;&lt;/BODY&gt;&lt;/HTML&gt;"/>
                     <Property name="editor" type="javax.swing.JComponent" editor="org.netbeans.modules.form.editors.SpinnerEditorEditor">
                       <SpinnerEditor format="#.#" type="3"/>
                     </Property>
