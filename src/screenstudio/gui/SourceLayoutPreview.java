@@ -193,6 +193,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
 
         setBackground(new java.awt.Color(51, 51, 51));
         setComponentPopupMenu(popPreview);
+        setPreferredSize(new java.awt.Dimension(320, 240));
         addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseDragged(java.awt.event.MouseEvent evt) {
                 formMouseDragged(evt);
@@ -211,11 +212,11 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGap(0, 291, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGap(0, 173, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 

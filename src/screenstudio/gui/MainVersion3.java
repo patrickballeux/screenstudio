@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.BackingStoreException;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
@@ -66,6 +67,7 @@ public class MainVersion3 extends javax.swing.JFrame {
         mLayoutPreview.setOutputHeight((Integer) spinHeight.getValue());
         panPreviewLayout.add(mLayoutPreview, BorderLayout.CENTER);
         this.setTitle("ScreenStudio " + screenstudio.Version.MAIN);
+        this.setSize(700, 400);
     }
 
     private void initControls() {
@@ -981,7 +983,9 @@ public class MainVersion3 extends javax.swing.JFrame {
     }//GEN-LAST:event_mnuCaptureActionPerformed
 
     private void mnuFileSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFileSaveActionPerformed
-        JFileChooser chooser = new JFileChooser();
+        java.util.prefs.Preferences p = java.util.prefs.Preferences.userRoot().node("screenstudio");
+        String lastFolder = p.get("lastfolder", ".");
+        JFileChooser chooser = new JFileChooser(new File(lastFolder));
         chooser.setAcceptAllFileFilterUsed(false);
         chooser.setFileFilter(new FileFilter() {
             @Override
@@ -995,17 +999,25 @@ public class MainVersion3 extends javax.swing.JFrame {
             }
         });
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        chooser.showSaveDialog(this);
-        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+        if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             if (chooser.getSelectedFile() != null) {
                 saveLayout(chooser.getSelectedFile());
+                p.put("lastfolder",chooser.getSelectedFile().getParent());
+                try {
+                    p.flush();
+                } catch (BackingStoreException ex) {
+                    Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-        }
+        }       
 
     }//GEN-LAST:event_mnuFileSaveActionPerformed
 
     private void mnuFileLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFileLoadActionPerformed
-        JFileChooser chooser = new JFileChooser();
+        // load last folder...
+        java.util.prefs.Preferences p = java.util.prefs.Preferences.userRoot().node("screenstudio");
+        String lastFolder = p.get("lastfolder", ".");
+        JFileChooser chooser = new JFileChooser(new File(lastFolder));
         chooser.setAcceptAllFileFilterUsed(false);
         chooser.setFileFilter(new FileFilter() {
             @Override
@@ -1022,6 +1034,12 @@ public class MainVersion3 extends javax.swing.JFrame {
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             if (chooser.getSelectedFile() != null) {
                 loadLayout(chooser.getSelectedFile());
+                p.put("lastfolder",chooser.getSelectedFile().getParent());
+                try {
+                    p.flush();
+                } catch (BackingStoreException ex) {
+                    Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
 
