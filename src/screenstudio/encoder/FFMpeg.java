@@ -166,6 +166,7 @@ public class FFMpeg implements Runnable {
      * @param videoBitrate
      * @param server
      * @param key
+     * @param outputFolder
      */
     public void setOutputFormat(FORMATS format, Presets p, int videoBitrate, String server, String key, File outputFolder) {
         switch (format) {

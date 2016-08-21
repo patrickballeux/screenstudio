@@ -188,9 +188,9 @@ public class MainVersion3 extends javax.swing.JFrame {
             spinFPS.setValue(layout.getOutputFramerate());
             spinHeight.setValue(layout.getOutputHeight());
             cboVideoPresets.setSelectedItem(layout.getOutputPreset());
+            cboTarget.setSelectedItem(layout.getOutputTarget());
             txtRTMPKey.setText(layout.getOutputRTMPKey());
             cboRTMPServers.setSelectedItem(layout.getOutputRTMPServer());
-            cboTarget.setSelectedItem(layout.getOutputTarget());
             mVideoOutputFolder = layout.getOutputVideoFolder();
             lblVideoFolder.setText(mVideoOutputFolder.getAbsolutePath());
             lblVideoFolder.setToolTipText(mVideoOutputFolder.getAbsolutePath());
@@ -1044,7 +1044,12 @@ public class MainVersion3 extends javax.swing.JFrame {
                 }
                 mFFMpeg.setAudio((FFMpeg.AudioRate) cboAudioBitrate.getSelectedItem(), audio, (Float) spinAudioDelay.getValue());
                 mFFMpeg.setPreset((FFMpeg.Presets) cboVideoPresets.getSelectedItem());
-                mFFMpeg.setOutputFormat((FFMpeg.FORMATS) cboTarget.getSelectedItem(), (FFMpeg.Presets) cboVideoPresets.getSelectedItem(), (Integer) numVideoBitrate.getValue(), "", txtRTMPKey.getText(), mVideoOutputFolder);
+                String server = "";
+                if (cboRTMPServers.getSelectedItem()!= null){
+                    server = cboRTMPServers.getSelectedItem().toString();
+                    server = server.split(";")[1];
+                }
+                mFFMpeg.setOutputFormat((FFMpeg.FORMATS) cboTarget.getSelectedItem(), (FFMpeg.Presets) cboVideoPresets.getSelectedItem(), (Integer) numVideoBitrate.getValue(),server , txtRTMPKey.getText(), mVideoOutputFolder);
                 new Thread(mFFMpeg).start();
                 lblMessages.setText("Recording...");
                 mnuCapture.setText("Stop");
