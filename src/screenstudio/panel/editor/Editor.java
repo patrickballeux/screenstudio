@@ -6,6 +6,7 @@
 package screenstudio.panel.editor;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -26,8 +27,13 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.colorchooser.ColorSelectionModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import screenstudio.gui.LabelText;
 
 /**
  *
@@ -37,8 +43,10 @@ public class Editor extends javax.swing.JDialog {
 
     String mUserContent = "";
     File currentFile = null;
-    String returnContent = "";
+    LabelText returnContent;
     boolean isModified = false;
+    private JColorChooser foreground;
+    private JColorChooser background;
 
     /**
      * Creates new form Main
@@ -49,6 +57,7 @@ public class Editor extends javax.swing.JDialog {
     public Editor(File file, String userContent, int panelWidth) {
         initComponents();
         currentFile = file;
+
         try {
             this.setIconImage(new ImageIcon(this.getClass().getResource("icon.png").toURI().toURL()).getImage());
         } catch (URISyntaxException | MalformedURLException ex) {
@@ -69,18 +78,39 @@ public class Editor extends javax.swing.JDialog {
         setSize(700, 500);
     }
 
-    public Editor(String content,JFrame owner) {
+    public Editor(LabelText content, JFrame owner) {
         super(owner);
         initComponents();
         currentFile = null;
-        returnContent= content;
+        returnContent = content;
+        foreground = new JColorChooser(new Color(returnContent.getForegroundColor()));
+        tabs.add("Foreground color", foreground);
+
+        foreground.getSelectionModel().addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                lblPreview.setForeground(((ColorSelectionModel) e.getSource()).getSelectedColor());
+                returnContent.setForegroundColor(lblPreview.getForeground().getRGB());
+            }
+        });
+
+        background = new JColorChooser(new Color(returnContent.getBackgroundColor()));
+        tabs.add("Background color", background);
+        background.getSelectionModel().addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                lblPreview.setBackground(((ColorSelectionModel) e.getSource()).getSelectedColor());
+                returnContent.setBackgroundColor(lblPreview.getBackground().getRGB());
+            }
+        });
+
         try {
             this.setIconImage(new ImageIcon(this.getClass().getResource("icon.png").toURI().toURL()).getImage());
         } catch (URISyntaxException | MalformedURLException ex) {
             Logger.getLogger(Editor.class.getName()).log(Level.SEVERE, null, ex);
         }
         mUserContent = "";
-        txtEditor.setText(content);
+        txtEditor.setText(content.getText());
         txtEditor.setText(capitalizeKeyworkds(txtEditor.getText()));
         try {
             lblPreview.setText(replaceTags(txtEditor.getText()));
@@ -88,11 +118,12 @@ public class Editor extends javax.swing.JDialog {
             //do nothing...
         }
         lblPreview.setPreferredSize(new Dimension(200 + (lblPreview.getBorder().getBorderInsets(lblPreview).right * 2), 300));
-        setSize(600, 300);
+        setSize(600, 600);
+
     }
 
-    public String getText() {
-        return txtEditor.getText();
+    public LabelText getLabelText() {
+        return returnContent;
     }
 
     /**
@@ -105,6 +136,7 @@ public class Editor extends javax.swing.JDialog {
     private void initComponents() {
 
         lblPreview = new javax.swing.JLabel();
+        tabs = new javax.swing.JTabbedPane();
         scrollEditor = new javax.swing.JScrollPane();
         txtEditor = new javax.swing.JTextArea();
         menu = new javax.swing.JMenuBar();
@@ -117,9 +149,6 @@ public class Editor extends javax.swing.JDialog {
         mnuEditCopy = new javax.swing.JMenuItem();
         mnuEditCut = new javax.swing.JMenuItem();
         mnuEditPaste = new javax.swing.JMenuItem();
-        mnuView = new javax.swing.JMenu();
-        mnuViewPanel = new javax.swing.JMenuItem();
-        mnuViewBanner = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Screen Studio Panel Editor");
@@ -152,7 +181,9 @@ public class Editor extends javax.swing.JDialog {
         });
         scrollEditor.setViewportView(txtEditor);
 
-        getContentPane().add(scrollEditor, java.awt.BorderLayout.CENTER);
+        tabs.addTab("Text", scrollEditor);
+
+        getContentPane().add(tabs, java.awt.BorderLayout.CENTER);
 
         mnuFile.setText("File");
 
@@ -216,26 +247,6 @@ public class Editor extends javax.swing.JDialog {
         mnuEdit.add(mnuEditPaste);
 
         menu.add(mnuEdit);
-
-        mnuView.setText("View");
-
-        mnuViewPanel.setText("Panel Mode");
-        mnuViewPanel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mnuViewPanelActionPerformed(evt);
-            }
-        });
-        mnuView.add(mnuViewPanel);
-
-        mnuViewBanner.setText("Banner Mode");
-        mnuViewBanner.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mnuViewBannerActionPerformed(evt);
-            }
-        });
-        mnuView.add(mnuViewBanner);
-
-        menu.add(mnuView);
 
         setJMenuBar(menu);
 
@@ -332,37 +343,17 @@ public class Editor extends javax.swing.JDialog {
 
     private void mnuFileExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFileExitActionPerformed
         //Add validation if content was not saved...
-        returnContent = txtEditor.getText();
+        returnContent = new LabelText(txtEditor.getText());
+        returnContent.setForegroundColor(foreground.getColor().getRGB());
+        returnContent.setBackgroundColor(background.getColor().getRGB());
         this.dispose();
     }//GEN-LAST:event_mnuFileExitActionPerformed
 
-    private void txtEditorKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtEditorKeyReleased
-        try {
-            // To prevent runtime exception when quotation is not closed...
-            if (evt.getKeyCode() != KeyEvent.VK_QUOTE && evt.getKeyCode() != KeyEvent.VK_QUOTEDBL) {
-                lblPreview.setText(replaceTags(txtEditor.getText()));
-            }
-        } catch (RuntimeException ex) {
-            //do nothing...
-        }
-        switch (evt.getKeyCode()) {
-            case KeyEvent.VK_ENTER:
-            case KeyEvent.VK_SPACE:
-            case KeyEvent.VK_GREATER:
-                isModified = true;
-                int pos = txtEditor.getCaretPosition();
-                String html = capitalizeKeyworkds(txtEditor.getText());
-                txtEditor.setText(html);
-                txtEditor.setCaretPosition(pos);
-                break;
-            default:
-                isModified = isModified || (evt.getKeyChar() + "").trim().length() == 1;
-                break;
-        }
-        lblPreview.repaint();
-    }//GEN-LAST:event_txtEditorKeyReleased
-
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        returnContent = new LabelText(txtEditor.getText());
+        returnContent.setForegroundColor(foreground.getColor().getRGB());
+        returnContent.setBackgroundColor(background.getColor().getRGB());
+
         if (this.currentFile != null && isModified) {
             // warn saving...
             EditorWarning confirm = new EditorWarning(null, true);
@@ -409,21 +400,31 @@ public class Editor extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_mnuEditPasteActionPerformed
 
-    private void mnuViewPanelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuViewPanelActionPerformed
-        this.remove(lblPreview);
-        lblPreview.setPreferredSize(new Dimension(320, 500));
-        this.add(lblPreview, BorderLayout.EAST);
-        this.doLayout();
-        this.revalidate();
-    }//GEN-LAST:event_mnuViewPanelActionPerformed
-
-    private void mnuViewBannerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuViewBannerActionPerformed
-        this.remove(lblPreview);
-        lblPreview.setPreferredSize(new Dimension(500, 200));
-        this.add(lblPreview, BorderLayout.SOUTH);
-        this.doLayout();
-        this.revalidate();
-    }//GEN-LAST:event_mnuViewBannerActionPerformed
+    private void txtEditorKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtEditorKeyReleased
+        try {
+            // To prevent runtime exception when quotation is not closed...
+            if (evt.getKeyCode() != KeyEvent.VK_QUOTE && evt.getKeyCode() != KeyEvent.VK_QUOTEDBL) {
+                lblPreview.setText(replaceTags(txtEditor.getText()));
+            }
+        } catch (RuntimeException ex) {
+            //do nothing...
+        }
+        switch (evt.getKeyCode()) {
+            case KeyEvent.VK_ENTER:
+            case KeyEvent.VK_SPACE:
+            case KeyEvent.VK_GREATER:
+                isModified = true;
+                int pos = txtEditor.getCaretPosition();
+                String html = capitalizeKeyworkds(txtEditor.getText());
+                txtEditor.setText(html);
+                txtEditor.setCaretPosition(pos);
+                break;
+            default:
+                isModified = isModified || (evt.getKeyChar() + "").trim().length() == 1;
+                break;
+        }
+        lblPreview.repaint();
+    }//GEN-LAST:event_txtEditorKeyReleased
 
     private final static String[] TAGS = {
         "html", "body", "p", "hr", "br", "table", "th", "tr", "td", "span", "div", "a", "thead", "head", "h",
@@ -449,10 +450,8 @@ public class Editor extends javax.swing.JDialog {
     private javax.swing.JMenuItem mnuFileExit;
     private javax.swing.JMenuItem mnuFileOpen;
     private javax.swing.JMenuItem mnuFileSave;
-    private javax.swing.JMenu mnuView;
-    private javax.swing.JMenuItem mnuViewBanner;
-    private javax.swing.JMenuItem mnuViewPanel;
     private javax.swing.JScrollPane scrollEditor;
+    private javax.swing.JTabbedPane tabs;
     private javax.swing.JTextArea txtEditor;
     // End of variables declaration//GEN-END:variables
 }

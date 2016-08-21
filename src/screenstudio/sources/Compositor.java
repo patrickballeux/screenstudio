@@ -25,6 +25,7 @@ import java.util.List;
 import javax.swing.JTable;
 import screenstudio.gui.LabelText;
 import screenstudio.targets.Layout;
+import screenstudio.targets.Layout.SourceType;
 
 /**
  *
@@ -146,7 +147,11 @@ public class Compositor implements Runnable {
                             break;
                     }
                 } else if (source instanceof LabelText) {
-                    list.add(new SourceLabel(new Rectangle(sx, sy, sw, sh), i, alpha, ((LabelText) source).getText()));
+                    if (sources.getValueAt(i, 1) == SourceType.LabelText) {
+                        list.add(new SourceLabel(new Rectangle(sx, sy, sw, sh), i, alpha, ((LabelText) source)));
+                    } else if (sources.getValueAt(i, 1) == SourceType.LabelFile) {
+                        list.add(new SourceFileLabel(new Rectangle(sx, sy, sw, sh), i, alpha,1000, (LabelText) source));
+                    }
                 }
             }
         }

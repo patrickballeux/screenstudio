@@ -21,7 +21,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.awt.image.DataBufferInt;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,9 +40,8 @@ public abstract class Source implements Runnable {
     private int mDelayTime = 10;
     
     private BufferedImage mImage = null;
-    private boolean mImageFlip = false;
 
-    private boolean mStopMe = false;
+    protected boolean mStopMe = false;
 
     private String mID = "";
     

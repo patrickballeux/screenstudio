@@ -26,4 +26,6 @@ public class Source {
     public int Height;
     public float Alpha;
     public int Order;
+    public int foregroundColor;
+    public int backgroundColor;
 }

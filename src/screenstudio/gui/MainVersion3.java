@@ -16,9 +16,15 @@
  */
 package screenstudio.gui;
 
+import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -35,6 +41,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
+import screenstudio.Version;
 import screenstudio.encoder.FFMpeg;
 import screenstudio.panel.editor.Editor;
 import screenstudio.sources.Compositor;
@@ -55,6 +62,7 @@ public class MainVersion3 extends javax.swing.JFrame {
     private FFMpeg mFFMpeg = null;
     private File mVideoOutputFolder = new File("");
     private long mRecordingTimestamp = 0;
+    private java.awt.TrayIcon trayIcon;
 
     /**
      * Creates new form MainVersion3
@@ -71,6 +79,11 @@ public class MainVersion3 extends javax.swing.JFrame {
         this.setSize(700, 400);
         ToolTipManager.sharedInstance().setDismissDelay(8000);
         ToolTipManager.sharedInstance().setInitialDelay(2000);
+        new Thread(() -> {
+            if (Version.hasNewVersion()) {
+                lblMessages.setText("A new version is available...");
+            }
+        }).start();
     }
 
     private void initControls() {
@@ -111,6 +124,26 @@ public class MainVersion3 extends javax.swing.JFrame {
         // get audio sync
         java.util.prefs.Preferences p = java.util.prefs.Preferences.userRoot().node("screenstudio");
         spinAudioDelay.setValue(p.getFloat("audiodelay", 0));
+
+        if (SystemTray.isSupported()) {
+            trayIcon = new TrayIcon(this.getIconImage(), "ScreenStudio: Double-click to activate recording...");
+            trayIcon.setImageAutoSize(true);
+            trayIcon.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    mnuCapture.doClick();
+                }
+            });
+            try {
+                SystemTray.getSystemTray().add(trayIcon);
+            } catch (AWTException ex) {
+                Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        } else {
+            trayIcon = null;
+        }
+
     }
 
     private void updateControls(boolean enabled) {
@@ -446,6 +479,11 @@ public class MainVersion3 extends javax.swing.JFrame {
                 formWindowStateChanged(evt);
             }
         });
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jLabel1.setText("Output Format");
 
@@ -518,7 +556,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                         .addComponent(lblRTMPKey, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtRTMPKey, javax.swing.GroupLayout.PREFERRED_SIZE, 435, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(53, Short.MAX_VALUE))
         );
         panTargetSettingsLayout.setVerticalGroup(
             panTargetSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -543,7 +581,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                 .addGroup(panTargetSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblRTMPKey)
                     .addComponent(txtRTMPKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(90, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout panOutputLayout = new javax.swing.GroupLayout(panOutput);
@@ -720,7 +758,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                     .addComponent(jLabel10))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cboAudioMicrophones, 0, 549, Short.MAX_VALUE)
+                    .addComponent(cboAudioMicrophones, 0, 461, Short.MAX_VALUE)
                     .addComponent(cboAudioSystems, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(panSettingsAudiosLayout.createSequentialGroup()
                         .addComponent(spinAudioDelay, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -792,7 +830,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                 .addComponent(panSettingsAudios, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panSettingsVideos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(284, Short.MAX_VALUE))
+                .addContainerGap(174, Short.MAX_VALUE))
         );
 
         tabs.addTab("Options", panOptions);
@@ -922,10 +960,10 @@ public class MainVersion3 extends javax.swing.JFrame {
         if (evt.getClickCount() == 2) {
             int rowIndex = tableSources.getSelectedRow();
             if (tableSources.getValueAt(rowIndex, 1) == SourceType.LabelText) {
-                Editor ed = new Editor(((LabelText)tableSources.getValueAt(rowIndex, 2)).getText(), this);
+                Editor ed = new Editor(((LabelText) tableSources.getValueAt(rowIndex, 2)), this);
                 ed.setModal(true);
                 ed.setVisible(true);
-                tableSources.setValueAt(new LabelText(ed.getText()), rowIndex, 2);
+                tableSources.setValueAt(ed.getLabelText(), rowIndex, 2);
                 tableSources.repaint();
             }
         }
@@ -966,6 +1004,10 @@ public class MainVersion3 extends javax.swing.JFrame {
             }
             mFFMpeg = null;
             mnuCapture.setText("Record");
+            if (trayIcon != null) {
+                trayIcon.setImage(this.getIconImage());
+                this.setVisible(true);
+            }
             updateControls(true);
         } else {
             boolean abort = false;
@@ -1003,8 +1045,16 @@ public class MainVersion3 extends javax.swing.JFrame {
                 new Thread(mFFMpeg).start();
                 lblMessages.setText("Recording...");
                 mnuCapture.setText("Stop");
+                if (trayIcon != null) {
+                    trayIcon.setImage(new ImageIcon(MainVersion3.class.getResource("/screenstudio/gui/images/iconRunning.png")).getImage());
+                }
+
                 updateControls(false);
-                this.setExtendedState(JFrame.ICONIFIED);
+                if (trayIcon != null) {
+                    this.setVisible(false);
+                } else {
+                    this.setExtendedState(JFrame.ICONIFIED);
+                }
                 mRecordingTimestamp = System.currentTimeMillis();
                 new Thread(() -> {
                     while (mFFMpeg != null) {
@@ -1025,7 +1075,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                     }
                     setTitle("ScreenStudio " + screenstudio.Version.MAIN);
                 }).start();
-            } 
+            }
         }
 
     }//GEN-LAST:event_mnuCaptureActionPerformed
@@ -1187,7 +1237,7 @@ public class MainVersion3 extends javax.swing.JFrame {
     }//GEN-LAST:event_mnuMainMoveDownActionPerformed
 
     private void formWindowStateChanged(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowStateChanged
-        if (mFFMpeg != null && evt.getOldState() == JFrame.ICONIFIED) {
+        if (mFFMpeg != null && evt.getOldState() == JFrame.ICONIFIED && trayIcon == null) {
             mnuCapture.doClick();
         }
     }//GEN-LAST:event_formWindowStateChanged
@@ -1210,6 +1260,12 @@ public class MainVersion3 extends javax.swing.JFrame {
             Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_spinAudioDelayStateChanged
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        if (trayIcon != null){
+            SystemTray.getSystemTray().remove(trayIcon);
+        }
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
