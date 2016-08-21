@@ -85,15 +85,18 @@ public class Layout {
         node.setNodeValue("" + value);
         output.getAttributes().setNamedItem(node);
     }
-    public int getOutputWidth(){
+
+    public int getOutputWidth() {
         return new Integer(output.getAttributes().getNamedItem("outputwidth").getNodeValue());
     }
+
     public void setOutputHeight(int value) {
         Node node = document.createAttribute("outputheight");
         node.setNodeValue("" + value);
         output.getAttributes().setNamedItem(node);
     }
-    public int getOutputHeight(){
+
+    public int getOutputHeight() {
         return new Integer(output.getAttributes().getNamedItem("outputheight").getNodeValue());
     }
 
@@ -103,26 +106,29 @@ public class Layout {
         output.getAttributes().setNamedItem(node);
 
     }
-    public int getOutputFramerate(){
+
+    public int getOutputFramerate() {
         return new Integer(output.getAttributes().getNamedItem("outputframerate").getNodeValue());
     }
- 
+
     public void setOutputTarget(FFMpeg.FORMATS value) {
         Node node = document.createAttribute("outputtarget");
         node.setNodeValue(value.name());
         output.getAttributes().setNamedItem(node);
 
     }
-   public FFMpeg.FORMATS getOutputTarget(){
+
+    public FFMpeg.FORMATS getOutputTarget() {
         return FFMpeg.FORMATS.valueOf(output.getAttributes().getNamedItem("outputtarget").getNodeValue());
     }
- 
+
     public void setVideoBitrate(int value) {
         Node node = document.createAttribute("videobitrate");
         node.setNodeValue("" + value);
         output.getAttributes().setNamedItem(node);
     }
-    public int getVideoBitrate(){
+
+    public int getVideoBitrate() {
         return new Integer(output.getAttributes().getNamedItem("videobitrate").getNodeValue());
     }
 
@@ -131,7 +137,8 @@ public class Layout {
         node.setNodeValue(value.name());
         audios.getAttributes().setNamedItem(node);
     }
-    public FFMpeg.AudioRate getAudioBitrate(){
+
+    public FFMpeg.AudioRate getAudioBitrate() {
         return FFMpeg.AudioRate.valueOf(audios.getAttributes().getNamedItem("audiobitrate").getNodeValue());
     }
 
@@ -140,7 +147,8 @@ public class Layout {
         node.setNodeValue(value.name());
         output.getAttributes().setNamedItem(node);
     }
-    public FFMpeg.Presets getOutputPreset(){
+
+    public FFMpeg.Presets getOutputPreset() {
         return FFMpeg.Presets.valueOf(output.getAttributes().getNamedItem("outputpreset").getNodeValue());
     }
 
@@ -150,7 +158,8 @@ public class Layout {
         output.getAttributes().setNamedItem(node);
 
     }
-    public String getOutputRTMPServer(){
+
+    public String getOutputRTMPServer() {
         return output.getAttributes().getNamedItem("rtmpserver").getNodeValue();
     }
 
@@ -160,7 +169,8 @@ public class Layout {
         output.getAttributes().setNamedItem(node);
 
     }
-    public String getOutputRTMPKey(){
+
+    public String getOutputRTMPKey() {
         return output.getAttributes().getNamedItem("rtmpkey").getNodeValue();
     }
 
@@ -170,15 +180,18 @@ public class Layout {
         audios.getAttributes().setNamedItem(node);
 
     }
-    public String getAudioMicrophone(){
+
+    public String getAudioMicrophone() {
         return audios.getAttributes().getNamedItem("microphone").getNodeValue();
     }
+
     public void setAudioSystem(String value) {
         Node node = document.createAttribute("audiosystem");
         node.setNodeValue(value);
         audios.getAttributes().setNamedItem(node);
     }
-    public String getAudioSystem(){
+
+    public String getAudioSystem() {
         return audios.getAttributes().getNamedItem("audiosystem").getNodeValue();
     }
 
@@ -187,7 +200,8 @@ public class Layout {
         node.setNodeValue(value);
         settings.getAttributes().setNamedItem(node);
     }
-    public String getShortcutCapture(){
+
+    public String getShortcutCapture() {
         return settings.getAttributes().getNamedItem("shortcutcapture").getNodeValue();
     }
 
@@ -197,7 +211,8 @@ public class Layout {
         output.getAttributes().setNamedItem(node);
 
     }
-    public File getOutputVideoFolder(){
+
+    public File getOutputVideoFolder() {
         return new File(output.getAttributes().getNamedItem("outputvideofolder").getNodeValue());
     }
 
@@ -208,7 +223,7 @@ public class Layout {
         }
     }
 
-    public void addSource(SourceType typeValue, String idValue, int xValue, int yValue, int wValue, int hValue, float alphaValue, int orderValue) {
+    public void addSource(SourceType typeValue, String idValue, int xValue, int yValue, int wValue, int hValue, float alphaValue, int orderValue, int fg, int bg) {
         String nodeName = "";
         switch (typeValue) {
             case Desktop:
@@ -236,6 +251,8 @@ public class Layout {
         Node type = document.createAttribute("type");
         Node alpha = document.createAttribute("alpha");
         Node order = document.createAttribute("order");
+        Node foreg = document.createAttribute("fg");
+        Node backg = document.createAttribute("bg");
         x.setNodeValue("" + xValue);
         y.setNodeValue("" + yValue);
         w.setNodeValue("" + wValue);
@@ -243,6 +260,8 @@ public class Layout {
         id.setNodeValue("" + idValue);
         alpha.setNodeValue("" + alphaValue);
         order.setNodeValue("" + orderValue);
+        foreg.setNodeValue("" + fg);
+        backg.setNodeValue("" + bg);
         switch (typeValue) {
             case LabelFile:
                 type.setNodeValue("file");
@@ -262,6 +281,9 @@ public class Layout {
         node.getAttributes().setNamedItem(type);
         node.getAttributes().setNamedItem(alpha);
         node.getAttributes().setNamedItem(order);
+        node.getAttributes().setNamedItem(foreg);
+        node.getAttributes().setNamedItem(backg);
+
         root.appendChild(node);
     }
 
@@ -303,7 +325,7 @@ public class Layout {
         return sources;
     }
 
-    public ArrayList<Source> getSources(){
+    public ArrayList<Source> getSources() {
         ArrayList<Source> list = new ArrayList<>();
         list.addAll(Arrays.asList(getImages()));
         list.addAll(Arrays.asList(getWebcams()));
@@ -312,6 +334,7 @@ public class Layout {
         list.sort((Source o1, Source o2) -> o1.Order - o2.Order);
         return list;
     }
+
     private Source[] getImages() {
         NodeList nodes = document.getElementsByTagName("image");
         Source[] sources = new Source[nodes.getLength()];
@@ -348,6 +371,11 @@ public class Layout {
             }
             s.Alpha = new Float(n.getAttributes().getNamedItem("alpha").getNodeValue());
             s.Order = new Integer(n.getAttributes().getNamedItem("order").getNodeValue());
+            // IF is required since not available in version 3.0.0
+            if (n.getAttributes().getNamedItem("fg") != null) {
+                s.foregroundColor = new Integer(n.getAttributes().getNamedItem("fg").getNodeValue());
+                s.backgroundColor = new Integer(n.getAttributes().getNamedItem("bg").getNodeValue());
+            }
             sources[i] = s;
         }
         return sources;

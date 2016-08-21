@@ -234,7 +234,10 @@ public class MainVersion3 extends javax.swing.JFrame {
                         row[0] = new File(s.ID).exists();
                         break;
                     case LabelText:
-                        row[2] = new LabelText(s.ID);
+                        LabelText t = new LabelText(s.ID);
+                        t.setForegroundColor(s.foregroundColor);
+                        t.setBackgroundColor(s.backgroundColor);
+                        row[2] = t;
                         break;
                     case Stream:
                         row[2] = s.ID;
@@ -284,7 +287,7 @@ public class MainVersion3 extends javax.swing.JFrame {
 
         List<Source> sources = Compositor.getSources(tableSources, (Integer) spinFPS.getValue());
         for (Source s : sources) {
-            layout.addSource(s.getType(), s.getID(), s.getBounds().x, s.getBounds().y, s.getBounds().width, s.getBounds().height, s.getAlpha().getAlpha(), s.getZOrder());
+            layout.addSource(s.getType(), s.getID(), s.getBounds().x, s.getBounds().y, s.getBounds().width, s.getBounds().height, s.getAlpha().getAlpha(), s.getZOrder(),s.getForeground(),s.getBackground());
         }
         try {
             layout.save(file);

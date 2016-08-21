@@ -33,6 +33,8 @@ import screenstudio.targets.Layout.SourceType;
 public abstract class Source implements Runnable {
 
     protected Rectangle mBounds = new Rectangle(0, 0, 320, 240);
+    protected int mForeground = 0;
+    protected int mBackground = 0xFFFFFF;
     private int mZ = 0;
     private AlphaComposite mAlpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1);
     protected int mImageType = BufferedImage.TYPE_3BYTE_BGR;
@@ -62,6 +64,12 @@ public abstract class Source implements Runnable {
         mID = id;
     }
 
+    public int getForeground(){
+        return mForeground;
+    }
+    public int getBackground(){
+        return mBackground;
+    }
     public String getID(){
         return mID;
     }

@@ -75,7 +75,7 @@ public class Editor extends javax.swing.JDialog {
             //do nothing...
         }
         lblPreview.setPreferredSize(new Dimension(panelWidth + (lblPreview.getBorder().getBorderInsets(lblPreview).right * 2), 500));
-        setSize(700, 500);
+        setSize(800, 500);
     }
 
     public Editor(LabelText content, JFrame owner) {
