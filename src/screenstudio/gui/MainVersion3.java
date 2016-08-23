@@ -1073,7 +1073,9 @@ public class MainVersion3 extends javax.swing.JFrame {
                             setTitle("Recording! (" + (seconds / 60) + " min " + (seconds % 60) + " sec)");
                         }
                         if (mFFMpeg.getState() == FFMpeg.RunningState.Error) {
-                            setExtendedState(JFrame.NORMAL);
+                            System.err.println("Encoder error detected...");
+                            mnuCapture.doClick();
+                            break;
                         }
                         try {
                             Thread.sleep(1000);

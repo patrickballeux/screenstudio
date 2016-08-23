@@ -126,7 +126,7 @@ public class FFMpeg implements Runnable {
      * @param rate : Audio rate for the output
      * @param input : device to use
      */
-    public void setAudio(AudioRate rate, String input,Float offset) {
+    public void setAudio(AudioRate rate, String input, Float offset) {
         switch (rate) {
             case Audio44K:
                 audioRate = "44100";
@@ -142,12 +142,12 @@ public class FFMpeg implements Runnable {
                 break;
         }
         audioInput = input;
-        if (offset != 0){
+        if (offset != 0) {
             mITSOffset = " -itsoffset " + offset.toString() + " ";
         } else {
             mITSOffset = "";
         }
-        
+
     }
 
     public RunningState getState() {
@@ -352,8 +352,12 @@ public class FFMpeg implements Runnable {
             in.close();
 
         } catch (MalformedURLException ex) {
+            this.state = RunningState.Error;
+            this.lastErrorMessage = ex.getMessage();
             Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
+            this.state = RunningState.Error;
+            this.lastErrorMessage = ex.getMessage();
             Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -367,12 +371,20 @@ public class FFMpeg implements Runnable {
         state = RunningState.Running;
         try {
             String command = getCommand();
+            System.out.println("Starting encoder...");
             Process p = Runtime.getRuntime().exec(command);
             OutputStream out = p.getOutputStream();
             long frameTime = (1000000000 / compositor.getFPS());
             long nextPTS = System.nanoTime() + frameTime;
             while (!mStopMe) {
+                try{
                 out.write(compositor.getData());
+                } catch (Exception exWrite){
+                    System.err.println("Exception while writing...  " + exWrite.getMessage());
+                    this.lastErrorMessage = exWrite.getMessage();
+                    state = RunningState.Error;
+                    mStopMe=true;
+                }
                 while (nextPTS - System.nanoTime() > 0) {
                     long wait = nextPTS - System.nanoTime();
                     if (wait > 0) {
@@ -385,9 +397,11 @@ public class FFMpeg implements Runnable {
                 }
                 nextPTS += frameTime;
             }
+            System.out.println("Exiting encoder...");
+            System.out.println("Status : " + state.toString());
             out.close();
             p.destroy();
-            state = RunningState.Stopped;
+            if (state ==RunningState.Running ) state = RunningState.Stopped;
 
         } catch (IOException ex) {
             state = RunningState.Error;
