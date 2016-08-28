@@ -54,7 +54,7 @@ import screenstudio.targets.Layout.SourceType;
  *
  * @author patrick
  */
-public class MainVersion3 extends javax.swing.JFrame {
+public class ScreenStudio extends javax.swing.JFrame {
 
     private final SourceLayoutPreview mLayoutPreview;
     private FFMpeg mFFMpeg = null;
@@ -65,9 +65,9 @@ public class MainVersion3 extends javax.swing.JFrame {
     /**
      * Creates new form MainVersion3
      */
-    public MainVersion3() {
+    public ScreenStudio() {
         initComponents();
-        this.setIconImage(new ImageIcon(MainVersion3.class.getResource("/screenstudio/gui/images/icon.png")).getImage());
+        this.setIconImage(new ImageIcon(ScreenStudio.class.getResource("/screenstudio/gui/images/icon.png")).getImage());
         initControls();
         mLayoutPreview = new SourceLayoutPreview(tableSources);
         mLayoutPreview.setOutputWidth((Integer) spinWidth.getValue());
@@ -135,7 +135,7 @@ public class MainVersion3 extends javax.swing.JFrame {
             try {
                 SystemTray.getSystemTray().add(trayIcon);
             } catch (AWTException ex) {
-                Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         } else {
@@ -258,7 +258,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                 model.addRow(row);
             }
         } catch (IOException | ParserConfigurationException | SAXException | InterruptedException ex) {
-            Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         panPreviewLayout.repaint();
@@ -290,7 +290,7 @@ public class MainVersion3 extends javax.swing.JFrame {
         try {
             layout.save(file);
         } catch (Exception ex) {
-            Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -356,14 +356,14 @@ public class MainVersion3 extends javax.swing.JFrame {
                             }
                         }
                     } catch (IOException | InterruptedException ex) {
-                        Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 });
 
                 mnuMainWebcams.add(menu);
             }
         } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -397,14 +397,14 @@ public class MainVersion3 extends javax.swing.JFrame {
 
                         }
                     } catch (IOException | InterruptedException ex) {
-                        Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 });
 
                 mnuMainDestops.add(menu);
             }
         } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -582,7 +582,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                 .addGroup(panTargetSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblRTMPKey)
                     .addComponent(txtRTMPKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(90, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout panOutputLayout = new javax.swing.GroupLayout(panOutput);
@@ -641,11 +641,10 @@ public class MainVersion3 extends javax.swing.JFrame {
         jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
         panPreviewLayout.setBackground(new java.awt.Color(51, 51, 51));
-        panPreviewLayout.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Layout", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 12), new java.awt.Color(255, 255, 255))); // NOI18N
+        panPreviewLayout.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Layout", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Lucida Grande", 0, 13), new java.awt.Color(255, 255, 255))); // NOI18N
         panPreviewLayout.setLayout(new java.awt.BorderLayout());
         jSplitPane1.setRightComponent(panPreviewLayout);
 
-        scrollSources.setBackground(new java.awt.Color(255, 255, 255));
         scrollSources.setBorder(javax.swing.BorderFactory.createTitledBorder("Video Sources"));
 
         tableSources.setModel(new javax.swing.table.DefaultTableModel(
@@ -999,9 +998,9 @@ public class MainVersion3 extends javax.swing.JFrame {
             try {
                 Microphone.getVirtualAudio(null, null);
             } catch (IOException ex) {
-                Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InterruptedException ex) {
-                Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
             }
             mFFMpeg = null;
             mnuCapture.setText("Record");
@@ -1036,9 +1035,9 @@ public class MainVersion3 extends javax.swing.JFrame {
                 try {
                     audio = Microphone.getVirtualAudio(mic, sys);
                 } catch (IOException ex) {
-                    Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 mFFMpeg.setAudio((FFMpeg.AudioRate) cboAudioBitrate.getSelectedItem(), audio, (Float) spinAudioDelay.getValue());
                 mFFMpeg.setPreset((FFMpeg.Presets) cboVideoPresets.getSelectedItem());
@@ -1052,7 +1051,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                 lblMessages.setText("Recording...");
                 mnuCapture.setText("Stop");
                 if (trayIcon != null) {
-                    trayIcon.setImage(new ImageIcon(MainVersion3.class.getResource("/screenstudio/gui/images/iconRunning.png")).getImage());
+                    trayIcon.setImage(new ImageIcon(ScreenStudio.class.getResource("/screenstudio/gui/images/iconRunning.png")).getImage());
                 }
 
                 updateControls(false);
@@ -1078,7 +1077,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException ex) {
-                            Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+                            Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
                     setTitle("ScreenStudio " + screenstudio.Version.MAIN);
@@ -1112,7 +1111,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                 try {
                     p.flush();
                 } catch (BackingStoreException ex) {
-                    Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -1144,7 +1143,7 @@ public class MainVersion3 extends javax.swing.JFrame {
                 try {
                     p.flush();
                 } catch (BackingStoreException ex) {
-                    Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -1265,7 +1264,7 @@ public class MainVersion3 extends javax.swing.JFrame {
         try {
             p.flush();
         } catch (BackingStoreException ex) {
-            Logger.getLogger(MainVersion3.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_spinAudioDelayStateChanged
 
@@ -1292,20 +1291,21 @@ public class MainVersion3 extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainVersion3.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ScreenStudio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainVersion3.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ScreenStudio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainVersion3.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ScreenStudio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainVersion3.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ScreenStudio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MainVersion3().setVisible(true);
+                new ScreenStudio().setVisible(true);
             }
         });
     }
