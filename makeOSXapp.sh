@@ -1,7 +1,7 @@
 VERSION=$( grep "MAIN =" src/screenstudio/Version.java | cut -d= -f 2 | cut -d'"' -f 2 )
 echo "ScreenStudio - Build a new version..."
-/Applications/NetBeans/NetBeans\ 8.1.app/Contents/Resources/NetBeans/java/ant -Dnb.internal.action.name=rebuild clean
-/Applications/NetBeans/NetBeans\ 8.1.app/Contents/Resources/NetBeans/java/ant -Dnb.internal.action.name=jar
+#/Applications/NetBeans/NetBeans\ 8.1.app/Contents/Resources/NetBeans/java/ant -Dnb.internal.action.name=rebuild clean
+#/Applications/NetBeans/NetBeans\ 8.1.app/Contents/Resources/NetBeans/java/ant -Dnb.internal.action.name=jar
 echo "Building OSX app"
 echo "Removing previous build..."
 echo "Creating new folder app..."
