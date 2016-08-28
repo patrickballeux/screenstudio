@@ -303,9 +303,9 @@ public class FFMpeg implements Runnable {
         c.append(buffer).append(" -f ").append(muxer).append(" ");
         c.append(output);
         // Set proper output
-        if (mDebugMode) {
+        //if (mDebugMode) {
             System.out.println(c.toString());
-        }
+        //}
         return c.toString();
     }
 

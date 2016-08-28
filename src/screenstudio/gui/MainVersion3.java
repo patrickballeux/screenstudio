@@ -23,8 +23,6 @@ import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -127,12 +125,12 @@ public class MainVersion3 extends javax.swing.JFrame {
 
         if (SystemTray.isSupported()) {
             trayIcon = new TrayIcon(this.getIconImage(), "ScreenStudio: Double-click to activate recording...");
+            if (Screen.isOSX()){
+                trayIcon.setToolTip("ScreenStudio: CTRL-Click to activate recording...");
+            }
             trayIcon.setImageAutoSize(true);
-            trayIcon.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    mnuCapture.doClick();
-                }
+            trayIcon.addActionListener((ActionEvent e) -> {
+                mnuCapture.doClick();
             });
             try {
                 SystemTray.getSystemTray().add(trayIcon);
