@@ -3,7 +3,7 @@
 
 # Constants
 JAVA_MAJOR=1
-JAVA_MINOR=6
+JAVA_MINOR=8
 APP_JAR="ScreenStudio.jar"
 APP_NAME="ScreenStudio"
 VM_ARGS=""
