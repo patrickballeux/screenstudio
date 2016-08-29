@@ -23,7 +23,7 @@ package screenstudio.gui;
 public class LabelText {
     private String mText = "";
     private int mforegroundColor = 0;
-    private int mbackgroundColor = 0xFFFFFF;
+    private int mbackgroundColor = 0x00FFFFFF;
     public LabelText(String text){
         mText = text;
     }

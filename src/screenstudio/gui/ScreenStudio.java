@@ -1091,14 +1091,15 @@ public class ScreenStudio extends javax.swing.JFrame {
                 }
                 mRecordingTimestamp = System.currentTimeMillis();
                 new Thread(() -> {
-                    while (mFFMpeg != null) {
+                    FFMpeg f = mFFMpeg;
+                    while (f != null) {
                         long seconds = (System.currentTimeMillis() - mRecordingTimestamp) / 1000;
                         if (seconds < 60) {
                             setTitle("Recording! (" + seconds + " sec)");
                         } else {
                             setTitle("Recording! (" + (seconds / 60) + " min " + (seconds % 60) + " sec)");
                         }
-                        if (mFFMpeg.getState() == FFMpeg.RunningState.Error) {
+                        if (f.getState() == FFMpeg.RunningState.Error) {
                             System.err.println("Encoder error detected...");
                             mnuCapture.doClick();
                             break;
@@ -1108,6 +1109,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                         } catch (InterruptedException ex) {
                             Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
                         }
+                        f = mFFMpeg;
                     }
                     setTitle("ScreenStudio " + screenstudio.Version.MAIN);
                 }).start();
