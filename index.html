@@ -55,6 +55,44 @@ ScreenStudio to adjust the proper command to use with FFMpeg.</p>
 <hr>
 
 <h2>USAGE:</h2>
+<h3>OUTPUT</h3>
+<p>You need to select the output size and format by selecting a TARGET. For local recording, select any file format. 
+For live streaming, select any service like Twitch or Youtube.</p>
+<p>For live streaming, you will have to select a server and enter your magic key in the opening dialog.</p>
+<h3>SOURCES</h3>
+<p>The SOURCES will let you select the different sources to use for a local recording or a live streaming:</p>
+
+<p>From the menu Sources:
+<ul>
+  <li>Webcams: Select the proper webcam to use. "None" will not use any webcam</li>
+<li>Displays: If you have more than 1 display, select the proper display to use</li>
+<li>Add Image: Select any image from your hard disk</li>
+<li>Add Label: Add a Text Label. You can edit the content by double-clicking on the label source</li>
+</ul>
+</p>
+
+<p>You will see a preview of your sources at the bottom of the list. The order in the list is important. You can move any source up and down using the Sources menu Move Up/Move Down. 
+The top most source will be rendered last, meaning the the first source rendered is at the bottom, thus showing behind the others... 
+Adjust location of any source by editing the value X,Y,Width,Height directly in the list. The Alpha value is for transparency. Accepted Alhpa values are from 0.0 to 1.0. 
+You can start a live preview by right-clicking on the preview layout and using Start Preview.</p>
+
+<h3>OPTIONS</h3>
+<p>ScreenStudio is relying on Pulseaudio for audio recording. When two audio input are selected (Mic+Internal)
+, ScreenStudio will add a virtual audio input that will mix both Mic and Internal audio input. 
+This virtual audio input will only exists while ScreenStudio is capturing and will be remove once the capture is completed.</p>
+
+<p>To adjust the audio levels, use the default audio mixer or install "pavucontrol" for more options.
+You output video folder can be selected by clicking the Browse button and selecting any folder on your hard disk.</p>
+
+<h3>FILE MENU</h3>
+<p>From the File menu, you can start and stop a recording using the Record button. You can also save your layout configuration into a file using the Save menu. You guessed it, you can then open a layout file using the Open menu. 
+</p>
+<p>
+Keep in mind that ScreenStudio is free and that I work on this project in my spare time.
+</p>
+
+
+
         </section>
 
         <footer>
