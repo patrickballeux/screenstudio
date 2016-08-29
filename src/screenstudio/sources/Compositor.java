@@ -51,7 +51,7 @@ public class Compositor implements Runnable {
     }
 
     public byte[] getData() {
-        while (!hasDrawn){
+        while (!hasDrawn) {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException ex) {
@@ -67,6 +67,13 @@ public class Compositor implements Runnable {
         mStopMe = false;
         for (Source s : mSources) {
             new Thread(s).start();
+            while (s.getImage() == null) {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Compositor.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
         long frameTime = (1000000000 / mFPS);
         long nextPTS = System.nanoTime() + frameTime;
@@ -162,7 +169,7 @@ public class Compositor implements Runnable {
                     if (sources.getValueAt(i, 1) == SourceType.LabelText) {
                         list.add(new SourceLabel(new Rectangle(sx, sy, sw, sh), i, alpha, ((LabelText) source)));
                     } else if (sources.getValueAt(i, 1) == SourceType.LabelFile) {
-                        list.add(new SourceFileLabel(new Rectangle(sx, sy, sw, sh), i, alpha,1000, (LabelText) source));
+                        list.add(new SourceFileLabel(new Rectangle(sx, sy, sw, sh), i, alpha, 1000, (LabelText) source));
                     }
                 }
             }
