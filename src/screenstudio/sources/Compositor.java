@@ -41,6 +41,7 @@ public class Compositor implements Runnable {
     private final Rectangle mOutputSize;
     private boolean hasDrawn = false;
     private byte[] mData;
+    private boolean mIsReady = false;
 
     public Compositor(java.util.List<Source> sources, Rectangle outputSize, int fps) {
         sources.sort((a, b) -> Integer.compare(b.getZOrder(), a.getZOrder()));
@@ -50,14 +51,10 @@ public class Compositor implements Runnable {
         mData = new byte[mOutputSize.width * mOutputSize.height * 3];
     }
 
+    public boolean isReady(){
+        return mIsReady;
+    }
     public byte[] getData() {
-        while (!hasDrawn) {
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Compositor.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
         return mData;
     }
 
@@ -69,7 +66,7 @@ public class Compositor implements Runnable {
             new Thread(s).start();
             while (s.getImage() == null) {
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(100);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(Compositor.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -87,10 +84,10 @@ public class Compositor implements Runnable {
                 g.setComposite(s.getAlpha());
                 g.drawImage(s.getImage(), s.getBounds().x, s.getBounds().y, null);
             }
-            hasDrawn = true;
             byte[] mBuffer = new byte[data.length];
             System.arraycopy(data, 0, mBuffer, 0, mBuffer.length);
             mData = mBuffer;
+            mIsReady=true;
             while (nextPTS - System.nanoTime() > 0) {
                 long wait = nextPTS - System.nanoTime();
                 if (wait > 0) {

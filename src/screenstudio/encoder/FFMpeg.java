@@ -174,19 +174,19 @@ public class FFMpeg implements Runnable {
             case FLV:
                 muxer = "flv";
                 videoEncoder = "libx264";
-                audioEncoder = "aac";
+                audioEncoder = "libmp3lame";
                 output = new File(outputFolder, generateRandomName() + ".flv").getAbsolutePath();
                 break;
             case MP4:
                 muxer = "mp4";
                 videoEncoder = "libx264";
-                audioEncoder = "aac";
+                audioEncoder = "libmp3lame";
                 output = new File(outputFolder, generateRandomName() + ".mp4").getAbsolutePath();
                 break;
             case MOV:
                 muxer = "mov";
                 videoEncoder = "libx264";
-                audioEncoder = "aac";
+                audioEncoder = "libmp3lame";
                 output = new File(outputFolder, generateRandomName() + ".mov").getAbsolutePath();
                 break;
             case TS:
@@ -199,7 +199,7 @@ public class FFMpeg implements Runnable {
             case GIF:
                 muxer = "gif";
                 videoEncoder = "gif";
-                audioEncoder = "mp3";
+                audioEncoder = "libmp3lame";
                 preset = "";
                 String randomName = generateRandomName();
                 output = new File(outputFolder, randomName + ".gif").getAbsolutePath() + " -f mp3 " + new File(outputFolder, randomName + ".mp3").getAbsolutePath();
@@ -227,7 +227,7 @@ public class FFMpeg implements Runnable {
                 output = "udp://255.255.255.255:8888?broadcast=1";
                 break;
         }
-        
+
         this.videoBitrate = videoBitrate + "";
     }
 
@@ -363,6 +363,14 @@ public class FFMpeg implements Runnable {
         try {
             String command = getCommand();
             System.out.println("Starting encoder...");
+            while (!compositor.isReady()) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
             Process p = Runtime.getRuntime().exec(command);
             OutputStream out = p.getOutputStream();
             long frameTime = (1000000000 / compositor.getFPS());
@@ -376,17 +384,15 @@ public class FFMpeg implements Runnable {
                     state = RunningState.Error;
                     mStopMe = true;
                 }
-                while (nextPTS - System.nanoTime() > 0) {
-                    long wait = nextPTS - System.nanoTime();
-                    if (wait > 0) {
-                        try {
-                            Thread.sleep(wait / 1000000, (int) (wait % 1000000));
-                        } catch (Exception ex) {
-                            System.err.println("Error: Thread.sleep(" + (wait / 1000000) + "," + ((int) (wait % 1000000)) + ")");
-                        }
+                long wait = nextPTS - System.nanoTime();
+                nextPTS += frameTime;
+                if (wait > 0) {
+                    try {
+                        Thread.sleep(wait / 1000000, (int) (wait % 1000000));
+                    } catch (Exception ex) {
+                        System.err.println("Error: Thread.sleep(" + (wait / 1000000) + "," + ((int) (wait % 1000000)) + ")");
                     }
                 }
-                nextPTS += frameTime;
             }
             System.out.println("Exiting encoder...");
             System.out.println("Status : " + state.toString());
