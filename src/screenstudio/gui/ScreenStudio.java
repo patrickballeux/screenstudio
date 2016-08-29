@@ -215,7 +215,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                     case Desktop:
                         row[0] = false;
                         for (Screen screen : screens) {
-                            if (screen.getId().equals(s.ID)) {
+                            if (screen.getLabel().equals(s.ID)) {
                                 row[2] = screen;
                                 row[0] = true;
                                 break;
@@ -372,14 +372,14 @@ public class ScreenStudio extends javax.swing.JFrame {
         try {
             for (Screen s : Screen.getSources()) {
                 JMenuItem menu = new JMenuItem(s.getDetailledLabel());
-                menu.setActionCommand(s.getId());
+                menu.setActionCommand(s.getLabel());
                 menu.setToolTipText("Size: " + s.getDetailledLabel());
                 menu.addActionListener((ActionEvent e) -> {
                     DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
                     Object[] row = new Object[model.getColumnCount()];
                     try {
                         for (Screen screen : Screen.getSources()) {
-                            if (screen.getId().equals(e.getActionCommand())) {
+                            if (screen.getLabel().equals(e.getActionCommand())) {
                                 row[0] = true;
                                 row[1] = SourceType.Desktop;
                                 row[2] = screen;
