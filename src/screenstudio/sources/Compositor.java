@@ -22,6 +22,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JTable;
 import screenstudio.gui.LabelText;
 import screenstudio.targets.Layout;
@@ -37,6 +39,7 @@ public class Compositor implements Runnable {
     private boolean mStopMe = false;
     private final int mFPS;
     private final Rectangle mOutputSize;
+    private boolean hasDrawn = false;
     private byte[] mData;
 
     public Compositor(java.util.List<Source> sources, Rectangle outputSize, int fps) {
@@ -48,11 +51,19 @@ public class Compositor implements Runnable {
     }
 
     public byte[] getData() {
+        while (!hasDrawn){
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Compositor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         return mData;
     }
 
     @Override
     public void run() {
+        hasDrawn = false;
         mStopMe = false;
         for (Source s : mSources) {
             new Thread(s).start();
@@ -69,6 +80,7 @@ public class Compositor implements Runnable {
                 g.setComposite(s.getAlpha());
                 g.drawImage(s.getImage(), s.getBounds().x, s.getBounds().y, null);
             }
+            hasDrawn = true;
             byte[] mBuffer = new byte[data.length];
             System.arraycopy(data, 0, mBuffer, 0, mBuffer.length);
             mData = mBuffer;
