@@ -28,4 +28,5 @@ public class Source {
     public int Order;
     public int foregroundColor;
     public int backgroundColor;
+    public String fontName;
 }

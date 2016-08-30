@@ -234,6 +234,8 @@ public class ScreenStudio extends javax.swing.JFrame {
                         LabelText t = new LabelText(s.ID);
                         t.setForegroundColor(s.foregroundColor);
                         t.setBackgroundColor(s.backgroundColor);
+                        t.setFontName(s.fontName);
+                        System.out.println("Font: " + s.fontName);
                         row[2] = t;
                         break;
                     case Stream:
@@ -284,7 +286,7 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         List<Source> sources = Compositor.getSources(tableSources, (Integer) spinFPS.getValue());
         for (Source s : sources) {
-            layout.addSource(s.getType(), s.getID(), s.getBounds().x, s.getBounds().y, s.getBounds().width, s.getBounds().height, s.getAlpha().getAlpha(), s.getZOrder(), s.getForeground(), s.getBackground());
+            layout.addSource(s.getType(), s.getID(), s.getBounds().x, s.getBounds().y, s.getBounds().width, s.getBounds().height, s.getAlpha().getAlpha(), s.getZOrder(), s.getForeground(), s.getBackground(),s.getFontName());
         }
         try {
             layout.save(file);

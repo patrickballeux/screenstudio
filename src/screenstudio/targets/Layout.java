@@ -223,7 +223,7 @@ public class Layout {
         }
     }
 
-    public void addSource(SourceType typeValue, String idValue, int xValue, int yValue, int wValue, int hValue, float alphaValue, int orderValue, int fg, int bg) {
+    public void addSource(SourceType typeValue, String idValue, int xValue, int yValue, int wValue, int hValue, float alphaValue, int orderValue, int fg, int bg,String font) {
         String nodeName = "";
         switch (typeValue) {
             case Desktop:
@@ -253,6 +253,7 @@ public class Layout {
         Node order = document.createAttribute("order");
         Node foreg = document.createAttribute("fg");
         Node backg = document.createAttribute("bg");
+        Node fontg = document.createAttribute("font");
         x.setNodeValue("" + xValue);
         y.setNodeValue("" + yValue);
         w.setNodeValue("" + wValue);
@@ -262,6 +263,7 @@ public class Layout {
         order.setNodeValue("" + orderValue);
         foreg.setNodeValue("" + fg);
         backg.setNodeValue("" + bg);
+        fontg.setNodeValue(font);
         switch (typeValue) {
             case LabelFile:
                 type.setNodeValue("file");
@@ -283,7 +285,7 @@ public class Layout {
         node.getAttributes().setNamedItem(order);
         node.getAttributes().setNamedItem(foreg);
         node.getAttributes().setNamedItem(backg);
-
+        node.getAttributes().setNamedItem(fontg);
         root.appendChild(node);
     }
 
@@ -375,6 +377,9 @@ public class Layout {
             if (n.getAttributes().getNamedItem("fg") != null) {
                 s.foregroundColor = new Integer(n.getAttributes().getNamedItem("fg").getNodeValue());
                 s.backgroundColor = new Integer(n.getAttributes().getNamedItem("bg").getNodeValue());
+            }
+            if (n.getAttributes().getNamedItem("font") != null) {
+                s.fontName = n.getAttributes().getNamedItem("font").getNodeValue();
             }
             sources[i] = s;
         }

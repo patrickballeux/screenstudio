@@ -39,7 +39,6 @@ public class Compositor implements Runnable {
     private boolean mStopMe = false;
     private final int mFPS;
     private final Rectangle mOutputSize;
-    private boolean hasDrawn = false;
     private byte[] mData;
     private boolean mIsReady = false;
 
@@ -60,7 +59,6 @@ public class Compositor implements Runnable {
 
     @Override
     public void run() {
-        hasDrawn = false;
         mStopMe = false;
         for (Source s : mSources) {
             new Thread(s).start();

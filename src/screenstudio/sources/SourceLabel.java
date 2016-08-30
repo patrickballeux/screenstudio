@@ -31,34 +31,40 @@ import screenstudio.targets.Layout;
  *
  * @author patrick
  */
-public class SourceLabel extends Source{
+public class SourceLabel extends Source {
 
     private final JLabel mLabel = new JLabel();
     private final BufferedImage mImage;
     private final byte[] mData;
+
     public SourceLabel(Rectangle bounds, int zOrder, float alpha, LabelText text) {
         super(bounds, zOrder, alpha, 1000, text.getText());
         mLabel.setText(text.getText());
         mLabel.setForeground(new Color(text.getForegroundColor()));
+        super.mBackground = text.getBackgroundColor();
+        super.mForeground = text.getForegroundColor();
+        mLabel.setOpaque((text.getBackgroundColor() & 0xFF000000) != 0);
         mLabel.setBackground(new Color(text.getBackgroundColor()));
         mLabel.setHorizontalAlignment(JLabel.LEFT);
         mLabel.setVerticalAlignment(JLabel.TOP);
-        mLabel.setFont(new Font(mLabel.getFont().getName(),mLabel.getFont().getStyle(),bounds.height-20));
+        mLabel.setFont(new Font(text.getFontName(), Font.BOLD, bounds.height - 20));
+        super.setFontName(text.getFontName());
         this.mType = Layout.SourceType.LabelText;
         this.mImageType = BufferedImage.TYPE_4BYTE_ABGR;
         mImage = new BufferedImage(bounds.width, bounds.height, mImageType);
         mData = ((DataBufferByte) mImage.getRaster().getDataBuffer()).getData();
         mLabel.setSize(bounds.getSize());
         Graphics2D g = mImage.createGraphics();
-        mLabel.setOpaque(false);
         mLabel.paint(g);
+        
     }
 
-    public void setText(String value){
+    public void setText(String value) {
         mLabel.setText(value);
         Graphics2D g = mImage.createGraphics();
         mLabel.paint(g);
     }
+
     @Override
     protected void getData(byte[] buffer) throws IOException {
         System.arraycopy(mData, 0, buffer, 0, buffer.length);
@@ -72,7 +78,7 @@ public class SourceLabel extends Source{
 
     @Override
     protected void disposeStream() throws IOException {
-        
+
     }
-    
+
 }

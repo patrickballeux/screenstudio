@@ -5,9 +5,10 @@
  */
 package screenstudio.panel.editor;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -26,6 +27,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
@@ -86,6 +88,10 @@ public class Editor extends javax.swing.JDialog {
         foreground = new JColorChooser(new Color(returnContent.getForegroundColor()));
         tabs.add("Foreground color", foreground);
 
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
+        cboFonts.setModel(model);
+        lblPreview.setFont(new Font(content.getFontName(),Font.BOLD,16));
+        cboFonts.setSelectedItem(content.getFontName());
         foreground.getSelectionModel().addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -117,6 +123,9 @@ public class Editor extends javax.swing.JDialog {
         } catch (RuntimeException ex) {
             //do nothing...
         }
+        lblPreview.setForeground(foreground.getColor());
+        lblPreview.setBackground(background.getColor());
+        lblPreview.setOpaque(true);
         lblPreview.setPreferredSize(new Dimension(200 + (lblPreview.getBorder().getBorderInsets(lblPreview).right * 2), 300));
         setSize(600, 600);
 
@@ -139,6 +148,7 @@ public class Editor extends javax.swing.JDialog {
         tabs = new javax.swing.JTabbedPane();
         scrollEditor = new javax.swing.JScrollPane();
         txtEditor = new javax.swing.JTextArea();
+        cboFonts = new javax.swing.JComboBox<>();
         menu = new javax.swing.JMenuBar();
         mnuFile = new javax.swing.JMenu();
         mnuFileOpen = new javax.swing.JMenuItem();
@@ -184,6 +194,13 @@ public class Editor extends javax.swing.JDialog {
         tabs.addTab("Text", scrollEditor);
 
         getContentPane().add(tabs, java.awt.BorderLayout.CENTER);
+
+        cboFonts.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cboFontsActionPerformed(evt);
+            }
+        });
+        getContentPane().add(cboFonts, java.awt.BorderLayout.PAGE_END);
 
         mnuFile.setText("File");
 
@@ -353,7 +370,7 @@ public class Editor extends javax.swing.JDialog {
         returnContent = new LabelText(txtEditor.getText());
         returnContent.setForegroundColor(foreground.getColor().getRGB());
         returnContent.setBackgroundColor(background.getColor().getRGB());
-
+        returnContent.setFontName(cboFonts.getSelectedItem().toString());
         if (this.currentFile != null && isModified) {
             // warn saving...
             EditorWarning confirm = new EditorWarning(null, true);
@@ -426,6 +443,11 @@ public class Editor extends javax.swing.JDialog {
         lblPreview.repaint();
     }//GEN-LAST:event_txtEditorKeyReleased
 
+    private void cboFontsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboFontsActionPerformed
+        returnContent.setFontName(cboFonts.getSelectedItem().toString());
+        lblPreview.setFont(new Font(cboFonts.getSelectedItem().toString(),lblPreview.getFont().getStyle(),lblPreview.getFont().getSize()));
+    }//GEN-LAST:event_cboFontsActionPerformed
+
     private final static String[] TAGS = {
         "html", "body", "p", "hr", "br", "table", "th", "tr", "td", "span", "div", "a", "thead", "head", "h",
         "ul", "li", "div", "style", "img"
@@ -439,6 +461,7 @@ public class Editor extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> cboFonts;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JLabel lblPreview;
     private javax.swing.JMenuBar menu;

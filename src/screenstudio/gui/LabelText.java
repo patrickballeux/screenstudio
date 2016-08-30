@@ -24,6 +24,7 @@ public class LabelText {
     private String mText = "";
     private int mforegroundColor = 0;
     private int mbackgroundColor = 0x00FFFFFF;
+    private String mFontName = "Dialog";
     public LabelText(String text){
         mText = text;
     }
@@ -41,6 +42,12 @@ public class LabelText {
     }
     public String getText(){
         return mText;
+    }
+    public void setFontName(String value){
+        mFontName = value;
+    }
+    public String getFontName() {
+        return mFontName;
     }
     public String toString(){
         return mText.replaceAll("\\<[^>]*>", "");

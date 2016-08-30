@@ -38,6 +38,7 @@ public abstract class Source implements Runnable {
     private int mZ = 0;
     private AlphaComposite mAlpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1);
     protected int mImageType = BufferedImage.TYPE_3BYTE_BGR;
+    protected String mFontName = "Dialog";
     // Time to wait before fetching next image in milliseconds
     private int mDelayTime = 10;
     
@@ -64,6 +65,12 @@ public abstract class Source implements Runnable {
         mID = id;
     }
 
+    public String getFontName(){
+        return mFontName;
+    }
+    public void setFontName(String value){
+        mFontName = value;
+    }
     public int getForeground(){
         return mForeground;
     }
