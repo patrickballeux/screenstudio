@@ -61,6 +61,7 @@ public class FFMpeg implements Runnable {
     }
 
     public enum RunningState {
+        Starting,
         Running,
         Stopped,
         Error
@@ -357,9 +358,9 @@ public class FFMpeg implements Runnable {
     @Override
     public void run() {
         mStopMe = false;
+        state = RunningState.Starting;
         new Thread(compositor).start();
         mDebugMode = true;
-        state = RunningState.Running;
         try {
             String command = getCommand();
             System.out.println("Starting encoder...");
@@ -375,6 +376,7 @@ public class FFMpeg implements Runnable {
             OutputStream out = p.getOutputStream();
             long frameTime = (1000000000 / compositor.getFPS());
             long nextPTS = System.nanoTime() + frameTime;
+            state = RunningState.Running;
             while (!mStopMe) {
                 try {
                     out.write(compositor.getData());

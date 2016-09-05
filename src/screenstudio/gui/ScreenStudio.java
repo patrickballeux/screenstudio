@@ -287,7 +287,7 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         List<Source> sources = Compositor.getSources(tableSources, (Integer) spinFPS.getValue());
         for (Source s : sources) {
-            layout.addSource(s.getType(), s.getID(), s.getBounds().x, s.getBounds().y, s.getBounds().width, s.getBounds().height, s.getAlpha().getAlpha(), s.getZOrder(), s.getForeground(), s.getBackground(),s.getFontName());
+            layout.addSource(s.getType(), s.getID(), s.getBounds().x, s.getBounds().y, s.getBounds().width, s.getBounds().height, s.getAlpha().getAlpha(), s.getZOrder(), s.getForeground(), s.getBackground(), s.getFontName());
         }
         try {
             layout.save(file);
@@ -1027,17 +1027,16 @@ public class ScreenStudio extends javax.swing.JFrame {
             }
             mFFMpeg = null;
             mnuCapture.setText("Record");
-            if (!chkStayVisible.isSelected()) {
-                if (trayIcon != null) {
-                    trayIcon.setImage(this.getIconImage());
-                    this.setVisible(true);
-                }
+            if (trayIcon != null) {
+                trayIcon.setImage(this.getIconImage());
+                this.setVisible(true);
             }
             updateControls(true);
             if (FFMpeg.isRTMP((FFMpeg.FORMATS) cboTarget.getSelectedItem())) {
                 txtRTMPKey.setVisible(true);
             }
         } else {
+            trayIcon.setImage(new ImageIcon(ScreenStudio.class.getResource("/screenstudio/gui/images/iconStarting.png")).getImage());
             if (txtRTMPKey.isVisible()) {
                 txtRTMPKey.setVisible(false);
             }
@@ -1080,10 +1079,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                 new Thread(mFFMpeg).start();
                 lblMessages.setText("Recording...");
                 mnuCapture.setText("Stop");
-                if (trayIcon != null) {
-                    trayIcon.setImage(new ImageIcon(ScreenStudio.class.getResource("/screenstudio/gui/images/iconRunning.png")).getImage());
-                }
-
+                
                 updateControls(false);
                 if (!chkStayVisible.isSelected()) {
                     if (trayIcon != null) {
@@ -1095,7 +1091,12 @@ public class ScreenStudio extends javax.swing.JFrame {
                 mRecordingTimestamp = System.currentTimeMillis();
                 new Thread(() -> {
                     FFMpeg f = mFFMpeg;
+                    FFMpeg.RunningState initState = f.getState();
                     while (f != null) {
+                        if (initState == FFMpeg.RunningState.Starting && f.getState() == FFMpeg.RunningState.Running) {
+                            trayIcon.setImage(new ImageIcon(ScreenStudio.class.getResource("/screenstudio/gui/images/iconRunning.png")).getImage());
+                            initState = FFMpeg.RunningState.Running;
+                        }
                         long seconds = (System.currentTimeMillis() - mRecordingTimestamp) / 1000;
                         if (seconds < 60) {
                             setTitle("Recording! (" + seconds + " sec)");
