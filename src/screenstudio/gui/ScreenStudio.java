@@ -163,6 +163,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         btnSetVideoFolder.setEnabled(enabled);
         mnuFileLoad.setEnabled(enabled);
         mnuFileSave.setEnabled(enabled);
+        spinAudioDelay.setEnabled(enabled);
     }
 
     private void loadLayout(File file) {
