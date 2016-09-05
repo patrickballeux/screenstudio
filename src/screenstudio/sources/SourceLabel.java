@@ -45,8 +45,8 @@ public class SourceLabel extends Source {
         super.mForeground = text.getForegroundColor();
         mLabel.setOpaque((text.getBackgroundColor() & 0xFF000000) != 0);
         mLabel.setBackground(new Color(text.getBackgroundColor()));
-        mLabel.setHorizontalAlignment(JLabel.LEFT);
-        mLabel.setVerticalAlignment(JLabel.TOP);
+        mLabel.setHorizontalAlignment(JLabel.CENTER);
+        mLabel.setVerticalAlignment(JLabel.CENTER);
         mLabel.setFont(new Font(text.getFontName(), Font.BOLD, bounds.height - 20));
         super.setFontName(text.getFontName());
         this.mType = Layout.SourceType.LabelText;

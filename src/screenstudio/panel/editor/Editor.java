@@ -126,8 +126,7 @@ public class Editor extends javax.swing.JDialog {
         lblPreview.setForeground(foreground.getColor());
         lblPreview.setBackground(background.getColor());
         lblPreview.setOpaque(true);
-        lblPreview.setPreferredSize(new Dimension(200 + (lblPreview.getBorder().getBorderInsets(lblPreview).right * 2), 300));
-        setSize(600, 600);
+        setSize(600, 400);
 
     }
 
@@ -170,13 +169,13 @@ public class Editor extends javax.swing.JDialog {
         });
 
         lblPreview.setFont(new java.awt.Font("Ubuntu", 0, 12)); // NOI18N
+        lblPreview.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblPreview.setText("<html><body>... Template ...</body></html>");
-        lblPreview.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         lblPreview.setBorder(javax.swing.BorderFactory.createTitledBorder("Preview"));
-        lblPreview.setMaximumSize(new java.awt.Dimension(320, 9999));
-        lblPreview.setMinimumSize(new java.awt.Dimension(320, 500));
-        lblPreview.setPreferredSize(new java.awt.Dimension(320, 36));
-        getContentPane().add(lblPreview, java.awt.BorderLayout.EAST);
+        lblPreview.setMaximumSize(new java.awt.Dimension(9999, 100));
+        lblPreview.setMinimumSize(new java.awt.Dimension(20, 100));
+        lblPreview.setPreferredSize(new java.awt.Dimension(320, 100));
+        getContentPane().add(lblPreview, java.awt.BorderLayout.NORTH);
 
         scrollEditor.setBorder(javax.swing.BorderFactory.createTitledBorder("HTML Code"));
 
