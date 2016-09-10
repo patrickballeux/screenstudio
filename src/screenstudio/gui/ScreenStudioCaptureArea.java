@@ -56,7 +56,6 @@ public class ScreenStudioCaptureArea extends javax.swing.JDialog {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        btnCancel = new javax.swing.JButton();
         btnOK = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -66,13 +65,6 @@ public class ScreenStudioCaptureArea extends javax.swing.JDialog {
         setModal(true);
 
         jPanel1.setBackground(new java.awt.Color(244, 55, 15));
-
-        btnCancel.setText("Reset");
-        btnCancel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelActionPerformed(evt);
-            }
-        });
 
         btnOK.setText("Ok");
         btnOK.addActionListener(new java.awt.event.ActionListener() {
@@ -86,9 +78,7 @@ public class ScreenStudioCaptureArea extends javax.swing.JDialog {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(225, Short.MAX_VALUE)
-                .addComponent(btnCancel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addContainerGap(356, Short.MAX_VALUE)
                 .addComponent(btnOK)
                 .addContainerGap())
         );
@@ -96,9 +86,7 @@ public class ScreenStudioCaptureArea extends javax.swing.JDialog {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap(258, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnOK)
-                    .addComponent(btnCancel))
+                .addComponent(btnOK)
                 .addContainerGap())
         );
 
@@ -113,11 +101,6 @@ public class ScreenStudioCaptureArea extends javax.swing.JDialog {
         mReturnBounds.setLocation(this.getLocationOnScreen());
         this.dispose();
     }//GEN-LAST:event_btnOKActionPerformed
-
-    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
-        mReturnStatus= 2;
-        this.dispose();
-    }//GEN-LAST:event_btnCancelActionPerformed
 
     /**
      * @param args the command line arguments
@@ -162,7 +145,6 @@ public class ScreenStudioCaptureArea extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnOK;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
