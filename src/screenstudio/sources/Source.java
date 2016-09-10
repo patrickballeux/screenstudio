@@ -33,6 +33,8 @@ import screenstudio.targets.Layout.SourceType;
 public abstract class Source implements Runnable {
 
     protected Rectangle mBounds = new Rectangle(0, 0, 320, 240);
+    protected int mCaptureX = 0;
+    protected int mCaptureY = 0;
     protected int mForeground = 0;
     protected int mBackground = 0xFFFFFF;
     private int mZ = 0;
@@ -65,6 +67,12 @@ public abstract class Source implements Runnable {
         mID = id;
     }
 
+    public int getCaptureX(){
+        return mCaptureX;
+    }
+    public int getCaptureY(){
+        return mCaptureY;
+    }
     public String getFontName(){
         return mFontName;
     }

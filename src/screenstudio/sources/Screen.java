@@ -35,20 +35,28 @@ public class Screen {
     private String id = "";
     private String name = "None";
     private int screenIndex = -1;
+    private boolean mIsOSX = false;
+    private boolean mFollowMouse = false;
 
     @Override
     public String toString() {
-        return name;
+        return getDetailledLabel();
     }
 
     public int getWidth() {
-        return (int) size.getWidth();
+        return size.width;
     }
 
     public int getHeight() {
-        return (int) size.getHeight();
+        return size.height;
     }
 
+    public boolean isFollowingMouse(){
+        return mFollowMouse;
+    }
+    public void setFollowingMouse(boolean value){
+        mFollowMouse = value;
+    }
     public String getDetailledLabel() {
         return getLabel() + " (" + (int) this.size.getWidth() + "X" + (int) this.size.getHeight() + ")";
     }
@@ -66,10 +74,11 @@ public class Screen {
             double maxHeight = 9999;
             String currentDisplay = System.getenv("DISPLAY");
             if (currentDisplay.length() == 2) {
-                currentDisplay = currentDisplay+".0";
+                currentDisplay = currentDisplay + ".0";
             }
             for (GraphicsDevice d : devices) {
                 Screen s = new Screen();
+                s.mIsOSX = false;
                 s.setId(currentDisplay);
                 System.out.println(s.getId() + " " + d.getDefaultConfiguration().getBounds().toString().replaceAll("java.awt.Rectangle", ""));
                 s.setScreenIndex(i++);
@@ -86,6 +95,7 @@ public class Screen {
                 //We have more than one screen
                 // Creating full screen capture...
                 Screen s = new Screen();
+                s.mIsOSX = false;
                 s.setId(list.get(0).getId());
                 s.setScreenIndex(i++);
                 s.setSize(new Rectangle(0, 0, (int) maxWidth, (int) maxHeight));
@@ -149,7 +159,11 @@ public class Screen {
      * @return the id
      */
     public String getId() {
-        return id;
+        if (mIsOSX) {
+            return id;
+        } else {
+            return id + "+" + size.x + "," + size.y;
+        }
     }
 
     /**
@@ -216,7 +230,7 @@ public class Screen {
                         }
                         s.screenIndex = index;
                         s.id = "";
-
+                        s.mIsOSX = true;
                         String[] parts = line.split(" ");
                         System.out.println(line);
                         for (int i = parts.length - 1; i >= 0; i--) {

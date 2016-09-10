@@ -50,7 +50,7 @@ public class Microphone {
             BufferedReader reader = new BufferedReader(isr);
             String line = reader.readLine();
             while (line != null) {
-                if (line.trim().toUpperCase().matches("^.* \\#\\d{1,2}$")) {
+                if (line.trim().toUpperCase().matches("^.* \\#\\d{1,4}$")) {
                     reader.readLine();
                     line = reader.readLine();
                     String l = line.trim().split(":")[1];

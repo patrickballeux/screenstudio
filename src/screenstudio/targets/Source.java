@@ -22,6 +22,8 @@ public class Source {
     public String ID;
     public int X;
     public int Y;
+    public int CaptureX;
+    public int CaptureY;
     public int Width;
     public int Height;
     public float Alpha;

@@ -99,7 +99,10 @@ public class SourceFFMpeg extends Source{
     
     public static SourceFFMpeg getDesktopInstance(Screen display,int fps){
         String  input = " -f " + new FFMpeg(null).getDesktopFormat() + " -video_size " + display.getWidth() + "x" + display.getHeight() + " -i " + display.getId();
-        return new SourceFFMpeg(display.getSize(),new Rectangle(display.getSize()),fps,input,SourceType.Desktop,display.getLabel());
+        SourceFFMpeg f = new SourceFFMpeg(display.getSize(),new Rectangle(display.getSize()),fps,input,SourceType.Desktop,display.getLabel());
+        f.mCaptureX = display.getSize().x;
+        f.mCaptureY = display.getSize().y;
+        return f;
     }
     public static SourceFFMpeg getWebcamInstance(Webcam webcam, int fps){
         String input = " -f " + new FFMpeg(null).getWebcamFormat() + " -i " + webcam.getDevice();

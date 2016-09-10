@@ -27,12 +27,9 @@
 package screenstudio.targets;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
@@ -223,7 +220,7 @@ public class Layout {
         }
     }
 
-    public void addSource(SourceType typeValue, String idValue, int xValue, int yValue, int wValue, int hValue, float alphaValue, int orderValue, int fg, int bg,String font) {
+    public void addSource(SourceType typeValue, String idValue, int xValue, int yValue, int wValue, int hValue, float alphaValue, int orderValue, int fg, int bg, String font, int captureX, int captureY) {
         String nodeName = "";
         switch (typeValue) {
             case Desktop:
@@ -245,6 +242,8 @@ public class Layout {
         Node node = document.createElement(nodeName);
         Node x = document.createAttribute("x");
         Node y = document.createAttribute("y");
+        Node capx = document.createAttribute("capturex");
+        Node capy = document.createAttribute("capturey");
         Node w = document.createAttribute("w");
         Node h = document.createAttribute("h");
         Node id = document.createAttribute("id");
@@ -256,6 +255,8 @@ public class Layout {
         Node fontg = document.createAttribute("font");
         x.setNodeValue("" + xValue);
         y.setNodeValue("" + yValue);
+        capx.setNodeValue("" + captureX);
+        capy.setNodeValue("" + captureY);
         w.setNodeValue("" + wValue);
         h.setNodeValue("" + hValue);
         id.setNodeValue("" + idValue);
@@ -277,6 +278,8 @@ public class Layout {
         }
         node.getAttributes().setNamedItem(x);
         node.getAttributes().setNamedItem(y);
+        node.getAttributes().setNamedItem(capx);
+        node.getAttributes().setNamedItem(capy);
         node.getAttributes().setNamedItem(w);
         node.getAttributes().setNamedItem(h);
         node.getAttributes().setNamedItem(id);
@@ -303,6 +306,13 @@ public class Layout {
             s.ID = n.getAttributes().getNamedItem("id").getNodeValue();
             s.Alpha = new Float(n.getAttributes().getNamedItem("alpha").getNodeValue());
             s.Order = new Integer(n.getAttributes().getNamedItem("order").getNodeValue());
+            if (n.getAttributes().getNamedItem("capturex") != null) {
+                s.CaptureX = new Integer(n.getAttributes().getNamedItem("capturex").getNodeValue());
+                s.CaptureY = new Integer(n.getAttributes().getNamedItem("capturey").getNodeValue());
+            } else {
+                s.CaptureX = 0;
+                s.CaptureY = 0;
+            }
             sources[i] = s;
         }
         return sources;
