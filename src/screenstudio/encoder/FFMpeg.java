@@ -279,7 +279,16 @@ public class FFMpeg implements Runnable {
         }
         // Output
         c.append(" -r ").append(compositor.getFPS());
-        c.append(" -s ").append(compositor.getWidth()).append("x").append(compositor.getHeight());
+        if (videoEncoder.equals("gif")) {
+            if (compositor.getWidth() < 800){
+                c.append(" -vf flags=lanczos ");
+            } else {
+                c.append(" -vf scale=800:-1:flags=lanczos ");
+            }
+        } 
+//        else {
+//            c.append(" -s ").append(compositor.getWidth()).append("x").append(compositor.getHeight());
+//        }
         c.append(" -vb ").append(videoBitrate).append("k");
         c.append(" -pix_fmt yuv420p ");
         if (output.startsWith("rtmp://")) {
