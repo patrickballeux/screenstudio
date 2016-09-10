@@ -200,7 +200,6 @@ public class ScreenStudio extends javax.swing.JFrame {
             while (model.getRowCount() > 0) {
                 model.removeRow(0);
             }
-            Screen[] screens = Screen.getSources();
             Webcam[] webcams = Webcam.getSources();
             for (screenstudio.targets.Source s : layout.getSources()) {
                 Object[] row = new Object[model.getColumnCount()];
@@ -215,10 +214,15 @@ public class ScreenStudio extends javax.swing.JFrame {
                 switch (s.Type) {
                     case Desktop:
                         row[0] = false;
+                        Screen[] screens = Screen.getSources();
                         for (Screen screen : screens) {
                             if (screen.getLabel().equals(s.ID)) {
                                 row[2] = screen;
                                 row[0] = true;
+                                screen.getSize().width = s.Width;
+                                screen.getSize().height = s.Height;
+                                screen.getSize().x = s.CaptureX;
+                                screen.getSize().y = s.CaptureY;
                                 break;
                             }
                         }
@@ -287,7 +291,7 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         List<Source> sources = Compositor.getSources(tableSources, (Integer) spinFPS.getValue());
         for (Source s : sources) {
-            layout.addSource(s.getType(), s.getID(), s.getBounds().x, s.getBounds().y, s.getBounds().width, s.getBounds().height, s.getAlpha().getAlpha(), s.getZOrder(), s.getForeground(), s.getBackground(), s.getFontName());
+            layout.addSource(s.getType(), s.getID(), s.getBounds().x, s.getBounds().y, s.getBounds().width, s.getBounds().height, s.getAlpha().getAlpha(), s.getZOrder(), s.getForeground(), s.getBackground(), s.getFontName(),s.getCaptureX(),s.getCaptureY());
         }
         try {
             layout.save(file);
@@ -532,7 +536,7 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         lblRTMPKey.setText("RTMP Secret Key");
 
-        numVideoBitrate.setModel(new javax.swing.SpinnerNumberModel(1000, 300, 9000, 100));
+        numVideoBitrate.setModel(new javax.swing.SpinnerNumberModel(1000, 50, 9000, 50));
 
         javax.swing.GroupLayout panTargetSettingsLayout = new javax.swing.GroupLayout(panTargetSettings);
         panTargetSettings.setLayout(panTargetSettingsLayout);
@@ -645,7 +649,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
         panPreviewLayout.setBackground(new java.awt.Color(51, 51, 51));
-        panPreviewLayout.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Layout", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Lucida Grande", 0, 13), new java.awt.Color(255, 255, 255))); // NOI18N
+        panPreviewLayout.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Layout", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 12), new java.awt.Color(255, 255, 255))); // NOI18N
         panPreviewLayout.setLayout(new java.awt.BorderLayout());
         jSplitPane1.setRightComponent(panPreviewLayout);
 
@@ -990,6 +994,20 @@ public class ScreenStudio extends javax.swing.JFrame {
                 ed.setVisible(true);
                 tableSources.setValueAt(ed.getLabelText(), rowIndex, 2);
                 tableSources.repaint();
+            } else if (tableSources.getValueAt(rowIndex, 1) == SourceType.Desktop) {
+                Screen s = (Screen) tableSources.getValueAt(rowIndex, 2);
+                ScreenStudioCaptureArea d = new ScreenStudioCaptureArea(this, true);
+                d.setVisible(true);
+                switch(d.getReturnStatus()){
+                    case 1:
+                        s.setSize(d.getReturnBounds());
+                        tableSources.setValueAt(s.getWidth(), rowIndex, 5);
+                        tableSources.setValueAt(s.getHeight(), rowIndex, 6);
+                        break;
+                    case 2:
+                        break;
+                }
+                tableSources.repaint();
             }
         }
         mLayoutPreview.repaint();
@@ -1141,8 +1159,12 @@ public class ScreenStudio extends javax.swing.JFrame {
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             if (chooser.getSelectedFile() != null) {
-                saveLayout(chooser.getSelectedFile());
-                p.put("lastfolder", chooser.getSelectedFile().getParent());
+                File f = chooser.getSelectedFile();
+                if (!f.getName().endsWith(".xml")){
+                    f = new File(f.getAbsolutePath()+".xml");
+                }
+                saveLayout(f);
+                p.put("lastfolder", f.getParent());
                 try {
                     p.flush();
                 } catch (BackingStoreException ex) {
