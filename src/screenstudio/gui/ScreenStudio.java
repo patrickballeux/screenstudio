@@ -514,7 +514,7 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         jLabel3.setText("Framerate");
 
-        spinFPS.setModel(new javax.swing.SpinnerNumberModel(10, 5, 30, 1));
+        spinFPS.setModel(new javax.swing.SpinnerNumberModel(10, 1, 60, 1));
 
         jLabel4.setText("Target");
 
@@ -536,7 +536,7 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         lblRTMPKey.setText("RTMP Secret Key");
 
-        numVideoBitrate.setModel(new javax.swing.SpinnerNumberModel(1000, 50, 9000, 50));
+        numVideoBitrate.setModel(new javax.swing.SpinnerNumberModel(1000, 1, 9000, 50));
 
         javax.swing.GroupLayout panTargetSettingsLayout = new javax.swing.GroupLayout(panTargetSettings);
         panTargetSettings.setLayout(panTargetSettingsLayout);
@@ -681,6 +681,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tableSources.setToolTipText("Double-click for more options...");
         tableSources.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
         tableSources.setColumnSelectionAllowed(true);
         tableSources.setFillsViewportHeight(true);
