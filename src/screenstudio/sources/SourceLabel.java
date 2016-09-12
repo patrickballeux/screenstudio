@@ -81,6 +81,7 @@ public class SourceLabel extends Source {
     protected void getData(byte[] buffer) throws IOException {
         mLabel.setText(replaceTags(mText));
         Graphics2D g = mImage.createGraphics();
+        java.util.Arrays.fill(mData, (byte)0);
         mLabel.paint(g);
         System.arraycopy(mData, 0, buffer, 0, buffer.length);
     }

@@ -158,6 +158,14 @@ public class Editor extends javax.swing.JDialog {
         mnuEditCopy = new javax.swing.JMenuItem();
         mnuEditCut = new javax.swing.JMenuItem();
         mnuEditPaste = new javax.swing.JMenuItem();
+        mnuTags = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenuItem3 = new javax.swing.JMenuItem();
+        jMenuItem4 = new javax.swing.JMenuItem();
+        jMenuItem5 = new javax.swing.JMenuItem();
+        jMenuItem6 = new javax.swing.JMenuItem();
+        jMenuItem7 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Screen Studio Panel Editor");
@@ -263,6 +271,66 @@ public class Editor extends javax.swing.JDialog {
         mnuEdit.add(mnuEditPaste);
 
         menu.add(mnuEdit);
+
+        mnuTags.setText("Tags");
+
+        jMenuItem1.setText("@CURRENTDATE");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuTagsActionPerformed(evt);
+            }
+        });
+        mnuTags.add(jMenuItem1);
+
+        jMenuItem2.setText("@CURRENTTIME");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuTagsActionPerformed(evt);
+            }
+        });
+        mnuTags.add(jMenuItem2);
+
+        jMenuItem3.setText("@STARTTIME");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuTagsActionPerformed(evt);
+            }
+        });
+        mnuTags.add(jMenuItem3);
+
+        jMenuItem4.setText("@RECORDINGTIME");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuTagsActionPerformed(evt);
+            }
+        });
+        mnuTags.add(jMenuItem4);
+
+        jMenuItem5.setText("@UPDATE 60 SEC@");
+        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuTagsActionPerformed(evt);
+            }
+        });
+        mnuTags.add(jMenuItem5);
+
+        jMenuItem6.setText("@UPDATE 5 MIN@");
+        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuTagsActionPerformed(evt);
+            }
+        });
+        mnuTags.add(jMenuItem6);
+
+        jMenuItem7.setText("file:///path/to/file.txt");
+        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuTagsActionPerformed(evt);
+            }
+        });
+        mnuTags.add(jMenuItem7);
+
+        menu.add(mnuTags);
 
         setJMenuBar(menu);
 
@@ -447,6 +515,11 @@ public class Editor extends javax.swing.JDialog {
         lblPreview.setFont(new Font(cboFonts.getSelectedItem().toString(),lblPreview.getFont().getStyle(),lblPreview.getFont().getSize()));
     }//GEN-LAST:event_cboFontsActionPerformed
 
+    private void menuTagsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuTagsActionPerformed
+        txtEditor.insert(evt.getActionCommand(), txtEditor.getCaretPosition());
+        evt.getActionCommand();
+    }//GEN-LAST:event_menuTagsActionPerformed
+
     private final static String[] TAGS = {
         "html", "body", "p", "hr", "br", "table", "th", "tr", "td", "span", "div", "a", "thead", "head", "h",
         "ul", "li", "div", "style", "img"
@@ -461,6 +534,13 @@ public class Editor extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> cboFonts;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JLabel lblPreview;
     private javax.swing.JMenuBar menu;
@@ -472,6 +552,7 @@ public class Editor extends javax.swing.JDialog {
     private javax.swing.JMenuItem mnuFileExit;
     private javax.swing.JMenuItem mnuFileOpen;
     private javax.swing.JMenuItem mnuFileSave;
+    private javax.swing.JMenu mnuTags;
     private javax.swing.JScrollPane scrollEditor;
     private javax.swing.JTabbedPane tabs;
     private javax.swing.JTextArea txtEditor;
