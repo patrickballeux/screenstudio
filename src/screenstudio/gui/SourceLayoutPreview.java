@@ -130,7 +130,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                                     break;
                                 case LabelText:
                                     g.setColor(Color.darkGray);
-                                    g.setFont(new Font(font.getFontName(), font.getStyle(), sh - 10));
+                                    g.setFont(new Font(font.getFontName(), font.getStyle(),font.getSize()));
                                     break;
                                 default:
                                     g.setColor(Color.gray);

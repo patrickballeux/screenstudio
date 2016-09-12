@@ -165,6 +165,8 @@ public class Editor extends javax.swing.JDialog {
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem6 = new javax.swing.JMenuItem();
+        jMenuItem8 = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jMenuItem7 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -321,6 +323,15 @@ public class Editor extends javax.swing.JDialog {
             }
         });
         mnuTags.add(jMenuItem6);
+
+        jMenuItem8.setText("@ONCHANGEONLY");
+        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuTagsActionPerformed(evt);
+            }
+        });
+        mnuTags.add(jMenuItem8);
+        mnuTags.add(jSeparator2);
 
         jMenuItem7.setText("file:///path/to/file.txt");
         jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
@@ -541,7 +552,9 @@ public class Editor extends javax.swing.JDialog {
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
+    private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JLabel lblPreview;
     private javax.swing.JMenuBar menu;
     private javax.swing.JMenu mnuEdit;
