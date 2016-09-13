@@ -105,6 +105,7 @@ public class SourceLabel extends Source {
         if (index != -1) {
             setAlpha(0);
             mOnChangeOnly = true;
+            retValue = retValue.replaceAll("@ONCHANGEONLY","");
         }
         return retValue;
     }
