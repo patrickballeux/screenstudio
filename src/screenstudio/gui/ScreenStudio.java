@@ -322,6 +322,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                 case USTREAM:
                 case VAUGHNLIVE:
                 case YOUTUBE:
+                case FACEBOOK:
                     cboRTMPServers.setModel(new DefaultComboBoxModel(FFMpeg.getServerList(value)));
                     txtRTMPKey.setText((""));
                     cboRTMPServers.setVisible(true);

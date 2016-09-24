@@ -211,6 +211,7 @@ public class FFMpeg implements Runnable {
             case USTREAM:
             case VAUGHNLIVE:
             case YOUTUBE:
+            case FACEBOOK:
                 muxer = "flv";
                 videoEncoder = "libx264";
                 audioEncoder = "aac";
@@ -433,6 +434,7 @@ public class FFMpeg implements Runnable {
         USTREAM,
         VAUGHNLIVE,
         YOUTUBE,
+        FACEBOOK,
         RTMP,
         BROADCAST,
     }
@@ -445,6 +447,7 @@ public class FFMpeg implements Runnable {
             case USTREAM:
             case VAUGHNLIVE:
             case YOUTUBE:
+            case FACEBOOK:
                 return true;
             default:
                 return false;
@@ -458,6 +461,7 @@ public class FFMpeg implements Runnable {
             case TWITCH:
             case VAUGHNLIVE:
             case YOUTUBE:
+            case FACEBOOK:
                 Properties p = new Properties();
                 InputStream in;
                 try {
