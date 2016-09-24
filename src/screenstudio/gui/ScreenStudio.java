@@ -164,6 +164,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         mnuFileLoad.setEnabled(enabled);
         mnuFileSave.setEnabled(enabled);
         spinAudioDelay.setEnabled(enabled);
+        cboDefaultRecordingAction.setEnabled(enabled);
     }
 
     private void loadLayout(File file) {
