@@ -43,7 +43,9 @@ public class Microphone {
         System.out.println("Source Audio List:");
         if (Screen.isOSX()) {
             list = getOSXDevices();
-        } else {
+        } if (Screen.isWindows()) {
+            list = getWINDevices();
+        }else {
             Process p = Runtime.getRuntime().exec("pactl list sources");
             InputStream in = p.getInputStream();
             InputStreamReader isr = new InputStreamReader(in);
@@ -78,7 +80,7 @@ public class Microphone {
     public static String getVirtualAudio(Microphone source1, Microphone source2) throws IOException, InterruptedException {
         ArrayList<String> loadedModules = new ArrayList<>();
         String device = "default";
-        if (Screen.isOSX()) {
+        if (Screen.isOSX() || Screen.isWindows()) {
             if (source1 != null) {
                 device = source1.getDevice();
             } else if (source1 != null) {
@@ -178,7 +180,7 @@ public class Microphone {
                     for (int i = parts.length - 1; i >= 0; i--) {
                         if (parts[i].startsWith("[")) {
                             // reached device id
-                            m.device = ":"+parts[i].substring(1, parts[i].length() - 1);
+                            m.device = ":" + parts[i].substring(1, parts[i].length() - 1);
                             break;
                         } else {
                             m.description = parts[i] + " " + m.description;
@@ -188,6 +190,50 @@ public class Microphone {
                     list.add(m);
                     line = reader.readLine();
                 }
+            } else {
+                line = reader.readLine();
+            }
+        }
+        reader.close();
+        isr.close();
+        in.close();
+        p.destroy();
+
+        return list;
+    }
+
+    private static ArrayList<Microphone> getWINDevices() throws IOException, InterruptedException {
+        ArrayList<Microphone> list = new ArrayList<>();
+        String command = "./FFMPEG/ffmpeg.exe -list_devices true -f dshow -i dummy";
+        String line = "";
+        System.out.println(command);
+        Process p = Runtime.getRuntime().exec(command);
+        InputStream in = p.getErrorStream();
+        InputStreamReader isr = new InputStreamReader(in);
+        BufferedReader reader = new BufferedReader(isr);
+        line = reader.readLine();
+        while (line != null) {
+            if (line.contains("DirectShow audio devices")) {
+                // we have some audio sources
+                line = reader.readLine();
+                while (line != null) {
+                    if (!line.contains("Alternative") && !line.contains("dummy")) {
+                        Microphone m = new Microphone();
+                        m.description = "";
+                        String[] parts = line.trim().split("] ");
+                        System.out.println(line);
+                        
+                        for (int i = parts.length - 1; i >= 0; i--) {
+                            m.description = parts[i].trim().replaceAll("\"", "");
+                            m.device = "audio=" + parts[i].trim();                           
+                            break;
+                        }
+                        System.out.println(m.description);
+                        list.add(m);
+                    }
+                    line = reader.readLine();
+                }
+
             } else {
                 line = reader.readLine();
             }

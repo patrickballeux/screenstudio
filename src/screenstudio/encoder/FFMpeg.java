@@ -114,6 +114,7 @@ public class FFMpeg implements Runnable {
     }
 
     public void stop() {
+        System.out.println("Stopping requested...");
         mStopMe = true;
     }
 
@@ -328,7 +329,9 @@ public class FFMpeg implements Runnable {
         InputStream in = null;
         if (Screen.isOSX()) {
             in = FFMpeg.class.getResourceAsStream("/screenstudio/encoder/osx.properties");
-        } else {
+        } else if (Screen.isWindows()) {
+            in = FFMpeg.class.getResourceAsStream("/screenstudio/encoder/windows.properties");
+        }else {
             in = FFMpeg.class.getResourceAsStream("/screenstudio/encoder/default.properties");
         }
 
@@ -381,15 +384,18 @@ public class FFMpeg implements Runnable {
                     Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-
             Process p = Runtime.getRuntime().exec(command);
             OutputStream out = p.getOutputStream();
+            InputStream in = p.getErrorStream();
+            new Thread(new ProcessReader(in)).start();
             long frameTime = (1000000000 / compositor.getFPS());
             long nextPTS = System.nanoTime() + frameTime;
             state = RunningState.Running;
+            System.out.println("Starting encoding...");
             while (!mStopMe) {
                 try {
                     out.write(compositor.getData());
+//                    System.out.println("Data written " + System.currentTimeMillis());
                 } catch (Exception exWrite) {
                     System.err.println("Exception while writing...  " + exWrite.getMessage());
                     this.lastErrorMessage = exWrite.getMessage();
@@ -408,8 +414,11 @@ public class FFMpeg implements Runnable {
             }
             System.out.println("Exiting encoder...");
             System.out.println("Status : " + state.toString());
+            in.close();
             out.close();
-            p.destroy();
+            p.destroy();     
+            p.destroyForcibly();
+            p=null;
             if (state == RunningState.Running) {
                 state = RunningState.Stopped;
             }
@@ -420,7 +429,6 @@ public class FFMpeg implements Runnable {
             Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
         }
         compositor.stop();
-
     }
 
     public enum FORMATS {

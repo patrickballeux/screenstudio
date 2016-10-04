@@ -66,30 +66,36 @@ public class Webcam {
     private double offset = 0;
     private boolean mIsGreenScreen = false;
     private int mGreenSensitivity = 1;
-    
+
     private Webcam(String dev, String id, String desc) {
         device = dev;
         description = desc.trim();
         this.id = id;
     }
 
-    public int getGcreenSensitivity(){
+    public int getGcreenSensitivity() {
         return mGreenSensitivity;
     }
-    public void setGreenSensitivity(int s){
+
+    public void setGreenSensitivity(int s) {
         mGreenSensitivity = s;
     }
-    public boolean isGreenScreen(){
+
+    public boolean isGreenScreen() {
         return mIsGreenScreen;
     }
-    public void setGreenScreen(boolean value){
+
+    public void setGreenScreen(boolean value) {
         mIsGreenScreen = value;
     }
+
     public static Webcam[] getSources() throws IOException, InterruptedException {
         java.util.ArrayList<Webcam> list = new java.util.ArrayList<>();
         System.out.println("Webcam List:");
         if (Screen.isOSX()) {
             list.addAll(getOSXDevices());
+        } else if (Screen.isWindows()) {
+            list.addAll(getWINDevices());
         } else {
             File dev = new File("/dev");
             if (dev.isDirectory()) {
@@ -166,6 +172,52 @@ public class Webcam {
         return list;
     }
 
+    private static ArrayList<Webcam> getWINDevices() throws IOException, InterruptedException {
+        ArrayList<Webcam> list = new ArrayList<Webcam>();
+        String command = "./FFMPEG/ffmpeg.exe -list_devices true -f dshow -i dummy";
+        String line = "";
+        System.out.println(command);
+        Process p = Runtime.getRuntime().exec(command);
+        InputStream in = p.getErrorStream();
+        InputStreamReader isr = new InputStreamReader(in);
+        BufferedReader reader = new BufferedReader(isr);
+        line = reader.readLine();
+        while (line != null) {
+            //System.out.println(line);
+            if (line.contains("DirectShow video devices")) {
+                // we have some video sources
+                line = reader.readLine();
+                while (line != null && !line.contains("audio devices")) {
+                    if (!line.contains("Alternative")) {
+                        Webcam w = new Webcam("", "", "");
+                        w.description = "";
+                        w.id = "";
+                        String[] parts = line.trim().split(" ");
+                        System.out.println(line);
+                        for (int i = parts.length - 1; i >= 0; i--) {
+                            w.device = "video=" + parts[i].trim();
+                            w.id = parts[i].trim();
+                            w.description = w.id.replaceAll("\"", "");
+                            break;
+                        }
+                        w.id = w.id.trim();
+                        System.out.println(w.description);
+                        list.add(w);
+                    }
+                    line = reader.readLine();
+                }
+            } else {
+                line = reader.readLine();
+            }
+        }
+        reader.close();
+        isr.close();
+        in.close();
+        p.destroy();
+
+        return list;
+    }
+
     /**
      * @return the width
      */
@@ -194,8 +246,8 @@ public class Webcam {
         this.height = height;
     }
 
-    public Rectangle getSize(){
-        return new Rectangle(0,0,this.width,this.height);
+    public Rectangle getSize() {
+        return new Rectangle(0, 0, this.width, this.height);
     }
 
     /**
