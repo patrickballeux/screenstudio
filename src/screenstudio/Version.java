@@ -36,6 +36,8 @@ public class Version {
             String path = "http://screenstudio.crombz.com/archives/ubuntu/ubuntu.last.version";
             if (Screen.isOSX()) {
                 path = "http://screenstudio.crombz.com/archives/osx/osx.last.version";
+            } else if (Screen.isWindows()){
+                path = "http://screenstudio.crombz.com/archives/windows/windows.last.version";
             }
             URL url = new URL(path);
             InputStream in = url.openStream();
