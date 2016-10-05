@@ -21,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.DataInputStream;
 import java.io.IOException;
 import screenstudio.encoder.FFMpeg;
+import screenstudio.encoder.ProcessReader;
 import screenstudio.targets.Layout.SourceType;
 
 /**
@@ -65,6 +66,7 @@ public class SourceFFMpeg extends Source{
         mFFMpeg = new FFMpeg(null);
         String command = mFFMpeg.getBin() + " " + mInput + " " + "-s " + mBounds.width + "x" + mBounds.height + " -r " + mFPS + " -f rawvideo -pix_fmt bgr24 -";
         mProcess = Runtime.getRuntime().exec(command);
+        new Thread(new ProcessReader(mProcess.getErrorStream())).start();
         System.out.println(command);
         mInputData = new DataInputStream(mProcess.getInputStream());
     }
