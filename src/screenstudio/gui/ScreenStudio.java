@@ -1043,12 +1043,16 @@ public class ScreenStudio extends javax.swing.JFrame {
     private void spinWidthStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spinWidthStateChanged
         if (mLayoutPreview != null) {
             mLayoutPreview.setOutputWidth((Integer) spinWidth.getValue());
-            if (!mAutoAction) {
+            if (!mAutoAction && chkKeepScreenRatio.isSelected()) {
                 mAutoAction = true;
                 Rectangle r = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().getBounds();
-                int h = r.height ;
+                int h = r.height;
                 int w = r.width;
-                spinHeight.setValue(((Integer) spinWidth.getValue()) * h / w);
+                int value = ((Integer) spinWidth.getValue()) * h / w;
+                if (value % 2 != 0) {
+                    value++;
+                }
+                spinHeight.setValue(value);
                 mAutoAction = false;
             }
         }
@@ -1057,12 +1061,16 @@ public class ScreenStudio extends javax.swing.JFrame {
     private void spinHeightStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spinHeightStateChanged
         if (mLayoutPreview != null) {
             mLayoutPreview.setOutputHeight((Integer) spinHeight.getValue());
-            if (!mAutoAction) {
+            if (!mAutoAction && chkKeepScreenRatio.isSelected()) {
                 mAutoAction = true;
                 Rectangle r = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().getBounds();
-                int h = r.height ;
+                int h = r.height;
                 int w = r.width;
-                spinWidth.setValue(((Integer) spinHeight.getValue()) * w / h);
+                int value = ((Integer) spinHeight.getValue()) * w / h;
+                if (value % 2 != 0) {
+                    value++;
+                }
+                spinWidth.setValue(value);
                 mAutoAction = false;
             }
         }
