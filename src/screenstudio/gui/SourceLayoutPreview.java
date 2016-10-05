@@ -70,7 +70,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
 
     @Override
     public void paint(Graphics g) {
-        super.paint(g);
+        
         // Draw Output borders...
         int x = 0;
         int y = 0;
@@ -130,7 +130,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                                     break;
                                 case LabelText:
                                     g.setColor(Color.darkGray);
-                                    g.setFont(new Font(font.getFontName(), font.getStyle(),font.getSize()));
+                                    g.setFont(new Font(font.getFontName(), font.getStyle(), font.getSize()));
                                     break;
                                 default:
                                     g.setColor(Color.gray);
@@ -152,6 +152,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                 g.drawString("Output : " + outputSize.width + "X" + outputSize.height, x + 5, y + 20);
             }
         }
+        tglPreview.paint(g);
     }
 
     private String stripHTML(String text) {
@@ -171,28 +172,9 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        popPreview = new javax.swing.JPopupMenu();
-        popStartPreview = new javax.swing.JMenuItem();
-        popStopPreview = new javax.swing.JMenuItem();
-
-        popStartPreview.setText("Start Preview");
-        popStartPreview.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                popStartPreviewActionPerformed(evt);
-            }
-        });
-        popPreview.add(popStartPreview);
-
-        popStopPreview.setText("Stop Preview");
-        popStopPreview.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                popStopPreviewActionPerformed(evt);
-            }
-        });
-        popPreview.add(popStopPreview);
+        tglPreview = new javax.swing.JToggleButton();
 
         setBackground(new java.awt.Color(51, 51, 51));
-        setComponentPopupMenu(popPreview);
         setPreferredSize(new java.awt.Dimension(320, 240));
         addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseDragged(java.awt.event.MouseEvent evt) {
@@ -208,43 +190,31 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
             }
         });
 
+        tglPreview.setText("Preview");
+        tglPreview.setToolTipText("<html>\n<body>\nPreview the current layout\n<br>\n<i><font size=-2 color=red>Remember to stop the preview before recording...</font></i>\n</body>\n</html>");
+        tglPreview.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tglPreviewActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 291, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addComponent(tglPreview)
+                .addContainerGap(232, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 173, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(tglPreview)
+                .addContainerGap(198, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void popStartPreviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popStartPreviewActionPerformed
-        List<Source> list = getSources(mSources, mFPS);
-        compositer = new Compositor(list, outputSize, 10);
-        new Thread(compositer).start();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (compositer != null) {
-                    repaint();
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(SourceLayoutPreview.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-                repaint();
-            }
-        }).start();
-    }//GEN-LAST:event_popStartPreviewActionPerformed
-
-    private void popStopPreviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popStopPreviewActionPerformed
-        compositer.stop();
-        compositer = null;
-        repaint();
-    }//GEN-LAST:event_popStopPreviewActionPerformed
 
     private void formMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseDragged
         if (mSources.getSelectedRow() != -1) {
@@ -267,6 +237,32 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
     private void formMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseReleased
         this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_formMouseReleased
+
+    private void tglPreviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tglPreviewActionPerformed
+        if (tglPreview.isSelected()) {
+            List<Source> list = getSources(mSources, mFPS);
+            compositer = new Compositor(list, outputSize, 10);
+            new Thread(compositer).start();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (compositer != null) {
+                        repaint();
+                        try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(SourceLayoutPreview.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                    repaint();
+                }
+            }).start();
+        } else if (compositer != null){
+            compositer.stop();
+            compositer = null;
+            repaint();
+        }
+    }//GEN-LAST:event_tglPreviewActionPerformed
 
     private Point getTranslatedPosition(int mouseX, int mouseY) {
         int w = outputSize.width;
@@ -294,8 +290,6 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPopupMenu popPreview;
-    private javax.swing.JMenuItem popStartPreview;
-    private javax.swing.JMenuItem popStopPreview;
+    private javax.swing.JToggleButton tglPreview;
     // End of variables declaration//GEN-END:variables
 }
