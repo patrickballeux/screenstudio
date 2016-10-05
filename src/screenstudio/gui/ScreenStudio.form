@@ -198,6 +198,8 @@
                                   <Component id="spinFPS" min="-2" max="-2" attributes="0"/>
                                   <Component id="cboTarget" alignment="0" max="32767" attributes="0"/>
                               </Group>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="chkKeepScreenRatio" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
@@ -214,6 +216,7 @@
                           <Component id="spinWidth" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="spinHeight" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="chkKeepScreenRatio" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -331,7 +334,7 @@
                                   <Component id="txtRTMPKey" min="-2" pref="435" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <EmptySpace pref="53" max="32767" attributes="0"/>
+                          <EmptySpace pref="65" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -420,6 +423,11 @@
                 </Component>
               </SubComponents>
             </Container>
+            <Component class="javax.swing.JCheckBox" name="chkKeepScreenRatio">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Keep Screen Ratio"/>
+              </Properties>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="panSources">

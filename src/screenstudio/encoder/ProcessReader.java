@@ -18,8 +18,6 @@ package screenstudio.encoder;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -36,13 +34,15 @@ public class ProcessReader implements Runnable {
     @Override
     public void run() {
         byte[] buffer = new byte[64000];
+        int count = 0;
         while (true) {
             try {
-                mIn.read(buffer);
+                count = mIn.read(buffer);
+                if (count > 0) {
+                    System.out.println(">>> " + new String(buffer, 0, count));
+                }
                 Thread.sleep(100);
-            } catch (IOException ex) {
-                break;
-            } catch (InterruptedException ex) {
+            } catch (IOException | InterruptedException ex) {
                 break;
             }
         }

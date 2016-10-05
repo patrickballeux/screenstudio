@@ -288,9 +288,6 @@ public class FFMpeg implements Runnable {
                 c.append(" -vf scale=800:-1:flags=lanczos ");
             }
         } 
-//        else {
-//            c.append(" -s ").append(compositor.getWidth()).append("x").append(compositor.getHeight());
-//        }
         c.append(" -vb ").append(videoBitrate).append("k");
         c.append(" -pix_fmt yuv420p ");
         if (output.startsWith("rtmp://")) {
@@ -349,10 +346,7 @@ public class FFMpeg implements Runnable {
             //Output
             strictSetting = p.getProperty("STRICTSETTINGS", "-2") + " ";
             //HOME
-            mHome = new File(p.getProperty("HOME", ".").replaceAll("~", System.getProperty("user.home")));
-            if (!mHome.exists()) {
-                mHome.mkdirs();
-            }
+            mHome = new File(System.getProperty("user.home"));
             mThreading = p.getProperty("THREADING", mThreading);
             in.close();
 
