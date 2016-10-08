@@ -5,6 +5,7 @@ ScreenStudio 3
 -----------------------------------------------------------------
 INSTALLATION:
 
+FOR UBUNTU:
 - Copy the content of the archive into any folder
 - Execute the script "createDesktopIcon.sh" to create a shortcut on your desktop
 - Make sure that Java JRE 8 is installed
@@ -17,6 +18,21 @@ sudo apt-get install ffmpeg openjdk-8-jre
 NOTE:  ScreenStudio is relying heavily on FFMpeg provided with Ubuntu 16.04.  Any other distros or custom builds of FFMPEG
 may not be supported.  If ScreenStudio does not work on your distro (or custom build), download the source code of
 ScreenStudio to adjust the proper command to use with FFMpeg.
+
+FOR OSX:
+- Install Java 8 JRE from http://java.com
+- Uncompress the archive
+- An Application folder will be available
+- Right-click on ScreenStudio app and click "Open"
+- OS X will ask you to confirm since the origin of the application cannot be validated.
+- Answer yes and ScreenStudio will start.
+
+FOR WINDOWS:
+- Install Java 8 JRE from http://java.com
+- Uncompress the archive
+- A folder will be available
+- In the new sub-folder, double-click on ScreenStudio.jar
+- You can copy/move this sub-folder where you want
 
 Binaries available at: http://screenstudio.crombz.com
 
