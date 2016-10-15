@@ -411,7 +411,6 @@ public class FFMpeg implements Runnable {
             in.close();
             out.close();
             p.destroy();     
-            p.destroyForcibly();
             p=null;
             if (state == RunningState.Running) {
                 state = RunningState.Stopped;

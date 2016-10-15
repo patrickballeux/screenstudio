@@ -34,12 +34,16 @@ public class ProcessReader implements Runnable {
     @Override
     public void run() {
         byte[] buffer = new byte[64000];
+        String line = "";
         int count = 0;
         while (true) {
             try {
                 count = mIn.read(buffer);
                 if (count > 0) {
-                    System.out.println(">>> " + new String(buffer, 0, count));
+                    line = new String(buffer, 0, count).trim();
+                    if (line.length() > 0) {
+                        System.out.println("FFMPEG: " + line);
+                    }
                 }
                 Thread.sleep(100);
             } catch (IOException | InterruptedException ex) {
