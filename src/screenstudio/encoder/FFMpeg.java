@@ -201,10 +201,10 @@ public class FFMpeg implements Runnable {
             case GIF:
                 muxer = "gif";
                 videoEncoder = "gif";
-                audioEncoder = "libmp3lame";
+                audioEncoder = "";
                 preset = "";
                 String randomName = generateRandomName();
-                output = new File(outputFolder, randomName + ".gif").getAbsolutePath() + " -f mp3 " + new File(outputFolder, randomName + ".mp3").getAbsolutePath();
+                output = new File(outputFolder, randomName + ".gif").getAbsolutePath();
                 break;
             case RTMP:
             case HITBOX:
@@ -274,7 +274,9 @@ public class FFMpeg implements Runnable {
         c.append(" -i - ");
 
         // Capture Audio
-        c.append(" -f ").append(audioFormat).append(mITSOffset).append(" -i ").append(audioInput);
+        if (!videoEncoder.equals("gif")) {
+            c.append(" -f ").append(audioFormat).append(mITSOffset).append(" -i ").append(audioInput);
+        }
         // Enabled strict settings
         if (strictSetting.length() > 0) {
             c.append(" -strict ").append(strictSetting);
@@ -282,20 +284,23 @@ public class FFMpeg implements Runnable {
         // Output
         c.append(" -r ").append(compositor.getFPS());
         if (videoEncoder.equals("gif")) {
-            if (compositor.getWidth() < 800){
+            if (compositor.getWidth() <= 600) {
                 c.append(" -vf flags=lanczos ");
             } else {
-                c.append(" -vf scale=800:-1:flags=lanczos ");
+                c.append(" -vf scale=600:-1:flags=lanczos ");
             }
-        } 
+        }
         c.append(" -vb ").append(videoBitrate).append("k");
         c.append(" -pix_fmt yuv420p ");
         if (output.startsWith("rtmp://")) {
             c.append(" -minrate ").append(videoBitrate).append("k -maxrate ").append(videoBitrate).append("k ");
         }
-        c.append(" -ab ").append(audioBitrate).append("k").append(" -ar ").append(audioRate);
+        if (!videoEncoder.equals("gif")) {
+            c.append(" -ab ").append(audioBitrate).append("k").append(" -ar ").append(audioRate);
+            c.append(" -acodec ").append(audioEncoder);
+        }
         c.append(" -vcodec ").append(videoEncoder);
-        c.append(" -acodec ").append(audioEncoder);
+
         if (preset.length() > 0) {
             c.append(" -preset ").append(preset);
         }
@@ -328,7 +333,7 @@ public class FFMpeg implements Runnable {
             in = FFMpeg.class.getResourceAsStream("/screenstudio/encoder/osx.properties");
         } else if (Screen.isWindows()) {
             in = FFMpeg.class.getResourceAsStream("/screenstudio/encoder/windows.properties");
-        }else {
+        } else {
             in = FFMpeg.class.getResourceAsStream("/screenstudio/encoder/default.properties");
         }
 
@@ -410,8 +415,8 @@ public class FFMpeg implements Runnable {
             System.out.println("Status : " + state.toString());
             in.close();
             out.close();
-            p.destroy();     
-            p=null;
+            p.destroy();
+            p = null;
             if (state == RunningState.Running) {
                 state = RunningState.Stopped;
             }

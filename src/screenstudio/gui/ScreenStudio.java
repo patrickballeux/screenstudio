@@ -312,6 +312,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                 case MP4:
                 case FLV:
                 case TS:
+                case GIF:
                     cboRTMPServers.setModel(new DefaultComboBoxModel());
                     txtRTMPKey.setText((""));
                     cboRTMPServers.setVisible(false);
@@ -1128,7 +1129,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                 lblMessages.setText("No video source to display...");
                 abort = true;
             }
-            if (cboAudioMicrophones.getSelectedIndex() == 0 && cboAudioSystems.getSelectedIndex() == 0) {
+            if (cboTarget.getSelectedItem() != FFMpeg.FORMATS.GIF && cboAudioMicrophones.getSelectedIndex() == 0 && cboAudioSystems.getSelectedIndex() == 0) {
                 lblMessages.setText("No audio source selected...");
                 abort = true;
             }
@@ -1145,14 +1146,16 @@ public class ScreenStudio extends javax.swing.JFrame {
                 if (cboAudioSystems.getSelectedIndex() > 0) {
                     sys = (Microphone) cboAudioSystems.getSelectedItem();
                 }
-                try {
-                    audio = Microphone.getVirtualAudio(mic, sys);
-                } catch (IOException ex) {
-                    Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
+                if (mic != null || sys != null) {
+                    try {
+                        audio = Microphone.getVirtualAudio(mic, sys);
+                    } catch (IOException ex) {
+                        Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    mFFMpeg.setAudio((FFMpeg.AudioRate) cboAudioBitrate.getSelectedItem(), audio, (Float) spinAudioDelay.getValue());
                 }
-                mFFMpeg.setAudio((FFMpeg.AudioRate) cboAudioBitrate.getSelectedItem(), audio, (Float) spinAudioDelay.getValue());
                 String server = "";
                 if (cboRTMPServers.getSelectedItem() != null) {
                     server = cboRTMPServers.getSelectedItem().toString();
