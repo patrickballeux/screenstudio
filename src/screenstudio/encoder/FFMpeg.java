@@ -415,6 +415,7 @@ public class FFMpeg implements Runnable {
             System.out.println("Status : " + state.toString());
             in.close();
             out.close();
+            compositor.stop();
             p.destroy();
             p = null;
             if (state == RunningState.Running) {
@@ -422,11 +423,11 @@ public class FFMpeg implements Runnable {
             }
 
         } catch (IOException ex) {
+            compositor.stop();
             state = RunningState.Error;
             lastErrorMessage = ex.getMessage();
             Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
         }
-        compositor.stop();
     }
 
     public enum FORMATS {

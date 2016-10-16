@@ -73,8 +73,16 @@ public class SourceFFMpeg extends Source{
 
     @Override
     protected void disposeStream() throws IOException {
+        System.out.println("Before Q");
+        mProcess.getOutputStream().write("q".getBytes());
+        System.out.println("After Q");
+        mProcess.getOutputStream().flush();
+        mProcess.getOutputStream().close();
         mInputData.close();
+        System.out.println("Input closed");
         mProcess.destroy();
+        mProcess.destroyForcibly();
+        System.out.println("Process Destroyed");
         mProcess = null;
         mInputData = null;
     }
