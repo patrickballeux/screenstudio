@@ -70,12 +70,13 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
 
     @Override
     public void paint(Graphics g) {
-        
         // Draw Output borders...
         int x = 0;
         int y = 0;
         int w = getWidth();
         int h = getHeight();
+        g.setColor(this.getBackground());
+        g.fillRect(0, 0, w, h);
         if (outputSize != null) {
             w = outputSize.width;
             h = outputSize.height;
