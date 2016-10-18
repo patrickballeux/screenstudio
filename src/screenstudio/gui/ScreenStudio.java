@@ -1444,6 +1444,9 @@ public class ScreenStudio extends javax.swing.JFrame {
         if (trayIcon != null) {
             SystemTray.getSystemTray().remove(trayIcon);
         }
+        if(mShortcuts!=null){
+            mShortcuts.stop();
+        }
     }//GEN-LAST:event_formWindowClosing
 
     private void cboDefaultRecordingActionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboDefaultRecordingActionActionPerformed
