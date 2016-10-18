@@ -21,6 +21,7 @@ import com.tulskiy.keymaster.common.HotKeyListener;
 import com.tulskiy.keymaster.common.Provider;
 import java.awt.AWTException;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.SystemTray;
@@ -51,6 +52,7 @@ import screenstudio.sources.Compositor;
 import screenstudio.sources.Microphone;
 import screenstudio.sources.Screen;
 import screenstudio.sources.Source;
+import screenstudio.sources.SystemCheck;
 import screenstudio.sources.Webcam;
 import screenstudio.targets.Layout;
 import screenstudio.targets.Layout.SourceType;
@@ -87,19 +89,29 @@ public class ScreenStudio extends javax.swing.JFrame {
             if (Version.hasNewVersion()) {
                 lblMessages.setText("A new version is available...");
             }
+            String text = "";
+            for (String msg : SystemCheck.getSystemCheck(false)) {
+                text = text + msg + "\n ";
+            }
+            if (text.length() > 0) {
+                lblMessages.setText(text);
+                lblMessages.setForeground(Color.red);
+                lblMessages.setToolTipText("<HTML><BODY>" + text.replaceAll("\n", "<BR>") + "</BODY></HTML>");
+            }
         }).start();
         mShortcuts = Provider.getCurrentProvider(false);
         mShortcuts.register(KeyStroke.getKeyStroke("control shift R"), new HotKeyListener() {
             @Override
             public void onHotKey(HotKey hotkey) {
                 System.out.println("Hotkey: " + hotkey.toString());
-                    switch (hotkey.keyStroke.getKeyCode()) {
-                        case KeyEvent.VK_R:
-                            mnuCapture.doClick();
-                            break;
-                    }
+                switch (hotkey.keyStroke.getKeyCode()) {
+                    case KeyEvent.VK_R:
+                        mnuCapture.doClick();
+                        break;
+                }
             }
         });
+
     }
 
     private void initControls() {
@@ -592,7 +604,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                         .addComponent(lblRTMPKey, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtRTMPKey, javax.swing.GroupLayout.PREFERRED_SIZE, 435, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(65, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panTargetSettingsLayout.setVerticalGroup(
             panTargetSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -647,7 +659,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                             .addComponent(cboTarget, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(chkKeepScreenRatio)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 259, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panOutputLayout.setVerticalGroup(
@@ -799,11 +811,11 @@ public class ScreenStudio extends javax.swing.JFrame {
                     .addComponent(jLabel10))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cboAudioMicrophones, 0, 461, Short.MAX_VALUE)
+                    .addComponent(cboAudioMicrophones, 0, 463, Short.MAX_VALUE)
                     .addComponent(cboAudioSystems, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(panSettingsAudiosLayout.createSequentialGroup()
                         .addComponent(spinAudioDelay, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 371, Short.MAX_VALUE)))
+                        .addGap(0, 366, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panSettingsAudiosLayout.setVerticalGroup(
@@ -879,7 +891,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                 .addComponent(cboDefaultRecordingAction, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel12)
-                .addContainerGap(227, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panSettingsMiscLayout.setVerticalGroup(
             panSettingsMiscLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1444,7 +1456,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         if (trayIcon != null) {
             SystemTray.getSystemTray().remove(trayIcon);
         }
-        if(mShortcuts!=null){
+        if (mShortcuts != null) {
             mShortcuts.stop();
         }
     }//GEN-LAST:event_formWindowClosing

@@ -18,8 +18,6 @@ package screenstudio.sources;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -27,28 +25,21 @@ import java.util.logging.Logger;
  */
 public class SystemCheck {
 
-    public static boolean isSystemReady(boolean interactive) {
+    public static ArrayList<String> getSystemCheck(boolean interactive) {
         ArrayList<String> msgs = new ArrayList<>();
-        if (Screen.isOSX()) {
+        if (Screen.isOSX() || Screen.isWindows()) {
+             
 // do nothing...
         } else {
             //Looks for avconv or ffmpeg
-            if (!new File("/usr/bin/avconv").exists() && !new File("/usr/bin/ffmpeg").exists()) {
+            if (!new File("/usr/bin/ffmpeg").exists()) {
                 msgs.add("----");
                 msgs.add("WARNING!");
-                msgs.add("libav-tools not detected...");
-                msgs.add("You won't be able to record or stream using AVCONV...");
-                msgs.add("Note: Install libav-tools (sudo apt-get install libav-tools)");
+                msgs.add("FFMpeg not detected...");
+                msgs.add("You won't be able to record or stream using FFMPEG...");
+                msgs.add("Note: Install ffmpeg (sudo apt-get install ffmpeg)");
                 msgs.add("----");
-
-            } else if (!new File("/usr/bin/avconv").exists() && new File("/usr/bin/ffmpeg").exists()) {
-                msgs.add("----");
-                msgs.add("INFO!");
-                msgs.add("libav-tools not detected but ffmpeg was...");
-                msgs.add("You'll have to use a FFMPEG based confoguration XML to record or stream");
-                msgs.add("Note: Install libav-tools (sudo apt-get install libav-tools)");
-                msgs.add("----");
-            }
+            } 
 
             //Looks for libjna-tools
             if (new File("/usr/share/doc/libjna-java").exists()) {
@@ -63,13 +54,6 @@ public class SystemCheck {
                 msgs.add("----");
             }
             //Looks for xwininfo
-            if (!new File("/usr/bin/xwininfo").exists()) {
-                msgs.add("----");
-                msgs.add("WARNING!");
-                msgs.add("/usr/bin/xwininfo was not detected...");
-                msgs.add("You won't be able to capture a window area...");
-                msgs.add("----");
-            }
             if (interactive) {
                 if (msgs.size() > 0) {
                 } else {
@@ -79,10 +63,7 @@ public class SystemCheck {
                 }
             }
         }
-        return msgs.isEmpty();
+        return msgs;
     }
 
-    public static void main(String[] args) {
-        isSystemReady(true);
-    }
 }
