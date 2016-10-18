@@ -153,7 +153,8 @@ public class ScreenStudio extends javax.swing.JFrame {
         java.util.prefs.Preferences p = java.util.prefs.Preferences.userRoot().node("screenstudio");
         spinAudioDelay.setValue(p.getFloat("audiodelay", 0));
         cboDefaultRecordingAction.setSelectedIndex(p.getInt("DefaultRecAction", 0));
-        if (SystemTray.isSupported()) {
+        chkDoNotUseTrayIcon.setSelected(p.getBoolean("DoNotUseTrayIcon", chkDoNotUseTrayIcon.isSelected()));
+        if (SystemTray.isSupported() && !chkDoNotUseTrayIcon.isSelected()) {
             trayIcon = new TrayIcon(this.getIconImage(), "ScreenStudio: Double-click to activate recording...");
             if (Screen.isOSX()) {
                 trayIcon.setToolTip("ScreenStudio: CTRL-Click to activate recording...");
@@ -501,6 +502,8 @@ public class ScreenStudio extends javax.swing.JFrame {
         jLabel11 = new javax.swing.JLabel();
         cboDefaultRecordingAction = new javax.swing.JComboBox<>();
         jLabel12 = new javax.swing.JLabel();
+        chkDoNotUseTrayIcon = new javax.swing.JCheckBox();
+        jLabel13 = new javax.swing.JLabel();
         panStatus = new javax.swing.JPanel();
         lblMessages = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
@@ -659,7 +662,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                             .addComponent(cboTarget, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(chkKeepScreenRatio)
-                        .addGap(0, 259, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panOutputLayout.setVerticalGroup(
@@ -880,17 +883,31 @@ public class ScreenStudio extends javax.swing.JFrame {
         jLabel12.setForeground(new java.awt.Color(102, 102, 102));
         jLabel12.setText("Contrl Shift R can be used as a global shortcut");
 
+        chkDoNotUseTrayIcon.setText("Do not use Tray Icon");
+        chkDoNotUseTrayIcon.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkDoNotUseTrayIconActionPerformed(evt);
+            }
+        });
+
+        jLabel13.setText("When starting,");
+
         javax.swing.GroupLayout panSettingsMiscLayout = new javax.swing.GroupLayout(panSettingsMisc);
         panSettingsMisc.setLayout(panSettingsMiscLayout);
         panSettingsMiscLayout.setHorizontalGroup(
             panSettingsMiscLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panSettingsMiscLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel11)
+                .addGroup(panSettingsMiscLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel11)
+                    .addComponent(jLabel13))
                 .addGap(18, 18, 18)
-                .addComponent(cboDefaultRecordingAction, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel12)
+                .addGroup(panSettingsMiscLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(chkDoNotUseTrayIcon)
+                    .addGroup(panSettingsMiscLayout.createSequentialGroup()
+                        .addComponent(cboDefaultRecordingAction, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel12)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panSettingsMiscLayout.setVerticalGroup(
@@ -900,7 +917,11 @@ public class ScreenStudio extends javax.swing.JFrame {
                     .addComponent(jLabel11)
                     .addComponent(cboDefaultRecordingAction, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel12))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panSettingsMiscLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel13)
+                    .addComponent(chkDoNotUseTrayIcon))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout panOptionsLayout = new javax.swing.GroupLayout(panOptions);
@@ -924,7 +945,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                 .addComponent(panSettingsVideos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panSettingsMisc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(69, Short.MAX_VALUE))
+                .addContainerGap(94, Short.MAX_VALUE))
         );
 
         tabs.addTab("Options", panOptions);
@@ -1472,6 +1493,17 @@ public class ScreenStudio extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_cboDefaultRecordingActionActionPerformed
 
+    private void chkDoNotUseTrayIconActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkDoNotUseTrayIconActionPerformed
+        java.util.prefs.Preferences p = java.util.prefs.Preferences.userRoot().node("screenstudio");
+        p.putBoolean("DoNotUseTrayIcon", chkDoNotUseTrayIcon.isSelected());
+        try {
+            p.flush();
+        } catch (BackingStoreException ex) {
+            Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }//GEN-LAST:event_chkDoNotUseTrayIconActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1518,11 +1550,13 @@ public class ScreenStudio extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> cboRTMPServers;
     private javax.swing.JComboBox<FFMpeg.FORMATS> cboTarget;
     private javax.swing.JComboBox<FFMpeg.Presets> cboVideoPresets;
+    private javax.swing.JCheckBox chkDoNotUseTrayIcon;
     private javax.swing.JCheckBox chkKeepScreenRatio;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
