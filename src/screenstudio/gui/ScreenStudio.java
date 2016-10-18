@@ -16,6 +16,9 @@
  */
 package screenstudio.gui;
 
+import com.tulskiy.keymaster.common.HotKey;
+import com.tulskiy.keymaster.common.HotKeyListener;
+import com.tulskiy.keymaster.common.Provider;
 import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.GraphicsEnvironment;
@@ -23,6 +26,7 @@ import java.awt.Rectangle;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -34,6 +38,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 import javax.swing.ToolTipManager;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableModel;
@@ -61,6 +66,7 @@ public class ScreenStudio extends javax.swing.JFrame {
     private File mVideoOutputFolder = new File(System.getProperty("user.home"));
     private long mRecordingTimestamp = 0;
     private java.awt.TrayIcon trayIcon;
+    private final com.tulskiy.keymaster.common.Provider mShortcuts;
 
     /**
      * Creates new form MainVersion3
@@ -82,6 +88,18 @@ public class ScreenStudio extends javax.swing.JFrame {
                 lblMessages.setText("A new version is available...");
             }
         }).start();
+        mShortcuts = Provider.getCurrentProvider(false);
+        mShortcuts.register(KeyStroke.getKeyStroke("control shift R"), new HotKeyListener() {
+            @Override
+            public void onHotKey(HotKey hotkey) {
+                System.out.println("Hotkey: " + hotkey.toString());
+                    switch (hotkey.keyStroke.getKeyCode()) {
+                        case KeyEvent.VK_R:
+                            mnuCapture.doClick();
+                            break;
+                    }
+            }
+        });
     }
 
     private void initControls() {
@@ -470,6 +488,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         panSettingsMisc = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
         cboDefaultRecordingAction = new javax.swing.JComboBox<>();
+        jLabel12 = new javax.swing.JLabel();
         panStatus = new javax.swing.JPanel();
         lblMessages = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
@@ -845,6 +864,10 @@ public class ScreenStudio extends javax.swing.JFrame {
             }
         });
 
+        jLabel12.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel12.setText("Contrl Shift R can be used as a global shortcut");
+
         javax.swing.GroupLayout panSettingsMiscLayout = new javax.swing.GroupLayout(panSettingsMisc);
         panSettingsMisc.setLayout(panSettingsMiscLayout);
         panSettingsMiscLayout.setHorizontalGroup(
@@ -854,14 +877,17 @@ public class ScreenStudio extends javax.swing.JFrame {
                 .addComponent(jLabel11)
                 .addGap(18, 18, 18)
                 .addComponent(cboDefaultRecordingAction, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel12)
+                .addContainerGap(227, Short.MAX_VALUE))
         );
         panSettingsMiscLayout.setVerticalGroup(
             panSettingsMiscLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panSettingsMiscLayout.createSequentialGroup()
                 .addGroup(panSettingsMiscLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel11)
-                    .addComponent(cboDefaultRecordingAction, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cboDefaultRecordingAction, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel12))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1481,6 +1507,7 @@ public class ScreenStudio extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
