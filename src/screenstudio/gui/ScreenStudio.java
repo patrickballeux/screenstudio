@@ -1179,7 +1179,9 @@ public class ScreenStudio extends javax.swing.JFrame {
                 txtRTMPKey.setVisible(true);
             }
         } else {
-            trayIcon.setImage(new ImageIcon(ScreenStudio.class.getResource("/screenstudio/gui/images/iconStarting.png")).getImage());
+            if (trayIcon != null) {
+                trayIcon.setImage(new ImageIcon(ScreenStudio.class.getResource("/screenstudio/gui/images/iconStarting.png")).getImage());
+            }
             if (txtRTMPKey.isVisible()) {
                 txtRTMPKey.setVisible(false);
             }
@@ -1248,7 +1250,9 @@ public class ScreenStudio extends javax.swing.JFrame {
                     FFMpeg.RunningState initState = f.getState();
                     while (f != null) {
                         if (initState == FFMpeg.RunningState.Starting && f.getState() == FFMpeg.RunningState.Running) {
-                            trayIcon.setImage(new ImageIcon(ScreenStudio.class.getResource("/screenstudio/gui/images/iconRunning.png")).getImage());
+                            if (trayIcon != null) {
+                                trayIcon.setImage(new ImageIcon(ScreenStudio.class.getResource("/screenstudio/gui/images/iconRunning.png")).getImage());
+                            }
                             initState = FFMpeg.RunningState.Running;
                         }
                         long seconds = (System.currentTimeMillis() - mRecordingTimestamp) / 1000;
@@ -1501,7 +1505,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         } catch (BackingStoreException ex) {
             Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }//GEN-LAST:event_chkDoNotUseTrayIconActionPerformed
 
     /**

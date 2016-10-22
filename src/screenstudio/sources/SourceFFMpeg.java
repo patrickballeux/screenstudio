@@ -28,7 +28,7 @@ import screenstudio.targets.Layout.SourceType;
  *
  * @author patrick
  */
-public class SourceFFMpeg extends Source{
+public class SourceFFMpeg extends Source {
 
     private FFMpeg mFFMpeg;
     private Process mProcess;
@@ -36,16 +36,16 @@ public class SourceFFMpeg extends Source{
     private final String mInput;
     private int mFPS;
     private final Rectangle mCaptureSize;
-    
-    protected enum DEVICES{
+
+    protected enum DEVICES {
         Desktop,
         Webcam,
         File,
         Stream
     }
-    
-    public SourceFFMpeg(Rectangle captureSize,Rectangle outputSize, int fps, String input,SourceType type,String id) {
-        super(outputSize, 1, 1, 0,id);
+
+    public SourceFFMpeg(Rectangle captureSize, Rectangle outputSize, int fps, String input, SourceType type, String id) {
+        super(outputSize, 1, 1, 0, id);
         mInput = input;
         mFPS = fps;
         mCaptureSize = captureSize;
@@ -53,12 +53,15 @@ public class SourceFFMpeg extends Source{
         mType = type;
     }
 
-    public void setFPS(int fps){
+    public void setFPS(int fps) {
         mFPS = fps;
     }
+
     @Override
     protected void getData(byte[] buffer) throws IOException {
-        mInputData.readFully(buffer);
+        if (mInputData != null) {
+            mInputData.readFully(buffer);
+        }
     }
 
     @Override
@@ -86,11 +89,11 @@ public class SourceFFMpeg extends Source{
         mProcess = null;
         mInputData = null;
     }
-    
-    protected String getInput(String source, DEVICES type){
+
+    protected String getInput(String source, DEVICES type) {
         String input = "";
-        
-        switch (type){
+
+        switch (type) {
             case Desktop:
                 input = " -f " + mFFMpeg.getDesktopFormat() + " -video_size " + mCaptureSize.width + "x" + mCaptureSize.height + " -i " + source;
                 break;
@@ -99,29 +102,32 @@ public class SourceFFMpeg extends Source{
                 break;
             case Stream:
                 input = " -i " + source;
-                 break;
+                break;
             case Webcam:
                 input = " -f " + mFFMpeg.getWebcamFormat() + " -i " + source;
                 break;
         }
         return input;
     }
-    
-    public static SourceFFMpeg getDesktopInstance(Screen display,int fps){
-        String  input = " -f " + new FFMpeg(null).getDesktopFormat() + " -video_size " + display.getWidth() + "x" + display.getHeight() + " -i " + display.getId();
-        SourceFFMpeg f = new SourceFFMpeg(display.getSize(),new Rectangle(display.getSize()),fps,input,SourceType.Desktop,display.getLabel());
+
+    public static SourceFFMpeg getDesktopInstance(Screen display, int fps) {
+        String input = " -f " + new FFMpeg(null).getDesktopFormat() + " -video_size " + display.getWidth() + "x" + display.getHeight() + " -i " + display.getId();
+        SourceFFMpeg f = new SourceFFMpeg(display.getSize(), new Rectangle(display.getSize()), fps, input, SourceType.Desktop, display.getLabel());
         f.mCaptureX = display.getSize().x;
         f.mCaptureY = display.getSize().y;
         return f;
     }
-    public static SourceFFMpeg getWebcamInstance(Webcam webcam, int fps){
+
+    public static SourceFFMpeg getWebcamInstance(Webcam webcam, int fps) {
         String input = " -f " + new FFMpeg(null).getWebcamFormat() + " -i " + webcam.getDevice();
-        return new SourceFFMpeg(webcam.getSize(),new Rectangle(webcam.getSize()),fps,input,SourceType.Webcam,webcam.getDevice());
+        return new SourceFFMpeg(webcam.getSize(), new Rectangle(webcam.getSize()), fps, input, SourceType.Webcam, webcam.getDevice());
     }
-    public static SourceFFMpeg getFileInstance(Rectangle bounds,java.io.File file, int fps){
-        return new SourceFFMpeg(bounds,bounds,fps,"-i " + file.getAbsolutePath(),SourceType.Video,file.getAbsolutePath());
+
+    public static SourceFFMpeg getFileInstance(Rectangle bounds, java.io.File file, int fps) {
+        return new SourceFFMpeg(bounds, bounds, fps, "-i " + file.getAbsolutePath(), SourceType.Video, file.getAbsolutePath());
     }
-    public static SourceFFMpeg getStreamInstance(Rectangle bounds,String url, int fps){
-        return new SourceFFMpeg(bounds,bounds,fps,"-i " + url,SourceType.Stream,url);
+
+    public static SourceFFMpeg getStreamInstance(Rectangle bounds, String url, int fps) {
+        return new SourceFFMpeg(bounds, bounds, fps, "-i " + url, SourceType.Stream, url);
     }
 }

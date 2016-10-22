@@ -42,17 +42,17 @@ public class SystemCheck {
             } 
 
             //Looks for libjna-tools
-            if (new File("/usr/share/doc/libjna-java").exists()) {
-                msgs.add("----");
-                msgs.add("WARNING!");
-                msgs.add("libjna-java was detected...");
-                msgs.add("You may not be able use the global shortcuts...");
-                msgs.add("ScreenStudio does provide its own library and may conflict with libjna-java.");
-                msgs.add("Note: Uninstall libjna-java (sudo apt-get remove libjna-java)");
-                msgs.add("Note: if shortcut keys do not work.");
-                msgs.add("Note: You can also replace jna.jar by your own by creating a symlink.");
-                msgs.add("----");
-            }
+//            if (new File("/usr/share/doc/libjna-java").exists()) {
+//                msgs.add("----");
+//                msgs.add("WARNING!");
+//                msgs.add("libjna-java was detected...");
+//                msgs.add("You may not be able use the global shortcuts...");
+//                msgs.add("ScreenStudio does provide its own library and may conflict with libjna-java.");
+//                msgs.add("Note: Uninstall libjna-java (sudo apt-get remove libjna-java)");
+//                msgs.add("Note: if shortcut keys do not work.");
+//                msgs.add("Note: You can also replace jna.jar by your own by creating a symlink.");
+//                msgs.add("----");
+//            }
             //Looks for xwininfo
             if (interactive) {
                 if (msgs.size() > 0) {
