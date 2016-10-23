@@ -173,6 +173,9 @@ public class ScreenStudio extends javax.swing.JFrame {
             trayIcon = null;
         }
 
+        if (Screen.isOSX() || Screen.isWindows()) {
+            cboAudioSystems.setEnabled(false);
+        }
     }
 
     private void updateControls(boolean enabled) {
@@ -197,6 +200,9 @@ public class ScreenStudio extends javax.swing.JFrame {
         mnuFileSave.setEnabled(enabled);
         spinAudioDelay.setEnabled(enabled);
         cboDefaultRecordingAction.setEnabled(enabled);
+         if (Screen.isOSX() || Screen.isWindows()) {
+            cboAudioSystems.setEnabled(false);
+        }
     }
 
     private void loadLayout(File file) {
