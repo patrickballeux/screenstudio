@@ -112,6 +112,9 @@ public class SourceFFMpeg extends Source {
 
     public static SourceFFMpeg getDesktopInstance(Screen display, int fps) {
         String input = " -f " + new FFMpeg(null).getDesktopFormat() + " -video_size " + display.getWidth() + "x" + display.getHeight() + " -i " + display.getId();
+        if (Screen.isWindows()){
+            input = " -f " + new FFMpeg(null).getDesktopFormat() + " -video_size " + display.getWidth() + "x" + display.getHeight() + " -offset_x " + display.getSize().x + " -offset_y " + display.getSize().y + " " + " -i " + display.getId();
+        }
         SourceFFMpeg f = new SourceFFMpeg(display.getSize(), new Rectangle(display.getSize()), fps, input, SourceType.Desktop, display.getLabel());
         f.mCaptureX = display.getSize().x;
         f.mCaptureY = display.getSize().y;
