@@ -194,12 +194,11 @@ public class Webcam {
                         w.id = "";
                         String[] parts = line.trim().split(" ");
                         System.out.println(line);
-                        for (int i = parts.length - 1; i >= 0; i--) {
-                            w.device = "video=" + parts[i].trim();
-                            w.id = parts[i].trim();
-                            w.description = w.id.replaceAll("\"", "");
-                            break;
-                        }
+                        line = line.substring(line.indexOf("]") + 1).trim();
+                        w.device = "video=" + line;
+                        w.id = line;
+                        w.description = w.id.replaceAll("\"", "");
+
                         w.id = w.id.trim();
                         System.out.println(w.description);
                         list.add(w);
