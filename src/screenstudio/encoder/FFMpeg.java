@@ -22,10 +22,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import screenstudio.sources.Compositor;
 import screenstudio.sources.Screen;
+import screenstudio.targets.Pipe;
 
 /**
  *
@@ -309,7 +311,7 @@ public class FFMpeg implements Runnable {
         c.append(output);
         // Set proper output
         //if (mDebugMode) {
-        System.out.println(c.toString());
+        //System.out.println(c.toString());
         //}
         return c.toString();
     }
@@ -383,6 +385,13 @@ public class FFMpeg implements Runnable {
                     Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            Pipe pipe = null;
+            if (Screen.isWindows()){
+                pipe = new Pipe();
+                new Thread(pipe).start();
+                command = command.replaceAll("-i -", "-i " + pipe.getServer());
+            }
+            System.out.println(command);
             Process p = Runtime.getRuntime().exec(command);
             OutputStream out = p.getOutputStream();
             InputStream in = p.getErrorStream();
@@ -393,7 +402,11 @@ public class FFMpeg implements Runnable {
             System.out.println("Starting encoding...");
             while (!mStopMe) {
                 try {
-                    out.write(compositor.getData());
+                    if (pipe != null){
+                        pipe.write(compositor.getData());
+                    } else {
+                        out.write(compositor.getData());
+                    }
 //                    System.out.println("Data written " + System.currentTimeMillis());
                 } catch (Exception exWrite) {
                     System.err.println("Exception while writing...  " + exWrite.getMessage());
@@ -414,7 +427,21 @@ public class FFMpeg implements Runnable {
             System.out.println("Exiting encoder...");
             System.out.println("Status : " + state.toString());
             in.close();
-            out.close();
+            if (pipe!=null){
+                pipe.close();
+                out.write("q\n".getBytes());
+                out.close();
+                out = null;
+                try {
+                    p.waitFor(15, TimeUnit.SECONDS);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            if (out != null){
+                out.close();
+                out = null;
+            }
             compositor.stop();
             p.destroy();
             p = null;
