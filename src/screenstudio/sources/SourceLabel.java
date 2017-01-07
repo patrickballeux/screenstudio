@@ -48,6 +48,9 @@ public class SourceLabel extends Source {
     private final float mOriginalAlpha;
     private String mLastContent;
     private boolean mOnChangeOnly = false;
+    private boolean mOneLiner = false;
+    private int mOneLinerLastLine = 0;
+    private long mOneLinerLastUpdate = System.currentTimeMillis();
     private long mReloadTime = 1000;
     private long mLastReloadTime = System.currentTimeMillis();
 
@@ -105,17 +108,54 @@ public class SourceLabel extends Source {
         if (index != -1) {
             setAlpha(0);
             mOnChangeOnly = true;
-            retValue = retValue.replaceAll("@ONCHANGEONLY","");
+            retValue = retValue.replaceAll("@ONCHANGEONLY", "");
+        }
+        index = retValue.indexOf("@ONELINER");
+        if (index != -1) {
+            mOneLiner = true;
+            retValue = retValue.replaceAll("@ONELINER", "");
         }
         return retValue;
     }
 
     @Override
     protected void getData(byte[] buffer) throws IOException {
+        String text = mText;
         if (System.currentTimeMillis() - mLastReloadTime > mReloadTime) {
-            mLabel.setText(replaceTags(mText));
+            text = replaceTags(mText);
             mLastReloadTime = System.currentTimeMillis();
         }
+        if (mOneLiner) {
+            String lines[] = text.split("\n");
+            text = lines[mOneLinerLastLine];
+            if (System.currentTimeMillis() - mOneLinerLastUpdate >= 5000) {
+                mOneLinerLastLine++;
+                if (mOneLinerLastLine >= lines.length) {
+                    mOneLinerLastLine = 0;
+                }
+                mOneLinerLastUpdate = System.currentTimeMillis();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        int r, g, b;
+                        r = mLabel.getForeground().getRed();
+                        g = mLabel.getForeground().getGreen();
+                        b = mLabel.getForeground().getBlue();
+                        mLabel.setForeground(new Color(r, g, b, 0));
+                        for (int alpha = 0; alpha < 255; alpha += 5) {
+                            mLabel.setForeground(new Color(r, g, b, alpha));
+                            try {
+                                Thread.sleep(50);
+                            } catch (InterruptedException ex) {
+                                Logger.getLogger(SourceLabel.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                        mLabel.setForeground(new Color(r, g, b, 255));
+                    }
+                }).start();
+            }
+        }
+        mLabel.setText(text);
         Graphics2D g = mImage.createGraphics();
         java.util.Arrays.fill(mData, (byte) 0);
         mLabel.paint(g);
