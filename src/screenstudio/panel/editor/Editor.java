@@ -166,6 +166,7 @@ public class Editor extends javax.swing.JDialog {
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem6 = new javax.swing.JMenuItem();
         jMenuItem8 = new javax.swing.JMenuItem();
+        jMenuItem9 = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jMenuItem7 = new javax.swing.JMenuItem();
 
@@ -331,6 +332,14 @@ public class Editor extends javax.swing.JDialog {
             }
         });
         mnuTags.add(jMenuItem8);
+
+        jMenuItem9.setText("@ONELINER");
+        jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuTagsActionPerformed(evt);
+            }
+        });
+        mnuTags.add(jMenuItem9);
         mnuTags.add(jSeparator2);
 
         jMenuItem7.setText("file:///path/to/file.txt");
@@ -553,6 +562,7 @@ public class Editor extends javax.swing.JDialog {
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem8;
+    private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JLabel lblPreview;
