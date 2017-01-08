@@ -100,9 +100,12 @@ In the text/html content, some tags are supported to udate the text content with
 	@CURRENTTIME (Current time)
  	@RECORDINGTIME (Recording time in minutes)
 	@STARTTIME (Time when the recording started)
-	@REMAININGTIME (Time remaining in minutes)
-	@TEXT (Custom text from the text entry in the Panel tab...)
-        @COMMAND (Custom text from a command output...)
+        @UPDATE 60 SEC@ (Update the content each 60 seconds)
+        @UPDATE 5 MIN@ (Update the content each 5 minutes)
+        @ONCHANGEONLY (Displays the content for 5 seconds only when new content)
+        @ONELINER (Displays content one line at a time)
+        file:///path/to/text/file.txt (URL will be parsed and load the content)
+              
 
 -----------------------------------------------------------------
 CONTACT:
@@ -116,4 +119,4 @@ Keep in mind that ScreenStudio is free and that I work on this project in my spa
 Have fun!
 
 Patrick
-
+s
