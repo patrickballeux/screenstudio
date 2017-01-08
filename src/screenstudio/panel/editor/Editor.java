@@ -85,7 +85,7 @@ public class Editor extends javax.swing.JDialog {
         initComponents();
         currentFile = null;
         returnContent = content;
-        foreground = new JColorChooser(new Color(returnContent.getForegroundColor()));
+        foreground = new JColorChooser(new Color(returnContent.getForegroundColor(),true));
         tabs.add("Foreground color", foreground);
 
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
@@ -100,7 +100,7 @@ public class Editor extends javax.swing.JDialog {
             }
         });
 
-        background = new JColorChooser(new Color(returnContent.getBackgroundColor()));
+        background = new JColorChooser(new Color(returnContent.getBackgroundColor(),true));
         tabs.add("Background color", background);
         background.getSelectionModel().addChangeListener(new ChangeListener() {
             @Override
