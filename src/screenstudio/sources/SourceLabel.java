@@ -53,12 +53,14 @@ public class SourceLabel extends Source {
     private long mOneLinerLastUpdate = System.currentTimeMillis();
     private long mReloadTime = 1000;
     private long mLastReloadTime = System.currentTimeMillis();
+    private String mLastRenderedText = "";
 
     public SourceLabel(Rectangle bounds, int zOrder, float alpha, LabelText text) {
         super(bounds, zOrder, alpha, 100, text.getText());
         mOriginalAlpha = alpha;
         mText = updateWithTextTags(text.getText());
-        mLabel.setText(replaceTags(mText));
+        mLastRenderedText = replaceTags(mText);
+        mLabel.setText(mLastRenderedText);
         mLastContent = mLabel.getText();
         mLabel.setForeground(new Color(text.getForegroundColor()));
         super.mBackground = text.getBackgroundColor();
@@ -120,13 +122,15 @@ public class SourceLabel extends Source {
 
     @Override
     protected void getData(byte[] buffer) throws IOException {
-        String text = mText;
+        String text = mLastRenderedText;
         if (System.currentTimeMillis() - mLastReloadTime > mReloadTime) {
-            text = replaceTags(mText);
+            mLastRenderedText = replaceTags(mText);
+            text = mLastRenderedText;
             mLastReloadTime = System.currentTimeMillis();
         }
         if (mOneLiner) {
             String lines[] = text.split("\n");
+            if (mOneLinerLastLine >= lines.length) mOneLinerLastLine = 0;
             text = lines[mOneLinerLastLine];
             if (System.currentTimeMillis() - mOneLinerLastUpdate >= 5000) {
                 mOneLinerLastLine++;
@@ -205,6 +209,9 @@ public class SourceLabel extends Source {
             int toIndex = retValue.indexOf(";", index);
             if (toIndex == -1) {
                 toIndex = retValue.indexOf(" ", index);
+            }
+            if (toIndex == -1){
+                toIndex = retValue.indexOf("\n", index);
             }
             if (toIndex == -1) {
                 toIndex = retValue.length() - 1;
