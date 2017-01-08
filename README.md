@@ -96,16 +96,16 @@ See http://www.w3schools.com/tags/ for a list of tags to use...
 
 In the text/html content, some tags are supported to udate the text content with values like the current date and time.
 
-@CURRENTDATE (Current date)
-@CURRENTTIME (Current time)
-@RECORDINGTIME (Recording time in minutes)
-@STARTTIME (Time when the recording started)
-@UPDATE 60 SEC@ (Update the content each 60 seconds)
-@UPDATE 5 MIN@ (Update the content each 5 minutes)
-@ONCHANGEONLY (Displays the content for 5 seconds only when new content)
-@ONELINER (Displays content one line at a time)
-file:///path/to/text/file.txt (URL will be parsed and load the content)
-              
+    @CURRENTDATE (Current date)
+    @CURRENTTIME (Current time)
+    @RECORDINGTIME (Recording time in minutes)
+    @STARTTIME (Time when the recording started)
+    @UPDATE 60 SEC@ (Update the content each 60 seconds)
+    @UPDATE 5 MIN@ (Update the content each 5 minutes)
+    @ONCHANGEONLY (Displays the content for 5 seconds only when new content)
+    @ONELINER (Displays content one line at a time)
+    file:///path/to/text/file.txt (URL will be parsed and load the content)
+
 
 -----------------------------------------------------------------
 CONTACT:
