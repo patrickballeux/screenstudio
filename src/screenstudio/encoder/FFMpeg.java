@@ -386,11 +386,11 @@ public class FFMpeg implements Runnable {
                 }
             }
             Pipe pipe = null;
-            if (Screen.isWindows()){
+//            if (Screen.isWindows()){
                 pipe = new Pipe();
                 new Thread(pipe).start();
                 command = command.replaceAll("-i -", "-i " + pipe.getServer());
-            }
+//            }
             System.out.println(command);
             Process p = Runtime.getRuntime().exec(command);
             OutputStream out = p.getOutputStream();
@@ -407,7 +407,6 @@ public class FFMpeg implements Runnable {
                     } else {
                         out.write(compositor.getData());
                     }
-//                    System.out.println("Data written " + System.currentTimeMillis());
                 } catch (Exception exWrite) {
                     System.err.println("Exception while writing...  " + exWrite.getMessage());
                     this.lastErrorMessage = exWrite.getMessage();
