@@ -22,8 +22,8 @@ package screenstudio.gui;
  */
 public class LabelText {
     private String mText = "";
-    private int mforegroundColor = 0;
-    private int mbackgroundColor = 0x00FFFFFF;
+    private int mforegroundColor = 0xFF000000;
+    private int mbackgroundColor = 0x88FFFFFF;
     private String mFontName = "Dialog";
     public LabelText(String text){
         mText = text;
