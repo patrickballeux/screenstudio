@@ -99,6 +99,8 @@ public class FFMpeg implements Runnable {
     private String muxer = "mp4";
     private String preset = "ultrafast";
     private String strictSetting = "-2";
+    
+    private String backgroundMusic = "";
 
     /**
      * Main class wrapper for FFMpeg
@@ -130,7 +132,7 @@ public class FFMpeg implements Runnable {
      * @param rate : Audio rate for the output
      * @param input : device to use
      */
-    public void setAudio(AudioRate rate, String input, Float offset) {
+    public void setAudio(AudioRate rate, String input, Float offset,File bgMusic) {
         switch (rate) {
             case Audio44K:
                 audioRate = "44100";
@@ -151,7 +153,7 @@ public class FFMpeg implements Runnable {
         } else {
             mITSOffset = "";
         }
-
+        if (bgMusic != null) backgroundMusic = bgMusic.getAbsolutePath();
     }
 
     public RunningState getState() {
@@ -278,6 +280,10 @@ public class FFMpeg implements Runnable {
         // Capture Audio
         if (!videoEncoder.equals("gif")) {
             c.append(" -f ").append(audioFormat).append(mITSOffset).append(" -i ").append(audioInput);
+
+            if (backgroundMusic.length() > 0){
+                c.append(" -i ").append(backgroundMusic).append(" -filter_complex amix ");
+            }
         }
         // Enabled strict settings
         if (strictSetting.length() > 0) {
@@ -309,10 +315,6 @@ public class FFMpeg implements Runnable {
         String buffer = " -g " + (compositor.getFPS() * 2);
         c.append(buffer).append(" -f ").append(muxer).append(" ");
         c.append(output);
-        // Set proper output
-        //if (mDebugMode) {
-        //System.out.println(c.toString());
-        //}
         return c.toString();
     }
 
