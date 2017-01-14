@@ -202,9 +202,9 @@ public class Layout {
         return settings.getAttributes().getNamedItem("shortcutcapture").getNodeValue();
     }
 
-    public void setOutputVideoFolder(File value) {
+    public void setOutputVideoFolder(String value) {
         Node node = document.createAttribute("outputvideofolder");
-        node.setNodeValue(value.getAbsolutePath());
+        node.setNodeValue(value);
         output.getAttributes().setNamedItem(node);
 
     }

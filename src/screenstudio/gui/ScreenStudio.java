@@ -65,7 +65,7 @@ public class ScreenStudio extends javax.swing.JFrame {
 
     private final SourceLayoutPreview mLayoutPreview;
     private FFMpeg mFFMpeg = null;
-    private File mVideoOutputFolder = new File(System.getProperty("user.home"));
+    private String mVideoOutputFolder = System.getProperty("user.home");
     private long mRecordingTimestamp = 0;
     private java.awt.TrayIcon trayIcon;
     private final com.tulskiy.keymaster.common.Provider mShortcuts;
@@ -146,8 +146,8 @@ public class ScreenStudio extends javax.swing.JFrame {
         int defaultHeight = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getHeight();
         spinWidth.setValue(defaultWidth);
         spinHeight.setValue(defaultHeight);
-        lblVideoFolder.setText(mVideoOutputFolder.getAbsolutePath());
-        lblVideoFolder.setToolTipText(mVideoOutputFolder.getAbsolutePath());
+        txtVideoFolder.setText(mVideoOutputFolder);
+        txtVideoFolder.setToolTipText(mVideoOutputFolder);
         updateMenuWebcams();
         updateMenuDesktops();
         // get audio sync
@@ -204,6 +204,9 @@ public class ScreenStudio extends javax.swing.JFrame {
         if (Screen.isOSX() || Screen.isWindows()) {
             cboAudioSystems.setEnabled(false);
         }
+        txtVideoFolder.setEnabled(enabled);
+        txtVideoFolder.setVisible(enabled);
+        btnBGMusicBrowse.setEnabled(enabled);
     }
 
     private void loadLayout(File file) {
@@ -229,9 +232,9 @@ public class ScreenStudio extends javax.swing.JFrame {
             cboTarget.setSelectedItem(layout.getOutputTarget());
             txtRTMPKey.setText(layout.getOutputRTMPKey());
             cboRTMPServers.setSelectedItem(layout.getOutputRTMPServer());
-            mVideoOutputFolder = layout.getOutputVideoFolder();
-            lblVideoFolder.setText(mVideoOutputFolder.getAbsolutePath());
-            lblVideoFolder.setToolTipText(mVideoOutputFolder.getAbsolutePath());
+            mVideoOutputFolder = layout.getOutputVideoFolder().getAbsolutePath();
+            txtVideoFolder.setText(mVideoOutputFolder);
+            txtVideoFolder.setToolTipText(mVideoOutputFolder);
             spinWidth.setValue(layout.getOutputWidth());
             numVideoBitrate.setValue(layout.getVideoBitrate());
             mBackgroundMusic = layout.getBackgroundMusic();
@@ -356,6 +359,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                 case FLV:
                 case TS:
                 case GIF:
+                case HTTP:
                     cboRTMPServers.setModel(new DefaultComboBoxModel());
                     txtRTMPKey.setText((""));
                     cboRTMPServers.setVisible(false);
@@ -508,8 +512,8 @@ public class ScreenStudio extends javax.swing.JFrame {
         jLabel10 = new javax.swing.JLabel();
         spinAudioDelay = new javax.swing.JSpinner();
         panSettingsVideos = new javax.swing.JPanel();
-        lblVideoFolder = new javax.swing.JLabel();
         btnSetVideoFolder = new javax.swing.JButton();
+        txtVideoFolder = new javax.swing.JTextField();
         panSettingsMisc = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
         cboDefaultRecordingAction = new javax.swing.JComboBox<>();
@@ -829,11 +833,11 @@ public class ScreenStudio extends javax.swing.JFrame {
                     .addComponent(jLabel10))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cboAudioMicrophones, 0, 432, Short.MAX_VALUE)
+                    .addComponent(cboAudioMicrophones, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(cboAudioSystems, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(panSettingsAudiosLayout.createSequentialGroup()
                         .addComponent(spinAudioDelay, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 335, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panSettingsAudiosLayout.setVerticalGroup(
@@ -855,12 +859,16 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         panSettingsVideos.setBorder(javax.swing.BorderFactory.createTitledBorder("Video Folders"));
 
-        lblVideoFolder.setText(" ");
-
         btnSetVideoFolder.setText("Browse");
         btnSetVideoFolder.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSetVideoFolderActionPerformed(evt);
+            }
+        });
+
+        txtVideoFolder.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtVideoFolderActionPerformed(evt);
             }
         });
 
@@ -869,8 +877,9 @@ public class ScreenStudio extends javax.swing.JFrame {
         panSettingsVideosLayout.setHorizontalGroup(
             panSettingsVideosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panSettingsVideosLayout.createSequentialGroup()
-                .addComponent(lblVideoFolder, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addContainerGap()
+                .addComponent(txtVideoFolder, javax.swing.GroupLayout.PREFERRED_SIZE, 503, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSetVideoFolder)
                 .addContainerGap())
         );
@@ -878,8 +887,8 @@ public class ScreenStudio extends javax.swing.JFrame {
             panSettingsVideosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panSettingsVideosLayout.createSequentialGroup()
                 .addGroup(panSettingsVideosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblVideoFolder)
-                    .addComponent(btnSetVideoFolder))
+                    .addComponent(btnSetVideoFolder)
+                    .addComponent(txtVideoFolder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1393,9 +1402,9 @@ public class ScreenStudio extends javax.swing.JFrame {
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.showOpenDialog(this);
         if (chooser.getSelectedFile() != null) {
-            mVideoOutputFolder = chooser.getSelectedFile();
-            lblVideoFolder.setText(mVideoOutputFolder.getAbsolutePath());
-            lblVideoFolder.setToolTipText(mVideoOutputFolder.getAbsolutePath());
+            mVideoOutputFolder = chooser.getSelectedFile().getAbsolutePath();
+            txtVideoFolder.setText(mVideoOutputFolder);
+            txtVideoFolder.setToolTipText(mVideoOutputFolder);
         }
     }//GEN-LAST:event_btnSetVideoFolderActionPerformed
 
@@ -1575,6 +1584,11 @@ public class ScreenStudio extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnBGMusicBrowseActionPerformed
 
+    private void txtVideoFolderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtVideoFolderActionPerformed
+        mVideoOutputFolder = txtVideoFolder.getText();
+        txtVideoFolder.setToolTipText(mVideoOutputFolder);
+    }//GEN-LAST:event_txtVideoFolderActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1646,7 +1660,6 @@ public class ScreenStudio extends javax.swing.JFrame {
     private javax.swing.JLabel lblMessages;
     private javax.swing.JLabel lblRTMPKey;
     private javax.swing.JLabel lblRTMPServer;
-    private javax.swing.JLabel lblVideoFolder;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem mnuCapture;
     private javax.swing.JMenu mnuEdit;
@@ -1678,5 +1691,6 @@ public class ScreenStudio extends javax.swing.JFrame {
     private javax.swing.JTable tableSources;
     private javax.swing.JTabbedPane tabs;
     private javax.swing.JTextField txtRTMPKey;
+    private javax.swing.JTextField txtVideoFolder;
     // End of variables declaration//GEN-END:variables
 }
