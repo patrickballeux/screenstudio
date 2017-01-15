@@ -209,8 +209,8 @@ public class Layout {
 
     }
 
-    public File getOutputVideoFolder() {
-        return new File(output.getAttributes().getNamedItem("outputvideofolder").getNodeValue());
+    public String getOutputVideoFolder() {
+        return output.getAttributes().getNamedItem("outputvideofolder").getNodeValue();
     }
 
     public void setBackgroundMusic(File bgMusic){

@@ -232,7 +232,7 @@ public class ScreenStudio extends javax.swing.JFrame {
             cboTarget.setSelectedItem(layout.getOutputTarget());
             txtRTMPKey.setText(layout.getOutputRTMPKey());
             cboRTMPServers.setSelectedItem(layout.getOutputRTMPServer());
-            mVideoOutputFolder = layout.getOutputVideoFolder().getAbsolutePath();
+            mVideoOutputFolder = layout.getOutputVideoFolder();
             txtVideoFolder.setText(mVideoOutputFolder);
             txtVideoFolder.setToolTipText(mVideoOutputFolder);
             spinWidth.setValue(layout.getOutputWidth());
