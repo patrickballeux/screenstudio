@@ -133,7 +133,7 @@ To view your M3U8 video stream in a webpage, just add this code:
   });
  }
 </script>
-'''
+'''html
 -----------------------------------------------------------------
 CONTACT:
 
