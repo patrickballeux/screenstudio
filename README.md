@@ -118,7 +118,7 @@ In the text/html content, some tags are supported to udate the text content with
 - HTTP LIVE STREAMING
 
 To view your M3U8 video stream in a webpage, just add this code:
-'''
+```
 <script src="https://cdn.jsdelivr.net/hls.js/latest/hls.js"></script>
 <video id="video" width=100% height=430 src="stream.m3u8" autoplay>
 </video>
@@ -133,7 +133,7 @@ To view your M3U8 video stream in a webpage, just add this code:
   });
  }
 </script>
-'''html
+```
 -----------------------------------------------------------------
 CONTACT:
 
