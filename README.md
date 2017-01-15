@@ -115,6 +115,24 @@ In the text/html content, some tags are supported to udate the text content with
     @ONELINER (Displays content one line at a time)
     file:///path/to/text/file.txt (URL will be parsed and load the content)
 
+- HTTP LIVE STREAMING
+
+To view your M3U8 video stream in a webpage, just add this code:
+
+<script src="https://cdn.jsdelivr.net/hls.js/latest/hls.js"></script>
+<video id="video" width=100% height=430 src="stream.m3u8" autoplay>
+</video>
+<script>
+  if(Hls.isSupported()) {
+    var video = document.getElementById('video');
+    var hls = new Hls();
+    hls.loadSource('stream.m3u8');
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED,function() {
+      video.play();
+  });
+ }
+</script>
 
 -----------------------------------------------------------------
 CONTACT:
