@@ -45,6 +45,11 @@ Then select the output format.  Some settings will be available according to the
 > FLV, TS, MP4, MOV are to record into a local file
 > TWITCH, YOUTUBE, USTREAM, HITBOX are for streaming to their respective RTMP server.
 > For RTMP, you can select a server and enter your secret key.
+> HTTP: This is a m3u8 stream.  Enter the full path to the folder or the FTP URL on your server
+
+Note: For HTTP Live Streaming, you can use the FTP URL to upload the files to your server.
+This URL can include the username/password and the field will be hidden to prevent leaking your credentials.
+For example: ftp://username:pass@ftp.yourserver.com/public_html/livestream
 
 If your computer is not really fast and powerful, use a 10 frame per second and a lower output size for better
 performances. 
@@ -71,6 +76,10 @@ ScreenStudio is capturing and will be remove once the capture is completed.
 To adjust the audio levels, use the default audio mixer or install "pavucontrol" for more options.
 
 You can also select the output folder where ScreenStudio will save the video files.
+
+Select a music file for the Background Music and the file will be mixed with your live audio feed.
+It can be a simple jingle or for a loop the file to have music in the background as long as your
+recording will last...
 
 - HTML Text label
 
@@ -119,4 +128,3 @@ Keep in mind that ScreenStudio is free and that I work on this project in my spa
 Have fun!
 
 Patrick
-s
