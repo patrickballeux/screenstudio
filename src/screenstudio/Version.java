@@ -27,7 +27,7 @@ import screenstudio.sources.Screen;
 public class Version {
 //Using this to set the main version of ScreenStudio
 
-    public final static String MAIN = "3.0.12";
+    public final static String MAIN = "3.1.0";
 
     public static boolean hasNewVersion() {
         boolean retValue = false;
