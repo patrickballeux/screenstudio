@@ -871,6 +871,11 @@ public class ScreenStudio extends javax.swing.JFrame {
                 txtVideoFolderActionPerformed(evt);
             }
         });
+        txtVideoFolder.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtVideoFolderKeyTyped(evt);
+            }
+        });
 
         javax.swing.GroupLayout panSettingsVideosLayout = new javax.swing.GroupLayout(panSettingsVideos);
         panSettingsVideos.setLayout(panSettingsVideosLayout);
@@ -878,8 +883,8 @@ public class ScreenStudio extends javax.swing.JFrame {
             panSettingsVideosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panSettingsVideosLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(txtVideoFolder, javax.swing.GroupLayout.PREFERRED_SIZE, 503, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtVideoFolder, javax.swing.GroupLayout.PREFERRED_SIZE, 497, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnSetVideoFolder)
                 .addContainerGap())
         );
@@ -1588,6 +1593,11 @@ public class ScreenStudio extends javax.swing.JFrame {
         mVideoOutputFolder = txtVideoFolder.getText();
         txtVideoFolder.setToolTipText(mVideoOutputFolder);
     }//GEN-LAST:event_txtVideoFolderActionPerformed
+
+    private void txtVideoFolderKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtVideoFolderKeyTyped
+        mVideoOutputFolder = txtVideoFolder.getText();
+        txtVideoFolder.setToolTipText(mVideoOutputFolder);
+    }//GEN-LAST:event_txtVideoFolderKeyTyped
 
     /**
      * @param args the command line arguments
