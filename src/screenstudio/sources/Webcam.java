@@ -179,7 +179,7 @@ public class Webcam {
         System.out.println(command);
         Process p = Runtime.getRuntime().exec(command);
         InputStream in = p.getErrorStream();
-        InputStreamReader isr = new InputStreamReader(in);
+        InputStreamReader isr = new InputStreamReader(in,"utf-8");
         BufferedReader reader = new BufferedReader(isr);
         line = reader.readLine();
         while (line != null) {
