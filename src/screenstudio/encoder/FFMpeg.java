@@ -334,7 +334,7 @@ public class FFMpeg implements Runnable {
         }
         String buffer = " -g " + (compositor.getFPS() * 2);
         c.append(buffer).append(" -y -f ").append(muxer).append(" ");
-        c.append(output);
+        c.append("\"" +output + "\"");
         return c.toString();
     }
 
