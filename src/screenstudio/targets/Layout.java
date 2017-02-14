@@ -58,7 +58,7 @@ public class Layout {
     private Node settings = null;
 
     public enum SourceType {
-        Desktop, Webcam, Image, LabelFile, LabelText, Video, Stream
+        Desktop, Webcam, Image, LabelText, Video, Stream
     }
 
     public Layout() {
@@ -249,9 +249,6 @@ public class Layout {
             case Image:
                 nodeName = "image";
                 break;
-            case LabelFile:
-                nodeName = "label";
-                break;
             case LabelText:
                 nodeName = "label";
                 break;
@@ -286,9 +283,6 @@ public class Layout {
         backg.setNodeValue("" + bg);
         fontg.setNodeValue(font);
         switch (typeValue) {
-            case LabelFile:
-                type.setNodeValue("file");
-                break;
             case LabelText:
                 type.setNodeValue("text");
                 break;
@@ -391,16 +385,13 @@ public class Layout {
         Source[] sources = new Source[nodes.getLength()];
         for (int i = 0; i < sources.length; i++) {
             Source s = new Source();
-            s.Type = SourceType.LabelFile;
+            s.Type = SourceType.LabelText;
             Node n = nodes.item(i);
             s.X = new Integer(n.getAttributes().getNamedItem("x").getNodeValue());
             s.Y = new Integer(n.getAttributes().getNamedItem("y").getNodeValue());
             s.Width = new Integer(n.getAttributes().getNamedItem("w").getNodeValue());
             s.Height = new Integer(n.getAttributes().getNamedItem("h").getNodeValue());
             s.ID = n.getAttributes().getNamedItem("id").getNodeValue();
-            if (n.getAttributes().getNamedItem("type").getNodeValue().equalsIgnoreCase("text")) {
-                s.Type = SourceType.LabelText;
-            }
             s.Alpha = new Float(n.getAttributes().getNamedItem("alpha").getNodeValue());
             s.Order = new Integer(n.getAttributes().getNamedItem("order").getNodeValue());
             // IF is required since not available in version 3.0.0

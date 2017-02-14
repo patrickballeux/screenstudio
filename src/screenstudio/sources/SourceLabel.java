@@ -56,7 +56,7 @@ public class SourceLabel extends Source {
     private String mLastRenderedText = "";
 
     public SourceLabel(Rectangle bounds, int zOrder, float alpha, LabelText text) {
-        super(bounds, zOrder, alpha, 100, text.getText());
+        super(bounds, zOrder, alpha, 100, text.getText(),BufferedImage.TYPE_4BYTE_ABGR);
         mOriginalAlpha = alpha;
         mText = updateWithTextTags(text.getText());
         mLastRenderedText = replaceTags(mText);
@@ -72,7 +72,6 @@ public class SourceLabel extends Source {
         mLabel.setFont(new Font(text.getFontName(), Font.BOLD, bounds.height - 20));
         super.setFontName(text.getFontName());
         this.mType = Layout.SourceType.LabelText;
-        this.mImageType = BufferedImage.TYPE_4BYTE_ABGR;
         mImage = new BufferedImage(bounds.width, bounds.height, mImageType);
         mData = ((DataBufferByte) mImage.getRaster().getDataBuffer()).getData();
         mLabel.setSize(bounds.getSize());
@@ -130,41 +129,51 @@ public class SourceLabel extends Source {
         }
         if (mOneLiner) {
             String lines[] = text.split("\n");
-            if (mOneLinerLastLine >= lines.length) mOneLinerLastLine = 0;
-            text = lines[mOneLinerLastLine];
-            if (System.currentTimeMillis() - mOneLinerLastUpdate >= 5000) {
-                mOneLinerLastLine++;
+            if (lines.length > 0) {
                 if (mOneLinerLastLine >= lines.length) {
                     mOneLinerLastLine = 0;
                 }
-                mOneLinerLastUpdate = System.currentTimeMillis();
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        int r, g, b;
-                        r = mLabel.getForeground().getRed();
-                        g = mLabel.getForeground().getGreen();
-                        b = mLabel.getForeground().getBlue();
-                        mLabel.setForeground(new Color(r, g, b, 0));
-                        for (int alpha = 0; alpha < 255; alpha += 5) {
-                            mLabel.setForeground(new Color(r, g, b, alpha));
-                            try {
-                                Thread.sleep(50);
-                            } catch (InterruptedException ex) {
-                                Logger.getLogger(SourceLabel.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        }
-                        mLabel.setForeground(new Color(r, g, b, 255));
+                text = lines[mOneLinerLastLine];
+                if (System.currentTimeMillis() - mOneLinerLastUpdate >= 5000) {
+                    mOneLinerLastLine++;
+                    if (mOneLinerLastLine >= lines.length) {
+                        mOneLinerLastLine = 0;
                     }
-                }).start();
+                    mOneLinerLastUpdate = System.currentTimeMillis();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            int r, g, b;
+                            r = mLabel.getForeground().getRed();
+                            g = mLabel.getForeground().getGreen();
+                            b = mLabel.getForeground().getBlue();
+                            mLabel.setForeground(new Color(r, g, b, 0));
+                            for (int alpha = 0; alpha < 255; alpha += 5) {
+                                mLabel.setForeground(new Color(r, g, b, alpha));
+                                try {
+                                    Thread.sleep(50);
+                                } catch (InterruptedException ex) {
+                                    Logger.getLogger(SourceLabel.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            }
+                            mLabel.setForeground(new Color(r, g, b, 255));
+                        }
+                    }).start();
+                }
             }
         }
+
         mLabel.setText(text);
         Graphics2D g = mImage.createGraphics();
-        java.util.Arrays.fill(mData, (byte) 0);
+
+        java.util.Arrays.fill(mData,
+                (byte) 0);
         mLabel.paint(g);
-        System.arraycopy(mData, 0, buffer, 0, buffer.length);
-        if (mOnChangeOnly && !mLastContent.equals(mLabel.getText()) && getAlpha().getAlpha() == 0.0F) {
+
+        System.arraycopy(mData,
+                0, buffer, 0, buffer.length);
+        if (mOnChangeOnly
+                && !mLastContent.equals(mLabel.getText()) && getAlpha().getAlpha() == 0.0F) {
             setAlpha(mOriginalAlpha);
             new Thread(() -> {
                 try {
@@ -210,7 +219,7 @@ public class SourceLabel extends Source {
             if (toIndex == -1) {
                 toIndex = retValue.indexOf(" ", index);
             }
-            if (toIndex == -1){
+            if (toIndex == -1) {
                 toIndex = retValue.indexOf("\n", index);
             }
             if (toIndex == -1) {

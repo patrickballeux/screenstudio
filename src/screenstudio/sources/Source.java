@@ -17,7 +17,6 @@
 package screenstudio.sources;
 
 import java.awt.AlphaComposite;
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -30,7 +29,7 @@ import screenstudio.targets.Layout.SourceType;
  *
  * @author patrick
  */
-public abstract class Source implements Runnable {
+public abstract class Source {
 
     protected Rectangle mBounds = new Rectangle(0, 0, 320, 240);
     protected int mCaptureX = 0;
@@ -41,12 +40,9 @@ public abstract class Source implements Runnable {
     private AlphaComposite mAlpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1);
     protected int mImageType = BufferedImage.TYPE_3BYTE_BGR;
     protected String mFontName = "Dialog";
-    // Time to wait before fetching next image in milliseconds
-    private int mDelayTime = 10;
     
-    private BufferedImage mImage = null;
-
-    protected boolean mStopMe = false;
+    private final BufferedImage mImage;
+    private final byte[] mBuffer;
 
     private String mID = "";
     
@@ -59,12 +55,14 @@ public abstract class Source implements Runnable {
     protected abstract void disposeStream() throws IOException;
 
     
-    protected Source(Rectangle bounds, int zOrder, float alpha, int delayTime,String id) {
+    protected Source(Rectangle bounds, int zOrder, float alpha, int delayTime,String id, int imageType ) {
         mBounds = bounds;
         mZ = zOrder;
         mAlpha = mAlpha.derive(alpha);
-        mDelayTime = delayTime;
         mID = id;
+        mImageType = imageType;
+        mImage = new BufferedImage(mBounds.width, mBounds.height, mImageType);
+        mBuffer = ((DataBufferByte) mImage.getRaster().getDataBuffer()).getData();
     }
 
     public int getCaptureX(){
@@ -91,38 +89,15 @@ public abstract class Source implements Runnable {
     public SourceType getType(){
         return mType;
     }
-    protected void setDelayTime(int ms){
-        mDelayTime = ms;
-    }
-    @Override
-    public void run() {
-        mStopMe = false;
-        BufferedImage mImage3ByteBRG = new BufferedImage(mBounds.width, mBounds.height, mImageType);
-        byte[] buffer = ((DataBufferByte) mImage3ByteBRG.getRaster().getDataBuffer()).getData();
+
+    public void start() {
         try {
             initStream();
-            while (!mStopMe) {
-                BufferedImage img = new BufferedImage(mBounds.width, mBounds.height, BufferedImage.TYPE_INT_ARGB);
-                Graphics2D g =img.createGraphics();
-                getData(buffer);
-                g.drawImage(mImage3ByteBRG, 0, 0, null);
-                mImage = img;
-                if (mDelayTime > 0) {
-                    try {
-                        Thread.sleep(mDelayTime);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(Source.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }
         } catch (IOException ex) {
-            System.out.println("Source has stopped... (" + ex.getMessage() + ")" );
-            mStopMe = true;
+            Logger.getLogger(Source.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
     public void stop() {
-        mStopMe = true;
         try {
             disposeStream();
         } catch (IOException ex) {
@@ -131,7 +106,11 @@ public abstract class Source implements Runnable {
     }
 
     public BufferedImage getImage() {
-        
+        try {
+            getData(mBuffer);
+        } catch (IOException ex) {
+            Logger.getLogger(Source.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return mImage;
     }
 

@@ -281,10 +281,6 @@ public class ScreenStudio extends javax.swing.JFrame {
                         row[2] = new File(s.ID);
                         row[0] = new File(s.ID).exists();
                         break;
-                    case LabelFile:
-                        row[2] = new File(s.ID);
-                        row[0] = new File(s.ID).exists();
-                        break;
                     case LabelText:
                         LabelText t = new LabelText(s.ID);
                         t.setForegroundColor(s.foregroundColor);
@@ -1301,7 +1297,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                 mRecordingTimestamp = System.currentTimeMillis();
                 new Thread(() -> {
                     FFMpeg f = mFFMpeg;
-                    FFMpeg.RunningState initState = f.getState();
+                    FFMpeg.RunningState initState = FFMpeg.RunningState.Starting;
                     while (f != null) {
                         if (initState == FFMpeg.RunningState.Starting && f.getState() == FFMpeg.RunningState.Running) {
                             if (trayIcon != null) {

@@ -20,6 +20,8 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import screenstudio.encoder.FFMpeg;
 import screenstudio.encoder.ProcessReader;
 import screenstudio.targets.Layout.SourceType;
@@ -28,7 +30,7 @@ import screenstudio.targets.Layout.SourceType;
  *
  * @author patrick
  */
-public class SourceFFMpeg extends Source {
+public class SourceFFMpeg extends Source implements Runnable{
 
     private FFMpeg mFFMpeg;
     private Process mProcess;
@@ -36,7 +38,22 @@ public class SourceFFMpeg extends Source {
     private final String mInput;
     private int mFPS;
     private final Rectangle mCaptureSize;
+    private boolean mStopMe = false; 
+    private byte[] dataBuffer;
 
+    @Override
+    public void run() {
+        while (!mStopMe){
+            try {
+                byte[] buffer = new byte[dataBuffer.length];
+                mInputData.readFully(buffer);
+                dataBuffer= buffer;
+            } catch (IOException ex) {
+                //Logger.getLogger(SourceFFMpeg.class.getName()).log(Level.SEVERE, null, ex);
+                mStopMe=true;
+            }
+        }
+    }
     protected enum DEVICES {
         Desktop,
         Webcam,
@@ -45,11 +62,10 @@ public class SourceFFMpeg extends Source {
     }
 
     public SourceFFMpeg(Rectangle captureSize, Rectangle outputSize, int fps, String input, SourceType type, String id) {
-        super(outputSize, 1, 1, 0, id);
+        super(outputSize, 1, 1, 0, id,BufferedImage.TYPE_3BYTE_BGR);
         mInput = input;
         mFPS = fps;
         mCaptureSize = captureSize;
-        mImageType = BufferedImage.TYPE_3BYTE_BGR;
         mType = type;
     }
 
@@ -59,33 +75,31 @@ public class SourceFFMpeg extends Source {
 
     @Override
     protected void getData(byte[] buffer) throws IOException {
-        if (mInputData != null) {
-            mInputData.readFully(buffer);
-        }
+        System.arraycopy(dataBuffer, 0, buffer, 0, buffer.length);
     }
 
     @Override
     protected void initStream() throws IOException {
+        mStopMe = false;
         mFFMpeg = new FFMpeg(null);
         String command = mFFMpeg.getBin() + " " + mInput + " " + "-s " + mBounds.width + "x" + mBounds.height + " -r " + mFPS + " -f rawvideo -pix_fmt bgr24 -";
         mProcess = Runtime.getRuntime().exec(command);
         new Thread(new ProcessReader(mProcess.getErrorStream())).start();
         System.out.println(command);
         mInputData = new DataInputStream(mProcess.getInputStream());
+        dataBuffer = new byte[mBounds.width*mBounds.height*3];
+        new Thread(this).start();
     }
 
     @Override
     protected void disposeStream() throws IOException {
-        System.out.println("Before Q");
+        mStopMe = true;
         mProcess.getOutputStream().write("q\n".getBytes());
-        System.out.println("After Q");
         mProcess.getOutputStream().flush();
         mProcess.getOutputStream().close();
         mInputData.close();
-        System.out.println("Input closed");
         mProcess.destroy();
         mProcess.destroyForcibly();
-        System.out.println("Process Destroyed");
         mProcess = null;
         mInputData = null;
     }
@@ -110,12 +124,12 @@ public class SourceFFMpeg extends Source {
         return input;
     }
 
-    public static SourceFFMpeg getDesktopInstance(Screen display, int fps) {
+    public static SourceFFMpeg getDesktopInstance(Screen display,Rectangle outputSize, int fps) {
         String input = " -f " + new FFMpeg(null).getDesktopFormat() + " -video_size " + display.getWidth() + "x" + display.getHeight() + " -i " + display.getId();
         if (Screen.isWindows()){
             input = " -f " + new FFMpeg(null).getDesktopFormat() + " -video_size " + display.getWidth() + "x" + display.getHeight() + " -offset_x " + display.getSize().x + " -offset_y " + display.getSize().y + " " + " -i " + display.getId();
         }
-        SourceFFMpeg f = new SourceFFMpeg(display.getSize(), new Rectangle(display.getSize()), fps, input, SourceType.Desktop, display.getLabel());
+        SourceFFMpeg f = new SourceFFMpeg(display.getSize(),outputSize, fps, input, SourceType.Desktop, display.getLabel());
         f.mCaptureX = display.getSize().x;
         f.mCaptureY = display.getSize().y;
         return f;

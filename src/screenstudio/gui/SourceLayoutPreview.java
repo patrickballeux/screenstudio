@@ -243,7 +243,6 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
         if (tglPreview.isSelected()) {
             List<Source> list = getSources(mSources, mFPS);
             compositer = new Compositor(list, outputSize, 10);
-            new Thread(compositer).start();
             new Thread(new Runnable() {
                 @Override
                 public void run() {

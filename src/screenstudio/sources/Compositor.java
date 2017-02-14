@@ -33,35 +33,22 @@ import screenstudio.targets.Layout.SourceType;
  *
  * @author patrick
  */
-public class Compositor implements Runnable {
+public class Compositor {
 
     private final java.util.List<Source> mSources;
-    private boolean mStopMe = false;
     private final int mFPS;
     private final Rectangle mOutputSize;
-    private byte[] mData;
+    private final byte[] mData;
     private boolean mIsReady = false;
+    private final Graphics2D g;
 
     public Compositor(java.util.List<Source> sources, Rectangle outputSize, int fps) {
         sources.sort((a, b) -> Integer.compare(b.getZOrder(), a.getZOrder()));
         mSources = sources;
         mOutputSize = outputSize;
         mFPS = fps;
-        mData = new byte[mOutputSize.width * mOutputSize.height * 3];
-    }
-
-    public boolean isReady(){
-        return mIsReady;
-    }
-    public byte[] getData() {
-        return mData;
-    }
-
-    @Override
-    public void run() {
-        mStopMe = false;
         for (Source s : mSources) {
-            new Thread(s).start();
+            s.start();
             while (s.getImage() == null) {
                 try {
                     Thread.sleep(100);
@@ -70,38 +57,23 @@ public class Compositor implements Runnable {
                 }
             }
         }
-        long frameTime = (1000000000 / mFPS);
-        long nextPTS = System.nanoTime() + frameTime;
         BufferedImage img = new BufferedImage(mOutputSize.width, mOutputSize.height, BufferedImage.TYPE_3BYTE_BGR);
-        Graphics2D g = img.createGraphics();
-        byte[] data = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
-        mData = new byte[data.length];
-        while (!mStopMe) {
-            java.util.Arrays.fill(data, (byte) 0);
-            for (Source s : mSources) {
-                g.setComposite(s.getAlpha());
-                g.drawImage(s.getImage(), s.getBounds().x, s.getBounds().y, null);
-            }
-            byte[] mBuffer = new byte[data.length];
-            System.arraycopy(data, 0, mBuffer, 0, mBuffer.length);
-            mData = mBuffer;
-            mIsReady=true;
-            while (nextPTS - System.nanoTime() > 0) {
-                long wait = nextPTS - System.nanoTime();
-                if (wait > 0) {
-                    try {
-                        Thread.sleep(wait / 1000000, (int) (wait % 1000000));
-                    } catch (Exception ex) {
-                        System.err.println("Error: Thread.sleep(" + (wait / 1000000) + "," + ((int) (wait % 1000000)) + ")");
-                    }
-                }
-            }
-            nextPTS += frameTime;
-        }
-        System.out.println("Compositor is stopping");
+        g = img.createGraphics();
+        mData = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
+        mIsReady = true;
+    }
+
+    public boolean isReady() {
+        return mIsReady;
+    }
+
+    public byte[] getData() {
+        java.util.Arrays.fill(mData, (byte) 0);
         for (Source s : mSources) {
-            s.stop();
+            g.setComposite(s.getAlpha());
+            g.drawImage(s.getImage(), s.getBounds().x, s.getBounds().y, null);
         }
+        return mData;
     }
 
     public int getFPS() {
@@ -117,8 +89,10 @@ public class Compositor implements Runnable {
     }
 
     public void stop() {
-        mStopMe = true;
-        System.out.println("Requesting Compositor to stop...");
+        System.out.println("Compositor is stopping");
+        for (Source s : mSources) {
+            s.stop();
+        }
     }
 
     public static List<Source> getSources(JTable sources, int fps) {
@@ -134,8 +108,7 @@ public class Compositor implements Runnable {
                 // Detect type of source...
                 if (source instanceof Screen) {
                     Screen screen = (Screen) source;
-                    SourceFFMpeg s = SourceFFMpeg.getDesktopInstance(screen, fps);
-                    s.getBounds().setBounds(new Rectangle(sx, sy, sw, sh));
+                    SourceFFMpeg s = SourceFFMpeg.getDesktopInstance(screen, new Rectangle(sx, sy, sw, sh), fps);
                     s.setAlpha(alpha);
                     s.setZOrder(i);
                     s.setFPS(fps);
@@ -159,15 +132,9 @@ public class Compositor implements Runnable {
                             s.setZOrder(i);
                             list.add(s);
                             break;
-                        case LabelFile:
-                            break;
                     }
                 } else if (source instanceof LabelText) {
-                    if (sources.getValueAt(i, 1) == SourceType.LabelText) {
-                        list.add(new SourceLabel(new Rectangle(sx, sy, sw, sh), i, alpha, ((LabelText) source)));
-                    } else if (sources.getValueAt(i, 1) == SourceType.LabelFile) {
-                        list.add(new SourceFileLabel(new Rectangle(sx, sy, sw, sh), i, alpha, 1000, (LabelText) source));
-                    }
+                    list.add(new SourceLabel(new Rectangle(sx, sy, sw, sh), i, alpha, ((LabelText) source)));
                 }
             }
         }

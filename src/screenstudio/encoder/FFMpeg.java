@@ -282,7 +282,9 @@ public class FFMpeg implements Runnable {
         c.add(bin);
         // Enable debug mode
         if (!mDebugMode) {
-            c.add("-nostats");c.add("-loglevel");c.add("0");
+            c.add("-nostats");
+            c.add("-loglevel");
+            c.add("0");
         }
         //compositor
         c.add("-f");
@@ -300,8 +302,9 @@ public class FFMpeg implements Runnable {
         if (!videoEncoder.equals("gif")) {
             c.add("-f");
             c.add(audioFormat);
-            if (mITSOffset.length() > 0){
-                c.add("-itsoffset"); c.add(mITSOffset);
+            if (mITSOffset.length() > 0) {
+                c.add("-itsoffset");
+                c.add(mITSOffset);
             }
             c.add("-i");
             c.add(audioInput);
@@ -429,7 +432,6 @@ public class FFMpeg implements Runnable {
     public void run() {
         mStopMe = false;
         state = RunningState.Starting;
-        new Thread(compositor).start();
         mDebugMode = true;
         try {
             System.out.println("Starting encoder...");
@@ -457,11 +459,7 @@ public class FFMpeg implements Runnable {
             System.out.println("Starting encoding...");
             while (!mStopMe) {
                 try {
-                    if (pipe != null) {
-                        pipe.write(compositor.getData());
-                    } else {
-                        out.write(compositor.getData());
-                    }
+                    pipe.write(compositor.getData());
                 } catch (Exception exWrite) {
                     System.err.println("Exception while writing...  " + exWrite.getMessage());
                     this.lastErrorMessage = exWrite.getMessage();
@@ -481,20 +479,14 @@ public class FFMpeg implements Runnable {
             System.out.println("Exiting encoder...");
             System.out.println("Status : " + state.toString());
             in.close();
-            if (pipe != null) {
-                pipe.close();
-                out.write("q\n".getBytes());
-                out.close();
-                out = null;
-                try {
-                    p.waitFor(15, TimeUnit.SECONDS);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            if (out != null) {
-                out.close();
-                out = null;
+            pipe.close();
+            out.write("q\n".getBytes());
+            out.close();
+            out = null;
+            try {
+                p.waitFor(15, TimeUnit.SECONDS);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
             }
             compositor.stop();
             p.destroy();

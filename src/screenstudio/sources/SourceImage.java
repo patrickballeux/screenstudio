@@ -16,7 +16,6 @@
  */
 package screenstudio.sources;
 
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -40,9 +39,8 @@ public class SourceImage extends Source {
     private int currentIndex = 0;
 
     public SourceImage(Rectangle bounds, int zOrder, float alpha, File image) {
-        super(bounds, zOrder, alpha, 1000, image.getAbsolutePath());
+        super(bounds, zOrder, alpha, 1000, image.getAbsolutePath(),BufferedImage.TYPE_4BYTE_ABGR);
         mFile = image;
-        mImageType = BufferedImage.TYPE_4BYTE_ABGR;
         mType = Layout.SourceType.Image;
     }
 
@@ -58,7 +56,6 @@ public class SourceImage extends Source {
     protected void initStream() throws IOException {
         if (mFile.getName().toUpperCase().endsWith(".GIF")) {
             images = readGif(mFile);
-            super.setDelayTime(100);
         } else {
             BufferedImage buffer = javax.imageio.ImageIO.read(mFile);
             images = new BufferedImage[1];
