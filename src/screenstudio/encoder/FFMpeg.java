@@ -371,7 +371,12 @@ public class FFMpeg implements Runnable {
         c.add("-y");
         c.add("-f");
         c.add(muxer);
-        c.add(output);
+        if (Screen.isWindows()){
+            c.add("\"" + output + "\"");
+        }else {
+            c.add(output);
+        }
+        
         return c.toArray(new String[c.size()]);
     }
 
@@ -443,13 +448,19 @@ public class FFMpeg implements Runnable {
                 }
             }
             Pipe pipe = new Pipe();
-            new Thread(pipe).start();
+            new Thread(pipe).start(); //Start listening...
             String[] commands = getCommands(pipe.getServer());
+            String fullCommand = "";
             for (String c : commands) {
-                System.out.print(c + " ");
+                fullCommand += c + " ";
             }
-            System.out.println();
-            Process p = Runtime.getRuntime().exec(commands);
+            System.out.println(fullCommand);
+            Process p;
+            if (Screen.isWindows()){ //Works best for windows when spaces are in the command
+                p = Runtime.getRuntime().exec(fullCommand);
+            } else { // Works best for Linux when spaces are in the command
+                p = Runtime.getRuntime().exec(commands);
+            }
             OutputStream out = p.getOutputStream();
             InputStream in = p.getErrorStream();
             new Thread(new ProcessReader(in)).start();
