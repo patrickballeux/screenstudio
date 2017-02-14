@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -150,7 +152,7 @@ public class FFMpeg implements Runnable {
         }
         audioInput = input;
         if (offset != 0) {
-            mITSOffset = " -itsoffset " + offset.toString() + " ";
+            mITSOffset = offset.toString();
         } else {
             mITSOffset = "";
         }
@@ -274,72 +276,104 @@ public class FFMpeg implements Runnable {
         return name;
     }
 
-    /**
-     * Build the complete FFMpeg command from this object instance
-     *
-     * @param debugMode : If enabled, verbose mode is activated
-     * @return the full command for FFMpeg
-     */
-    private String getCommand() {
-        StringBuilder c = new StringBuilder();
+    private String[] getCommands(String tcpServer) {
+        ArrayList<String> c = new ArrayList<>();
         // Add binary path
-        c.append(bin);
+        c.add(bin);
         // Enable debug mode
         if (!mDebugMode) {
-            c.append(nonVerboseMode);
+            c.add("-nostats");c.add("-loglevel");c.add("0");
         }
         //compositor
-        c.append(" ").append(mThreading).append(" -f ").append(compositorFormat);
-        c.append(" -framerate ").append(compositor.getFPS());
-        c.append(" -video_size ").append(compositor.getWidth()).append("x").append(compositor.getHeight());
-        c.append(" -i - ");
+        c.add("-f");
+        c.add("rawvideo");
+        c.add("-pix_fmt");
+        c.add("bgr24");
+        c.add("-framerate");
+        c.add("" + compositor.getFPS());
+        c.add("-video_size");
+        c.add(compositor.getWidth() + "x" + compositor.getHeight());
+        c.add("-i");
+        c.add(tcpServer);
 
         // Capture Audio
         if (!videoEncoder.equals("gif")) {
-            c.append(" -f ").append(audioFormat).append(mITSOffset).append(" -i ").append(audioInput);
+            c.add("-f");
+            c.add(audioFormat);
+            if (mITSOffset.length() > 0){
+                c.add("-itsoffset"); c.add(mITSOffset);
+            }
+            c.add("-i");
+            c.add(audioInput);
 
             if (backgroundMusic.length() > 0) {
-                c.append(" -i ").append(backgroundMusic).append(" -filter_complex amix ");
+                c.add("-i");
+                c.add(backgroundMusic);
+                c.add("-filter_complex");
+                c.add("amix");
             }
         }
         // Enabled strict settings
         if (strictSetting.length() > 0) {
-            c.append(" -strict ").append(strictSetting);
+            c.add("-strict");
+            c.add(strictSetting);
         }
         // Output
-        c.append(" -r ").append(compositor.getFPS());
+        c.add("-r");
+        c.add("" + compositor.getFPS());
         if (videoEncoder.equals("gif")) {
             if (compositor.getWidth() <= 600) {
-                c.append(" -vf flags=lanczos ");
+                c.add("-vf");
+                c.add("flags=lanczos");
             } else {
-                c.append(" -vf scale=600:-1:flags=lanczos ");
+                c.add("-vf");
+                c.add("scale=600:-1:flags=lanczos");
             }
         }
-        c.append(" -vb ").append(videoBitrate).append("k");
-        c.append(" -pix_fmt yuv420p ");
+        c.add("-vb");
+        c.add(videoBitrate + "k");
+        c.add("-pix_fmt");
+        c.add("yuv420p");
         if (output.startsWith("rtmp://")) {
-            c.append(" -minrate ").append(videoBitrate).append("k -maxrate ").append(videoBitrate).append("k ");
+            c.add("-minrate");
+            c.add("" + videoBitrate + "k");
+            c.add("-maxrate");
+            c.add("" + videoBitrate + "k ");
         }
         if (!videoEncoder.equals("gif")) {
-            c.append(" -ab ").append(audioBitrate).append("k").append(" -ar ").append(audioRate);
-            c.append(" -acodec ").append(audioEncoder);
+            c.add("-ab");
+            c.add("" + audioBitrate + "k");
+            c.add("-ar");
+            c.add("" + audioRate);
+            c.add("-acodec");
+            c.add("" + audioEncoder);
         }
-        c.append(" -vcodec ").append(videoEncoder);
+        c.add("-vcodec");
+        c.add(videoEncoder);
 
         if (preset.length() > 0) {
-            c.append(" -preset ").append(preset);
+            c.add("-preset");
+            c.add(preset);
         }
         if (output.endsWith(".m3u8")) {
-            c.append(" -flags -global_header -hls_time 10 -hls_wrap 6 ");
+            c.add("-flags");
+            c.add("-global_header");
+            c.add("-hls_time");
+            c.add("10");
+            c.add("-hls_wrap");
+            c.add("6");
         }
-        String buffer = " -g " + (compositor.getFPS() * 2);
-        c.append(buffer).append(" -y -f ").append(muxer).append(" ");
-        c.append("\"" +output + "\"");
-        return c.toString();
+        c.add("-g");
+        c.add("" + (compositor.getFPS() * 2));
+        c.add("-y");
+        c.add("-f");
+        c.add(muxer);
+        c.add(output);
+        return c.toArray(new String[c.size()]);
     }
 
     public String getBin() {
-        return bin + nonVerboseMode;
+        return bin + " " + nonVerboseMode;
     }
 
     public String getDesktopFormat() {
@@ -364,16 +398,16 @@ public class FFMpeg implements Runnable {
         try {
             Properties p = new Properties();
             p.load(in);
-            bin = p.getProperty("BIN", "ffmpeg") + " ";
-            nonVerboseMode = p.getProperty("NONVERBOSEMODE", " -nostats -loglevel 0 ") + " ";
+            bin = p.getProperty("BIN", "ffmpeg");
+            nonVerboseMode = p.getProperty("NONVERBOSEMODE", " -nostats -loglevel 0 ");
             //Main input
-            desktopFormat = p.getProperty("DESKTOPFORMAT", "x11grab") + " ";
+            desktopFormat = p.getProperty("DESKTOPFORMAT", "x11grab");
             webcamFormat = p.getProperty("WEBCAMFORMAT", "v4l2");
             // Audio
-            audioInput = p.getProperty("DEFAULTAUDIO", "default") + " ";
-            audioFormat = p.getProperty("AUDIOFORMAT", "pulse") + " ";
+            audioInput = p.getProperty("DEFAULTAUDIO", "default");
+            audioFormat = p.getProperty("AUDIOFORMAT", "pulse");
             //Output
-            strictSetting = p.getProperty("STRICTSETTINGS", "-2") + " ";
+            strictSetting = p.getProperty("STRICTSETTINGS", "-2");
             //HOME
             mHome = new File(System.getProperty("user.home"));
             mThreading = p.getProperty("THREADING", mThreading);
@@ -398,7 +432,6 @@ public class FFMpeg implements Runnable {
         new Thread(compositor).start();
         mDebugMode = true;
         try {
-            String command = getCommand();
             System.out.println("Starting encoder...");
             while (!compositor.isReady()) {
                 try {
@@ -407,14 +440,14 @@ public class FFMpeg implements Runnable {
                     Logger.getLogger(FFMpeg.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            Pipe pipe = null;
-//            if (Screen.isWindows()){
-            pipe = new Pipe();
+            Pipe pipe = new Pipe();
             new Thread(pipe).start();
-            command = command.replaceAll("-i -", "-i " + pipe.getServer());
-//            }
-            System.out.println(command);
-            Process p = Runtime.getRuntime().exec(command);
+            String[] commands = getCommands(pipe.getServer());
+            for (String c : commands) {
+                System.out.print(c + " ");
+            }
+            System.out.println();
+            Process p = Runtime.getRuntime().exec(commands);
             OutputStream out = p.getOutputStream();
             InputStream in = p.getErrorStream();
             new Thread(new ProcessReader(in)).start();
