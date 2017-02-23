@@ -31,4 +31,6 @@ public class Source {
     public int foregroundColor;
     public int backgroundColor;
     public String fontName;
+    public long startTime;
+    public long endTime;
 }

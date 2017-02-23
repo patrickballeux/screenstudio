@@ -40,7 +40,8 @@ public abstract class Source {
     private AlphaComposite mAlpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1);
     protected int mImageType = BufferedImage.TYPE_3BYTE_BGR;
     protected String mFontName = "Dialog";
-    
+    protected long mStartDisplayTime = 0;
+    protected long mEndDisplayTime = 0;
     private final BufferedImage mImage;
     private final byte[] mBuffer;
 
@@ -90,6 +91,16 @@ public abstract class Source {
         return mType;
     }
 
+    public void setDisplayTime(long start, long end){
+        mStartDisplayTime = start;
+        mEndDisplayTime = end;
+    }
+    public long getStartDisplayTime(){
+        return mStartDisplayTime;
+    }
+    public long getEndDisplayTime(){
+        return mEndDisplayTime;
+    }
     public void start() {
         try {
             initStream();

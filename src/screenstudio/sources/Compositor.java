@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 import javax.swing.JTable;
 import screenstudio.gui.LabelText;
 import screenstudio.targets.Layout;
-import screenstudio.targets.Layout.SourceType;
 
 /**
  *
@@ -41,6 +40,7 @@ public class Compositor {
     private final byte[] mData;
     private boolean mIsReady = false;
     private final Graphics2D g;
+    private long mStartTime;
 
     public Compositor(java.util.List<Source> sources, Rectangle outputSize, int fps) {
         sources.sort((a, b) -> Integer.compare(b.getZOrder(), a.getZOrder()));
@@ -60,6 +60,7 @@ public class Compositor {
         BufferedImage img = new BufferedImage(mOutputSize.width, mOutputSize.height, BufferedImage.TYPE_3BYTE_BGR);
         g = img.createGraphics();
         mData = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
+        mStartTime = System.currentTimeMillis();
         mIsReady = true;
     }
 
@@ -69,9 +70,14 @@ public class Compositor {
 
     public byte[] getData() {
         java.util.Arrays.fill(mData, (byte) 0);
+        long timeDelta = (System.currentTimeMillis() - mStartTime) / 1000;
         for (Source s : mSources) {
-            g.setComposite(s.getAlpha());
-            g.drawImage(s.getImage(), s.getBounds().x, s.getBounds().y, null);
+            BufferedImage img = s.getImage();
+            if ((s.getEndDisplayTime() == 0 || s.getEndDisplayTime() >= timeDelta) 
+                    && (s.getStartDisplayTime() <= timeDelta)) {
+                g.setComposite(s.getAlpha());
+                g.drawImage(img, s.getBounds().x, s.getBounds().y, null);
+            }
         }
         return mData;
     }
@@ -104,6 +110,8 @@ public class Compositor {
                 int sw = (int) sources.getValueAt(i, 5);
                 int sh = (int) sources.getValueAt(i, 6);
                 float alpha = new Float(sources.getValueAt(i, 7).toString());
+                long timestart = (Long)sources.getValueAt(i,8);
+                long timeend = (Long)sources.getValueAt(i,9);
                 Object source = sources.getValueAt(i, 2);
                 // Detect type of source...
                 if (source instanceof Screen) {
@@ -112,6 +120,7 @@ public class Compositor {
                     s.setAlpha(alpha);
                     s.setZOrder(i);
                     s.setFPS(fps);
+                    s.setDisplayTime(timestart, timeend);
                     list.add(s);
                 } else if (source instanceof Webcam) {
                     Webcam webcam = (Webcam) source;
@@ -120,21 +129,27 @@ public class Compositor {
                     s.setAlpha(alpha);
                     s.setZOrder(i);
                     s.setFPS(fps);
+                    s.setDisplayTime(timestart, timeend);
                     list.add(s);
                 } else if (source instanceof File) {
                     switch ((Layout.SourceType) sources.getValueAt(i, 1)) {
                         case Image:
-                            list.add(new SourceImage(new Rectangle(sx, sy, sw, sh), i, alpha, (File) source));
+                            SourceImage s = new SourceImage(new Rectangle(sx, sy, sw, sh), i, alpha, (File) source); 
+                            s.setDisplayTime(timestart, timeend);
+                            list.add(s);
                             break;
                         case Video:
-                            SourceFFMpeg s = SourceFFMpeg.getFileInstance(new Rectangle(sx, sy, sw, sh), ((File) source), fps);
-                            s.setAlpha(alpha);
-                            s.setZOrder(i);
-                            list.add(s);
+                            SourceFFMpeg sf = SourceFFMpeg.getFileInstance(new Rectangle(sx, sy, sw, sh), ((File) source), fps);
+                            sf.setAlpha(alpha);
+                            sf.setZOrder(i);
+                            sf.setDisplayTime(timestart, timeend);
+                            list.add(sf);
                             break;
                     }
                 } else if (source instanceof LabelText) {
-                    list.add(new SourceLabel(new Rectangle(sx, sy, sw, sh), i, alpha, ((LabelText) source)));
+                    SourceLabel s = new SourceLabel(new Rectangle(sx, sy, sw, sh), i, alpha, ((LabelText) source));
+                    s.setDisplayTime(timestart, timeend);
+                    list.add(s);
                 }
             }
         }

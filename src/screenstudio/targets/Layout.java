@@ -124,7 +124,7 @@ public class Layout {
         node.setNodeValue("" + value);
         output.getAttributes().setNamedItem(node);
     }
-
+    
     public int getVideoBitrate() {
         return new Integer(output.getAttributes().getNamedItem("videobitrate").getNodeValue());
     }
@@ -240,7 +240,7 @@ public class Layout {
         }
     }
 
-    public void addSource(SourceType typeValue, String idValue, int xValue, int yValue, int wValue, int hValue, float alphaValue, int orderValue, int fg, int bg, String font, int captureX, int captureY) {
+    public void addSource(SourceType typeValue, String idValue, int xValue, int yValue, int wValue, int hValue, float alphaValue, int orderValue, int fg, int bg, String font, int captureX, int captureY, long start, long end) {
         String nodeName = "";
         switch (typeValue) {
             case Desktop:
@@ -270,6 +270,8 @@ public class Layout {
         Node foreg = document.createAttribute("fg");
         Node backg = document.createAttribute("bg");
         Node fontg = document.createAttribute("font");
+        Node timeStart = document.createAttribute("start");
+        Node timeEnd = document.createAttribute("end");
         x.setNodeValue("" + xValue);
         y.setNodeValue("" + yValue);
         capx.setNodeValue("" + captureX);
@@ -282,6 +284,8 @@ public class Layout {
         foreg.setNodeValue("" + fg);
         backg.setNodeValue("" + bg);
         fontg.setNodeValue(font);
+        timeStart.setNodeValue(start+"");
+        timeEnd.setNodeValue(end+"");
         switch (typeValue) {
             case LabelText:
                 type.setNodeValue("text");
@@ -303,6 +307,8 @@ public class Layout {
         node.getAttributes().setNamedItem(foreg);
         node.getAttributes().setNamedItem(backg);
         node.getAttributes().setNamedItem(fontg);
+        node.getAttributes().setNamedItem(timeStart);
+        node.getAttributes().setNamedItem(timeEnd);
         root.appendChild(node);
     }
 
@@ -327,6 +333,10 @@ public class Layout {
                 s.CaptureX = 0;
                 s.CaptureY = 0;
             }
+            if (n.getAttributes().getNamedItem("start") != null){
+                s.startTime = Long.parseLong(n.getAttributes().getNamedItem("start").getNodeValue());
+                s.endTime = Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue());
+            }
             sources[i] = s;
         }
         return sources;
@@ -346,6 +356,10 @@ public class Layout {
             s.ID = n.getAttributes().getNamedItem("id").getNodeValue();
             s.Alpha = new Float(n.getAttributes().getNamedItem("alpha").getNodeValue());
             s.Order = new Integer(n.getAttributes().getNamedItem("order").getNodeValue());
+            if (n.getAttributes().getNamedItem("start") != null){
+                s.startTime = Long.parseLong(n.getAttributes().getNamedItem("start").getNodeValue());
+                s.endTime = Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue());
+            }
             sources[i] = s;
         }
         return sources;
@@ -375,6 +389,10 @@ public class Layout {
             s.ID = n.getAttributes().getNamedItem("id").getNodeValue();
             s.Alpha = new Float(n.getAttributes().getNamedItem("alpha").getNodeValue());
             s.Order = new Integer(n.getAttributes().getNamedItem("order").getNodeValue());
+            if (n.getAttributes().getNamedItem("start") != null){
+                s.startTime = Long.parseLong(n.getAttributes().getNamedItem("start").getNodeValue());
+                s.endTime = Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue());
+            }
             sources[i] = s;
         }
         return sources;
@@ -401,6 +419,10 @@ public class Layout {
             }
             if (n.getAttributes().getNamedItem("font") != null) {
                 s.fontName = n.getAttributes().getNamedItem("font").getNodeValue();
+            }
+            if (n.getAttributes().getNamedItem("start") != null){
+                s.startTime = Long.parseLong(n.getAttributes().getNamedItem("start").getNodeValue());
+                s.endTime = Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue());
             }
             sources[i] = s;
         }

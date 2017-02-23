@@ -497,7 +497,7 @@
                     <Component class="javax.swing.JTable" name="tableSources">
                       <Properties>
                         <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                          <Table columnCount="8" rowCount="4">
+                          <Table columnCount="10" rowCount="4">
                             <Column editable="true" title=" " type="java.lang.Boolean"/>
                             <Column editable="false" title="Source" type="java.lang.String"/>
                             <Column editable="false" title="Description" type="java.lang.String"/>
@@ -506,6 +506,8 @@
                             <Column editable="true" title="Width" type="java.lang.Integer"/>
                             <Column editable="true" title="Height" type="java.lang.Integer"/>
                             <Column editable="true" title="Alpha" type="java.lang.Float"/>
+                            <Column editable="true" title="Start" type="java.lang.Long"/>
+                            <Column editable="true" title="End" type="java.lang.Long"/>
                           </Table>
                         </Property>
                         <Property name="toolTipText" type="java.lang.String" value="Double-click for more options..."/>
@@ -548,6 +550,16 @@
                               <Renderer/>
                             </Column>
                             <Column maxWidth="60" minWidth="60" prefWidth="60" resizable="true">
+                              <Title/>
+                              <Editor/>
+                              <Renderer/>
+                            </Column>
+                            <Column maxWidth="75" minWidth="60" prefWidth="60" resizable="true">
+                              <Title/>
+                              <Editor/>
+                              <Renderer/>
+                            </Column>
+                            <Column maxWidth="75" minWidth="60" prefWidth="60" resizable="true">
                               <Title/>
                               <Editor/>
                               <Renderer/>

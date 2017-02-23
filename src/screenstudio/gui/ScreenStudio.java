@@ -259,6 +259,8 @@ public class ScreenStudio extends javax.swing.JFrame {
                 row[5] = s.Width;
                 row[6] = s.Height;
                 row[7] = s.Alpha;
+                row[8] = s.startTime;
+                row[9] = s.endTime;
                 switch (s.Type) {
                     case Desktop:
                         row[0] = false;
@@ -337,7 +339,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         layout.setBackgroundMusic(mBackgroundMusic);
         List<Source> sources = Compositor.getSources(tableSources, (Integer) spinFPS.getValue());
         for (Source s : sources) {
-            layout.addSource(s.getType(), s.getID(), s.getBounds().x, s.getBounds().y, s.getBounds().width, s.getBounds().height, s.getAlpha().getAlpha(), s.getZOrder(), s.getForeground(), s.getBackground(), s.getFontName(), s.getCaptureX(), s.getCaptureY());
+            layout.addSource(s.getType(), s.getID(), s.getBounds().x, s.getBounds().y, s.getBounds().width, s.getBounds().height, s.getAlpha().getAlpha(), s.getZOrder(), s.getForeground(), s.getBackground(), s.getFontName(), s.getCaptureX(), s.getCaptureY(), s.getStartDisplayTime(), s.getEndDisplayTime());
         }
         try {
             layout.save(file);
@@ -403,6 +405,8 @@ public class ScreenStudio extends javax.swing.JFrame {
                                 row[5] = webcam.getWidth();
                                 row[6] = webcam.getHeight();
                                 row[7] = 1;
+                                row[8] = 0L;
+                                row[9] = 0L;
                                 model.addRow(row);
                                 mLayoutPreview.repaint();
                                 tabs.setSelectedComponent(panSources);
@@ -444,6 +448,8 @@ public class ScreenStudio extends javax.swing.JFrame {
                                 row[5] = spinWidth.getValue();
                                 row[6] = spinHeight.getValue();
                                 row[7] = 1;
+                                row[8] = 0L;
+                                row[9] = 0L;
                                 model.addRow(row);
                                 mLayoutPreview.repaint();
                                 tabs.setSelectedComponent(panSources);
@@ -719,20 +725,20 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         tableSources.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                " ", "Source", "Description", "X", "Y", "Width", "Height", "Alpha"
+                " ", "Source", "Description", "X", "Y", "Width", "Height", "Alpha", "Start", "End"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Float.class
+                java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Float.class, java.lang.Long.class, java.lang.Long.class
             };
             boolean[] canEdit = new boolean [] {
-                true, false, false, true, true, true, true, true
+                true, false, false, true, true, true, true, true, true, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -792,6 +798,12 @@ public class ScreenStudio extends javax.swing.JFrame {
             tableSources.getColumnModel().getColumn(7).setMinWidth(60);
             tableSources.getColumnModel().getColumn(7).setPreferredWidth(60);
             tableSources.getColumnModel().getColumn(7).setMaxWidth(60);
+            tableSources.getColumnModel().getColumn(8).setMinWidth(60);
+            tableSources.getColumnModel().getColumn(8).setPreferredWidth(60);
+            tableSources.getColumnModel().getColumn(8).setMaxWidth(75);
+            tableSources.getColumnModel().getColumn(9).setMinWidth(60);
+            tableSources.getColumnModel().getColumn(9).setPreferredWidth(60);
+            tableSources.getColumnModel().getColumn(9).setMaxWidth(75);
         }
 
         jSplitPane1.setLeftComponent(scrollSources);
@@ -1265,7 +1277,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                     } catch (InterruptedException ex) {
                         Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    mFFMpeg.setAudio((FFMpeg.AudioRate) cboAudioBitrate.getSelectedItem(), audio, (Float) spinAudioDelay.getValue(),mBackgroundMusic);
+                    mFFMpeg.setAudio((FFMpeg.AudioRate) cboAudioBitrate.getSelectedItem(), audio, (Float) spinAudioDelay.getValue(), mBackgroundMusic);
                 }
                 String server = "";
                 if (cboRTMPServers.getSelectedItem() != null) {
@@ -1438,6 +1450,8 @@ public class ScreenStudio extends javax.swing.JFrame {
             row[5] = 200;
             row[6] = 200;
             row[7] = 1.0f;
+            row[8] = 0L;
+            row[9] = 0L;
             model.addRow(row);
         }
         mLayoutPreview.repaint();
@@ -1455,6 +1469,8 @@ public class ScreenStudio extends javax.swing.JFrame {
         row[5] = 300;
         row[6] = 100;
         row[7] = 1.0f;
+        row[8] = 0L;
+        row[9] = 0L;
         model.addRow(row);
         mLayoutPreview.repaint();
         tabs.setSelectedComponent(panSources);
