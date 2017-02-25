@@ -23,6 +23,7 @@ import java.awt.image.DataBufferByte;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import screenstudio.sources.transitions.Transition;
 import screenstudio.targets.Layout.SourceType;
 
 /**
@@ -31,6 +32,40 @@ import screenstudio.targets.Layout.SourceType;
  */
 public abstract class Source {
 
+    /**
+     * @return the mTransitionStart
+     */
+    public Transition.NAMES getTransitionStart() {
+        return mTransitionStart;
+    }
+
+    /**
+     * @param mTransitionStart the mTransitionStart to set
+     */
+    public void setTransitionStart(Transition.NAMES mTransitionStart) {
+        this.mTransitionStart = mTransitionStart;
+    }
+
+    /**
+     * @return the mTransitionStop
+     */
+    public Transition.NAMES getTransitionStop() {
+        return mTransitionStop;
+    }
+
+    /**
+     * @param mTransitionStop the mTransitionStop to set
+     */
+    public void setTransitionStop(Transition.NAMES mTransitionStop) {
+        this.mTransitionStop = mTransitionStop;
+    }
+
+    public enum EVENTS {
+        START,
+        STOP,
+        DISPLAYED,
+        HIDDEN,
+    }
     protected Rectangle mBounds = new Rectangle(0, 0, 320, 240);
     protected int mCaptureX = 0;
     protected int mCaptureY = 0;
@@ -44,19 +79,21 @@ public abstract class Source {
     protected long mEndDisplayTime = 0;
     private final BufferedImage mImage;
     private final byte[] mBuffer;
+    private Transition.NAMES mTransitionStart =Transition.NAMES.None; 
+    private Transition.NAMES mTransitionStop =Transition.NAMES.None; 
+    private ISourceEvents mListener = null;
 
     private String mID = "";
-    
+
     protected SourceType mType = null;
-    
+
     protected abstract void getData(byte[] buffer) throws IOException;
 
     protected abstract void initStream() throws IOException;
 
     protected abstract void disposeStream() throws IOException;
 
-    
-    protected Source(Rectangle bounds, int zOrder, float alpha, int delayTime,String id, int imageType ) {
+    protected Source(Rectangle bounds, int zOrder, float alpha, int delayTime, String id, int imageType) {
         mBounds = bounds;
         mZ = zOrder;
         mAlpha = mAlpha.derive(alpha);
@@ -66,51 +103,68 @@ public abstract class Source {
         mBuffer = ((DataBufferByte) mImage.getRaster().getDataBuffer()).getData();
     }
 
-    public int getCaptureX(){
+    public int getCaptureX() {
         return mCaptureX;
     }
-    public int getCaptureY(){
+
+    public int getCaptureY() {
         return mCaptureY;
     }
-    public String getFontName(){
+
+    public String getFontName() {
         return mFontName;
     }
-    public void setFontName(String value){
+
+    public void setFontName(String value) {
         mFontName = value;
     }
-    public int getForeground(){
+
+    public int getForeground() {
         return mForeground;
     }
-    public int getBackground(){
+
+    public int getBackground() {
         return mBackground;
     }
-    public String getID(){
+
+    public String getID() {
         return mID;
     }
-    public SourceType getType(){
+
+    public SourceType getType() {
         return mType;
     }
 
-    public void setDisplayTime(long start, long end){
+    public void setDisplayTime(long start, long end) {
         mStartDisplayTime = start;
         mEndDisplayTime = end;
     }
-    public long getStartDisplayTime(){
+
+    public long getStartDisplayTime() {
         return mStartDisplayTime;
     }
-    public long getEndDisplayTime(){
+
+    public long getEndDisplayTime() {
         return mEndDisplayTime;
     }
+
     public void start() {
         try {
             initStream();
+            if (mListener != null) {
+                mListener.event(EVENTS.START);
+            }
         } catch (IOException ex) {
             Logger.getLogger(Source.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
     public void stop() {
         try {
             disposeStream();
+            if (mListener != null) {
+                mListener.event(EVENTS.STOP);
+            }
         } catch (IOException ex) {
             Logger.getLogger(Source.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -130,15 +184,34 @@ public abstract class Source {
     }
 
     public void setAlpha(float value) {
+        if (value > 1f) {
+            value = 1f;
+        } else if (value < 0f) {
+            value = 0f;
+        }
+        if (mListener != null) {
+            if (value == 0f && mAlpha.getAlpha() != 0f) {
+                mListener.event(EVENTS.HIDDEN);
+            } else if (value != 0f && mAlpha.getAlpha() == 0f) {
+                mListener.event(EVENTS.DISPLAYED);
+            }
+        }
         mAlpha = mAlpha.derive(value);
     }
-    public AlphaComposite getAlpha(){
+
+    public AlphaComposite getAlpha() {
         return mAlpha;
     }
-    public void setZOrder (int value){
+
+    public void setZOrder(int value) {
         mZ = value;
     }
-    public int getZOrder (){
+
+    public int getZOrder() {
         return mZ;
+    }
+
+    public void setListener(ISourceEvents l) {
+        mListener = l;
     }
 }

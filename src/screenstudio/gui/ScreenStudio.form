@@ -2,6 +2,24 @@
 
 <Form version="1.6" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
+    <Container class="javax.swing.JPopupMenu" name="popSources">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout">
+        <Property name="useNullLayout" type="boolean" value="true"/>
+      </Layout>
+      <SubComponents>
+        <Menu class="javax.swing.JMenu" name="popMnuSourceTransitionIn">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Transition In"/>
+          </Properties>
+        </Menu>
+        <Menu class="javax.swing.JMenu" name="popMnuSourceTransitionOut">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Transition Out"/>
+          </Properties>
+        </Menu>
+      </SubComponents>
+    </Container>
     <Menu class="javax.swing.JMenuBar" name="menuBar">
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="mnuFile">
@@ -441,7 +459,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
           <SubComponents>
-            <Container class="javax.swing.JSplitPane" name="jSplitPane1">
+            <Container class="javax.swing.JSplitPane" name="splitterSources">
               <Properties>
                 <Property name="dividerLocation" type="int" value="150"/>
                 <Property name="orientation" type="int" value="0"/>
@@ -497,7 +515,7 @@
                     <Component class="javax.swing.JTable" name="tableSources">
                       <Properties>
                         <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                          <Table columnCount="10" rowCount="4">
+                          <Table columnCount="12" rowCount="4">
                             <Column editable="true" title=" " type="java.lang.Boolean"/>
                             <Column editable="false" title="Source" type="java.lang.String"/>
                             <Column editable="false" title="Description" type="java.lang.String"/>
@@ -508,71 +526,86 @@
                             <Column editable="true" title="Alpha" type="java.lang.Float"/>
                             <Column editable="true" title="Start" type="java.lang.Long"/>
                             <Column editable="true" title="End" type="java.lang.Long"/>
+                            <Column editable="false" title="Trans-In" type="java.lang.String"/>
+                            <Column editable="false" title="Trans-Out" type="java.lang.String"/>
                           </Table>
                         </Property>
                         <Property name="toolTipText" type="java.lang.String" value="Double-click for more options..."/>
-                        <Property name="autoResizeMode" type="int" value="3"/>
+                        <Property name="autoResizeMode" type="int" value="0"/>
                         <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                           <TableColumnModel selectionModel="1">
-                            <Column maxWidth="25" minWidth="25" prefWidth="25" resizable="true">
+                            <Column maxWidth="-1" minWidth="-1" prefWidth="25" resizable="false">
                               <Title/>
                               <Editor/>
                               <Renderer/>
                             </Column>
-                            <Column maxWidth="100" minWidth="100" prefWidth="100" resizable="true">
+                            <Column maxWidth="-1" minWidth="-1" prefWidth="100" resizable="false">
                               <Title/>
                               <Editor/>
                               <Renderer/>
                             </Column>
-                            <Column maxWidth="2000" minWidth="150" prefWidth="150" resizable="true">
+                            <Column maxWidth="-1" minWidth="150" prefWidth="150" resizable="true">
                               <Title/>
                               <Editor/>
                               <Renderer/>
                             </Column>
-                            <Column maxWidth="60" minWidth="60" prefWidth="60" resizable="true">
+                            <Column maxWidth="-1" minWidth="-1" prefWidth="60" resizable="false">
                               <Title/>
                               <Editor/>
                               <Renderer/>
                             </Column>
-                            <Column maxWidth="60" minWidth="60" prefWidth="60" resizable="true">
+                            <Column maxWidth="-1" minWidth="-1" prefWidth="60" resizable="false">
                               <Title/>
                               <Editor/>
                               <Renderer/>
                             </Column>
-                            <Column maxWidth="60" minWidth="60" prefWidth="60" resizable="true">
+                            <Column maxWidth="-1" minWidth="-1" prefWidth="60" resizable="false">
                               <Title/>
                               <Editor/>
                               <Renderer/>
                             </Column>
-                            <Column maxWidth="60" minWidth="60" prefWidth="60" resizable="true">
+                            <Column maxWidth="-1" minWidth="-1" prefWidth="60" resizable="false">
                               <Title/>
                               <Editor/>
                               <Renderer/>
                             </Column>
-                            <Column maxWidth="60" minWidth="60" prefWidth="60" resizable="true">
+                            <Column maxWidth="-1" minWidth="-1" prefWidth="60" resizable="false">
                               <Title/>
                               <Editor/>
                               <Renderer/>
                             </Column>
-                            <Column maxWidth="75" minWidth="60" prefWidth="60" resizable="true">
+                            <Column maxWidth="-1" minWidth="-1" prefWidth="60" resizable="false">
                               <Title/>
                               <Editor/>
                               <Renderer/>
                             </Column>
-                            <Column maxWidth="75" minWidth="60" prefWidth="60" resizable="true">
+                            <Column maxWidth="-1" minWidth="-1" prefWidth="60" resizable="false">
+                              <Title/>
+                              <Editor/>
+                              <Renderer/>
+                            </Column>
+                            <Column maxWidth="-1" minWidth="-1" prefWidth="75" resizable="false">
+                              <Title/>
+                              <Editor/>
+                              <Renderer/>
+                            </Column>
+                            <Column maxWidth="-1" minWidth="-1" prefWidth="75" resizable="false">
                               <Title/>
                               <Editor/>
                               <Renderer/>
                             </Column>
                           </TableColumnModel>
                         </Property>
-                        <Property name="columnSelectionAllowed" type="boolean" value="true"/>
+                        <Property name="componentPopupMenu" type="javax.swing.JPopupMenu" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                          <ComponentRef name="popSources"/>
+                        </Property>
                         <Property name="fillsViewportHeight" type="boolean" value="true"/>
                         <Property name="selectionModel" type="javax.swing.ListSelectionModel" editor="org.netbeans.modules.form.editors2.JTableSelectionModelEditor">
                           <JTableSelectionModel selectionMode="0"/>
                         </Property>
+                        <Property name="surrendersFocusOnKeystroke" type="boolean" value="true"/>
                         <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
-                          <TableHeader reorderingAllowed="false" resizingAllowed="false"/>
+                          <TableHeader reorderingAllowed="false" resizingAllowed="true"/>
                         </Property>
                       </Properties>
                       <Events>

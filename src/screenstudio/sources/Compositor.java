@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JTable;
 import screenstudio.gui.LabelText;
+import screenstudio.sources.transitions.Transition;
 import screenstudio.targets.Layout;
 
 /**
@@ -40,7 +41,7 @@ public class Compositor {
     private final byte[] mData;
     private boolean mIsReady = false;
     private final Graphics2D g;
-    private long mStartTime;
+    private final long mStartTime;
 
     public Compositor(java.util.List<Source> sources, Rectangle outputSize, int fps) {
         sources.sort((a, b) -> Integer.compare(b.getZOrder(), a.getZOrder()));
@@ -55,6 +56,13 @@ public class Compositor {
                 } catch (InterruptedException ex) {
                     Logger.getLogger(Compositor.class.getName()).log(Level.SEVERE, null, ex);
                 }
+            }
+        }
+        // Apply transitions...
+        for (Source s : mSources) {
+            if (s.getTransitionStart() != Transition.NAMES.None && s.getStartDisplayTime() == 0) {
+                Transition t = Transition.getInstance(s.getTransitionStart(), s, fps, this.mOutputSize);
+                new Thread(t).start();
             }
         }
         BufferedImage img = new BufferedImage(mOutputSize.width, mOutputSize.height, BufferedImage.TYPE_3BYTE_BGR);
@@ -73,10 +81,18 @@ public class Compositor {
         long timeDelta = (System.currentTimeMillis() - mStartTime) / 1000;
         for (Source s : mSources) {
             BufferedImage img = s.getImage();
-            if ((s.getEndDisplayTime() == 0 || s.getEndDisplayTime() >= timeDelta) 
+            if ((s.getEndDisplayTime() == 0 || s.getEndDisplayTime() >= timeDelta)
                     && (s.getStartDisplayTime() <= timeDelta)) {
-                g.setComposite(s.getAlpha());
-                g.drawImage(img, s.getBounds().x, s.getBounds().y, null);
+                //Showing for the first time???
+                if (s.getTransitionStart() != Transition.NAMES.None && s.getStartDisplayTime() != 0) {
+                    //Then we can trigger the start event...
+                    s.setDisplayTime(0, s.getEndDisplayTime());
+                    Transition t = Transition.getInstance(s.getTransitionStart(), s, mFPS, mOutputSize);
+                    new Thread(t).start();
+                } else {
+                    g.setComposite(s.getAlpha());
+                    g.drawImage(img, s.getBounds().x, s.getBounds().y, null);
+                }
             }
         }
         return mData;
@@ -110,8 +126,11 @@ public class Compositor {
                 int sw = (int) sources.getValueAt(i, 5);
                 int sh = (int) sources.getValueAt(i, 6);
                 float alpha = new Float(sources.getValueAt(i, 7).toString());
-                long timestart = (Long)sources.getValueAt(i,8);
-                long timeend = (Long)sources.getValueAt(i,9);
+                long timestart = (Long) sources.getValueAt(i, 8);
+                long timeend = (Long) sources.getValueAt(i, 9);
+                String transIn = sources.getValueAt(i, 10).toString();
+                String transOut = sources.getValueAt(i, 11).toString();
+
                 Object source = sources.getValueAt(i, 2);
                 // Detect type of source...
                 if (source instanceof Screen) {
@@ -121,6 +140,8 @@ public class Compositor {
                     s.setZOrder(i);
                     s.setFPS(fps);
                     s.setDisplayTime(timestart, timeend);
+                    s.setTransitionStart(Transition.NAMES.valueOf(transIn));
+                    s.setTransitionStop(Transition.NAMES.valueOf(transOut));
                     list.add(s);
                 } else if (source instanceof Webcam) {
                     Webcam webcam = (Webcam) source;
@@ -130,12 +151,16 @@ public class Compositor {
                     s.setZOrder(i);
                     s.setFPS(fps);
                     s.setDisplayTime(timestart, timeend);
+                    s.setTransitionStart(Transition.NAMES.valueOf(transIn));
+                    s.setTransitionStop(Transition.NAMES.valueOf(transOut));
                     list.add(s);
                 } else if (source instanceof File) {
                     switch ((Layout.SourceType) sources.getValueAt(i, 1)) {
                         case Image:
-                            SourceImage s = new SourceImage(new Rectangle(sx, sy, sw, sh), i, alpha, (File) source); 
+                            SourceImage s = new SourceImage(new Rectangle(sx, sy, sw, sh), i, alpha, (File) source);
                             s.setDisplayTime(timestart, timeend);
+                            s.setTransitionStart(Transition.NAMES.valueOf(transIn));
+                            s.setTransitionStop(Transition.NAMES.valueOf(transOut));
                             list.add(s);
                             break;
                         case Video:
@@ -143,12 +168,16 @@ public class Compositor {
                             sf.setAlpha(alpha);
                             sf.setZOrder(i);
                             sf.setDisplayTime(timestart, timeend);
+                            sf.setTransitionStart(Transition.NAMES.valueOf(transIn));
+                            sf.setTransitionStop(Transition.NAMES.valueOf(transOut));
                             list.add(sf);
                             break;
                     }
                 } else if (source instanceof LabelText) {
                     SourceLabel s = new SourceLabel(new Rectangle(sx, sy, sw, sh), i, alpha, ((LabelText) source));
                     s.setDisplayTime(timestart, timeend);
+                    s.setTransitionStart(Transition.NAMES.valueOf(transIn));
+                    s.setTransitionStop(Transition.NAMES.valueOf(transOut));
                     list.add(s);
                 }
             }

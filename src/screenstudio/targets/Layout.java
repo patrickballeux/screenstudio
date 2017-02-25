@@ -240,7 +240,7 @@ public class Layout {
         }
     }
 
-    public void addSource(SourceType typeValue, String idValue, int xValue, int yValue, int wValue, int hValue, float alphaValue, int orderValue, int fg, int bg, String font, int captureX, int captureY, long start, long end) {
+    public void addSource(SourceType typeValue, String idValue, int xValue, int yValue, int wValue, int hValue, float alphaValue, int orderValue, int fg, int bg, String font, int captureX, int captureY, long start, long end, String transStart, String transStop) {
         String nodeName = "";
         switch (typeValue) {
             case Desktop:
@@ -272,6 +272,9 @@ public class Layout {
         Node fontg = document.createAttribute("font");
         Node timeStart = document.createAttribute("start");
         Node timeEnd = document.createAttribute("end");
+        Node transitionStart = document.createAttribute("transstart");
+        Node transitionStop = document.createAttribute("transstop");
+        
         x.setNodeValue("" + xValue);
         y.setNodeValue("" + yValue);
         capx.setNodeValue("" + captureX);
@@ -286,6 +289,8 @@ public class Layout {
         fontg.setNodeValue(font);
         timeStart.setNodeValue(start+"");
         timeEnd.setNodeValue(end+"");
+        transitionStart.setNodeValue(transStart);
+        transitionStop.setNodeValue(transStop);
         switch (typeValue) {
             case LabelText:
                 type.setNodeValue("text");
@@ -309,6 +314,8 @@ public class Layout {
         node.getAttributes().setNamedItem(fontg);
         node.getAttributes().setNamedItem(timeStart);
         node.getAttributes().setNamedItem(timeEnd);
+        node.getAttributes().setNamedItem(transitionStart);
+        node.getAttributes().setNamedItem(transitionStop);
         root.appendChild(node);
     }
 
@@ -337,6 +344,10 @@ public class Layout {
                 s.startTime = Long.parseLong(n.getAttributes().getNamedItem("start").getNodeValue());
                 s.endTime = Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue());
             }
+            if (n.getAttributes().getNamedItem("transstart") != null){
+                s.transitionStart = n.getAttributes().getNamedItem("transstart").getNodeValue();
+                s.transitionStop = n.getAttributes().getNamedItem("transstop").getNodeValue();
+            }
             sources[i] = s;
         }
         return sources;
@@ -359,6 +370,10 @@ public class Layout {
             if (n.getAttributes().getNamedItem("start") != null){
                 s.startTime = Long.parseLong(n.getAttributes().getNamedItem("start").getNodeValue());
                 s.endTime = Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue());
+            }
+            if (n.getAttributes().getNamedItem("transstart") != null){
+                s.transitionStart = n.getAttributes().getNamedItem("transstart").getNodeValue();
+                s.transitionStop = n.getAttributes().getNamedItem("transstop").getNodeValue();
             }
             sources[i] = s;
         }
@@ -393,6 +408,10 @@ public class Layout {
                 s.startTime = Long.parseLong(n.getAttributes().getNamedItem("start").getNodeValue());
                 s.endTime = Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue());
             }
+            if (n.getAttributes().getNamedItem("transstart") != null){
+                s.transitionStart = n.getAttributes().getNamedItem("transstart").getNodeValue();
+                s.transitionStop = n.getAttributes().getNamedItem("transstop").getNodeValue();
+            }
             sources[i] = s;
         }
         return sources;
@@ -423,6 +442,10 @@ public class Layout {
             if (n.getAttributes().getNamedItem("start") != null){
                 s.startTime = Long.parseLong(n.getAttributes().getNamedItem("start").getNodeValue());
                 s.endTime = Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue());
+            }
+            if (n.getAttributes().getNamedItem("transstart") != null){
+                s.transitionStart = n.getAttributes().getNamedItem("transstart").getNodeValue();
+                s.transitionStop = n.getAttributes().getNamedItem("transstop").getNodeValue();
             }
             sources[i] = s;
         }
