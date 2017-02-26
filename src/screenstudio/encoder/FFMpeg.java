@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -104,6 +103,7 @@ public class FFMpeg implements Runnable {
     private String strictSetting = "-2";
 
     private String backgroundMusic = "";
+    private final long mDefaultStopDelay = 2000;
 
     /**
      * Main class wrapper for FFMpeg
@@ -371,12 +371,12 @@ public class FFMpeg implements Runnable {
         c.add("-y");
         c.add("-f");
         c.add(muxer);
-        if (Screen.isWindows()){
+        if (Screen.isWindows()) {
             c.add("\"" + output + "\"");
-        }else {
+        } else {
             c.add(output);
         }
-        
+
         return c.toArray(new String[c.size()]);
     }
 
@@ -456,7 +456,7 @@ public class FFMpeg implements Runnable {
             }
             System.out.println(fullCommand);
             Process p;
-            if (Screen.isWindows()){ //Works best for windows when spaces are in the command
+            if (Screen.isWindows()) { //Works best for windows when spaces are in the command
                 p = Runtime.getRuntime().exec(fullCommand);
             } else { // Works best for Linux when spaces are in the command
                 p = Runtime.getRuntime().exec(commands);
@@ -468,7 +468,13 @@ public class FFMpeg implements Runnable {
             long nextPTS = System.nanoTime() + frameTime;
             state = RunningState.Running;
             System.out.println("Starting encoding...");
-            while (!mStopMe) {
+            long mStopDelay = 0;
+            while (mStopDelay == 0 || mStopDelay > System.currentTimeMillis()) {
+                if (mStopMe){
+                    mStopDelay = System.currentTimeMillis() + mDefaultStopDelay;
+                    compositor.RequestStop();
+                    mStopMe=false;  // disable one acknowledged
+                }
                 try {
                     pipe.write(compositor.getData());
                 } catch (Exception exWrite) {

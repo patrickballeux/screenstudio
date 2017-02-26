@@ -241,11 +241,13 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
 
     private void tglPreviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tglPreviewActionPerformed
         if (tglPreview.isSelected()) {
+            tglPreview.setEnabled(false);
             List<Source> list = getSources(mSources, mFPS);
             compositer = new Compositor(list, outputSize, 10);
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    tglPreview.setEnabled(true);
                     while (compositer != null) {
                         repaint();
                         try {
@@ -257,10 +259,24 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                     repaint();
                 }
             }).start();
-        } else if (compositer != null){
-            compositer.stop();
-            compositer = null;
-            repaint();
+        } else if (compositer != null) {
+            compositer.RequestStop();
+            tglPreview.setEnabled(false);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(SourceLayoutPreview.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    compositer.stop();
+                    compositer = null;
+                    tglPreview.setEnabled(true);
+                    repaint();
+                }
+            }).start();
+
         }
     }//GEN-LAST:event_tglPreviewActionPerformed
 

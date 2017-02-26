@@ -795,6 +795,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         });
         tableSources.setToolTipText("Double-click for more options...");
         tableSources.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        tableSources.setColumnSelectionAllowed(true);
         tableSources.setComponentPopupMenu(popSources);
         tableSources.setFillsViewportHeight(true);
         tableSources.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -839,9 +840,9 @@ public class ScreenStudio extends javax.swing.JFrame {
             tableSources.getColumnModel().getColumn(9).setResizable(false);
             tableSources.getColumnModel().getColumn(9).setPreferredWidth(60);
             tableSources.getColumnModel().getColumn(10).setResizable(false);
-            tableSources.getColumnModel().getColumn(10).setPreferredWidth(75);
+            tableSources.getColumnModel().getColumn(10).setPreferredWidth(95);
             tableSources.getColumnModel().getColumn(11).setResizable(false);
-            tableSources.getColumnModel().getColumn(11).setPreferredWidth(75);
+            tableSources.getColumnModel().getColumn(11).setPreferredWidth(95);
         }
 
         splitterSources.setLeftComponent(scrollSources);
@@ -1249,6 +1250,13 @@ public class ScreenStudio extends javax.swing.JFrame {
                 lblMessages.setText("Stopped...");
             }
             mFFMpeg.stop();
+            while (mFFMpeg.getState() == FFMpeg.RunningState.Running){
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
             try {
                 Microphone.getVirtualAudio(null, null);
             } catch (IOException | InterruptedException ex) {

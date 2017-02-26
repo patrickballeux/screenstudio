@@ -42,6 +42,7 @@ public class Compositor {
     private boolean mIsReady = false;
     private final Graphics2D g;
     private final long mStartTime;
+    private boolean mRequestStop = false;
 
     public Compositor(java.util.List<Source> sources, Rectangle outputSize, int fps) {
         sources.sort((a, b) -> Integer.compare(b.getZOrder(), a.getZOrder()));
@@ -76,6 +77,10 @@ public class Compositor {
         return mIsReady;
     }
 
+    public void RequestStop() {
+        mRequestStop = true;
+    }
+
     public byte[] getData() {
         java.util.Arrays.fill(mData, (byte) 0);
         long timeDelta = (System.currentTimeMillis() - mStartTime) / 1000;
@@ -90,11 +95,16 @@ public class Compositor {
                     Transition t = Transition.getInstance(s.getTransitionStart(), s, mFPS, mOutputSize);
                     new Thread(t).start();
                 } else {
+                    if (mRequestStop && s.getTransitionStop() != Transition.NAMES.None) {
+                        Transition t = Transition.getInstance(s.getTransitionStop(), s, mFPS, mOutputSize);
+                        new Thread(t).start();
+                    }
                     g.setComposite(s.getAlpha());
                     g.drawImage(img, s.getBounds().x, s.getBounds().y, null);
                 }
             }
         }
+        mRequestStop = false;
         return mData;
     }
 
