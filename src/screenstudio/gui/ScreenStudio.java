@@ -181,17 +181,17 @@ public class ScreenStudio extends javax.swing.JFrame {
         if (Screen.isOSX() || Screen.isWindows()) {
             cboAudioSystems.setEnabled(false);
         }
-        
-        for (Transition.NAMES t : Transition.NAMES.values()){
+
+        for (Transition.NAMES t : Transition.NAMES.values()) {
             popMnuSourceTransitionIn.add(t.name());
             popMnuSourceTransitionOut.add(t.name());
         }
-        for (int i = 0; i<popMnuSourceTransitionIn.getItemCount();i++){
+        for (int i = 0; i < popMnuSourceTransitionIn.getItemCount(); i++) {
             JMenuItem m = popMnuSourceTransitionIn.getItem(i);
             m.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (tableSources.getSelectedRow() != -1){
+                    if (tableSources.getSelectedRow() != -1) {
                         tableSources.setValueAt(e.getActionCommand(), tableSources.getSelectedRow(), 10);
                     }
                 }
@@ -200,7 +200,7 @@ public class ScreenStudio extends javax.swing.JFrame {
             m.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (tableSources.getSelectedRow() != -1){
+                    if (tableSources.getSelectedRow() != -1) {
                         tableSources.setValueAt(e.getActionCommand(), tableSources.getSelectedRow(), 11);
                     }
                 }
@@ -1249,43 +1249,51 @@ public class ScreenStudio extends javax.swing.JFrame {
             } else {
                 lblMessages.setText("Stopped...");
             }
-            mFFMpeg.stop();
-            while (mFFMpeg.getState() == FFMpeg.RunningState.Running){
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            try {
-                Microphone.getVirtualAudio(null, null);
-            } catch (IOException | InterruptedException ex) {
-                Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            mFFMpeg = null;
-            mnuCapture.setText("Record");
-            switch (cboDefaultRecordingAction.getSelectedIndex()) {
-                case 0: // Hide
-                    if (trayIcon != null) {
-                        this.setVisible(true);
-                    } else {
-                        this.setExtendedState(JFrame.NORMAL);
+            mnuCapture.setEnabled(false);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    mFFMpeg.stop();
+                    while (mFFMpeg.getState() == FFMpeg.RunningState.Running) {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
-                    break;
-                case 1: // Minimize
-                    this.setExtendedState(JFrame.NORMAL);
-                    break;
-                case 2: // Stay Visible
-                    break;
-            }
+                    try {
+                        Microphone.getVirtualAudio(null, null);
+                    } catch (IOException | InterruptedException ex) {
+                        Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    mFFMpeg = null;
+                    mnuCapture.setText("Record");
+                    switch (cboDefaultRecordingAction.getSelectedIndex()) {
+                        case 0: // Hide
+                            if (trayIcon != null) {
+                                setVisible(true);
+                            } else {
+                                setExtendedState(JFrame.NORMAL);
+                            }
+                            break;
+                        case 1: // Minimize
+                            setExtendedState(JFrame.NORMAL);
+                            break;
+                        case 2: // Stay Visible
+                            break;
+                    }
 
-            if (trayIcon != null) {
-                trayIcon.setImage(this.getIconImage());
-            }
-            updateControls(true);
-            if (FFMpeg.isRTMP((FFMpeg.FORMATS) cboTarget.getSelectedItem())) {
-                txtRTMPKey.setVisible(true);
-            }
+                    if (trayIcon != null) {
+                        trayIcon.setImage(getIconImage());
+                    }
+                    updateControls(true);
+                    if (FFMpeg.isRTMP((FFMpeg.FORMATS) cboTarget.getSelectedItem())) {
+                        txtRTMPKey.setVisible(true);
+                    }
+                    mnuCapture.setEnabled(true);
+                }
+            }).start();
+
         } else {
             if (trayIcon != null) {
                 trayIcon.setImage(new ImageIcon(ScreenStudio.class.getResource("/screenstudio/gui/images/iconStarting.png")).getImage());

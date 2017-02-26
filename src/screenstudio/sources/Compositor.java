@@ -91,13 +91,14 @@ public class Compositor {
                 //Showing for the first time???
                 if (s.getTransitionStart() != Transition.NAMES.None && s.getStartDisplayTime() != 0) {
                     //Then we can trigger the start event...
-                    s.setDisplayTime(0, s.getEndDisplayTime());
                     Transition t = Transition.getInstance(s.getTransitionStart(), s, mFPS, mOutputSize);
                     new Thread(t).start();
+                    s.setTransitionStart(Transition.NAMES.None);
                 } else {
-                    if (mRequestStop && s.getTransitionStop() != Transition.NAMES.None) {
+                    if (s.getTransitionStop() != Transition.NAMES.None && (mRequestStop || (s.getEndDisplayTime()-1 == timeDelta))) {
                         Transition t = Transition.getInstance(s.getTransitionStop(), s, mFPS, mOutputSize);
                         new Thread(t).start();
+                        s.setTransitionStop(Transition.NAMES.None);
                     }
                     g.setComposite(s.getAlpha());
                     g.drawImage(img, s.getBounds().x, s.getBounds().y, null);

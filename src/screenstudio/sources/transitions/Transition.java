@@ -70,8 +70,8 @@ public class Transition implements Runnable {
                 t.setToAlpha(0);
                 break;
             case EnterBottom:
-                t.setFromX(bounds.height+1);
-                t.setToX(s.getBounds().y);
+                t.setFromY(bounds.height+1);
+                t.setToY(s.getBounds().y);
                 break;
             case EnterLeft:
                 t.setFromX(0-s.getBounds().width-1);
@@ -94,8 +94,8 @@ public class Transition implements Runnable {
                 t.setToX(0-s.getBounds().width-1);
                 break;
             case ExitRight:
-                t.setFromY(s.getBounds().x);
-                t.setToY(bounds.width+1);
+                t.setFromX(s.getBounds().x);
+                t.setToX(bounds.width+1);
                 break;
             case ExitTop: 
                 t.setFromY(s.getBounds().y);
