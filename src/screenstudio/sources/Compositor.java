@@ -43,6 +43,8 @@ public class Compositor {
     private final Graphics2D g;
     private final long mStartTime;
     private boolean mRequestStop = false;
+    private final BufferedImage mImage;
+    private byte[] mPreviewBuffer;
 
     public Compositor(java.util.List<Source> sources, Rectangle outputSize, int fps) {
         sources.sort((a, b) -> Integer.compare(b.getZOrder(), a.getZOrder()));
@@ -66,13 +68,19 @@ public class Compositor {
                 new Thread(t).start();
             }
         }
-        BufferedImage img = new BufferedImage(mOutputSize.width, mOutputSize.height, BufferedImage.TYPE_3BYTE_BGR);
-        g = img.createGraphics();
-        mData = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
+        mImage = new BufferedImage(mOutputSize.width, mOutputSize.height, BufferedImage.TYPE_3BYTE_BGR);
+        g = mImage.createGraphics();
+        mData = ((DataBufferByte) mImage.getRaster().getDataBuffer()).getData();
         mStartTime = System.currentTimeMillis();
         mIsReady = true;
     }
 
+    public List<Source> getSources(){
+        return mSources;
+    }
+    public byte[] getImage(){
+        return mPreviewBuffer;
+    }
     public boolean isReady() {
         return mIsReady;
     }
@@ -86,7 +94,7 @@ public class Compositor {
         long timeDelta = (System.currentTimeMillis() - mStartTime) / 1000;
         for (Source s : mSources) {
             BufferedImage img = s.getImage();
-            if ((s.getEndDisplayTime() == 0 || s.getEndDisplayTime() >= timeDelta)
+            if (s.isRemoteDisplay() && (s.getEndDisplayTime() == 0 || s.getEndDisplayTime() >= timeDelta)
                     && (s.getStartDisplayTime() <= timeDelta)) {
                 //Showing for the first time???
                 if (s.getTransitionStart() != Transition.NAMES.None && s.getStartDisplayTime() != 0) {
@@ -106,6 +114,8 @@ public class Compositor {
             }
         }
         mRequestStop = false;
+        mPreviewBuffer = new byte[mData.length];
+        System.arraycopy(mData, 0, mPreviewBuffer, 0, mPreviewBuffer.length);
         return mData;
     }
 

@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<!--
+Copyright (C) 2017 patrick
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<html>
+    <head>
+        <title>ScreenStudio Remote</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <style>
+        body {background-color: black; color:white;}
+        .header {background-color: black; color:white;text-align: center;font-weight: bold;font-size: 20px;}
+        .preview {text-align: center;border: 1px solid lightblue;}
+        .action {border: 1px solid white}
+        .source {text-align: left;font-size:16px;overflow: hidden;padding: 5px;}
+        .sourcetitle {text-align: center;font-size:20px;font-weight: bold;}
+    </style>
+    <body>
+        <div class="header">ScreenStudio Remote</div>
+        <form class="preview" name="refresh"><img width="100%" style="max-width: 400px;max-height: 400px;" src="preview.png" alt="ScreenStudio Preview" onclick="document.forms.refresh.submit();"></form>
+        <hr>
+        <div class="action" align="center">
+            <form action="/" method="GET">
+                <input type="submit" name="action" value="record" >    
+            </form></div>
+        <div class="sources">
+            <div class="sourcetitle">Sources</div>
+            @SOURCES
+        </div>
+        <hr>
+    </body>
+</html>

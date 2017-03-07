@@ -82,7 +82,7 @@ public abstract class Source {
     private Transition.NAMES mTransitionStart =Transition.NAMES.None; 
     private Transition.NAMES mTransitionStop =Transition.NAMES.None; 
     private ISourceEvents mListener = null;
-
+    private boolean mRemoteDisplay = true;
     private String mID = "";
 
     protected SourceType mType = null;
@@ -93,6 +93,12 @@ public abstract class Source {
 
     protected abstract void disposeStream() throws IOException;
 
+    public void setRemoteDisplay(boolean show){
+        mRemoteDisplay = show;
+    }
+    public boolean isRemoteDisplay(){
+        return mRemoteDisplay;
+    }
     protected Source(Rectangle bounds, int zOrder, float alpha, int delayTime, String id, int imageType) {
         mBounds = bounds;
         mZ = zOrder;

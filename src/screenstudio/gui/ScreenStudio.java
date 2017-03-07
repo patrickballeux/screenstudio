@@ -32,6 +32,9 @@ import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,6 +54,7 @@ import org.xml.sax.SAXException;
 import screenstudio.Version;
 import screenstudio.encoder.FFMpeg;
 import screenstudio.panel.editor.Editor;
+import screenstudio.remote.HTTPServer;
 import screenstudio.sources.Compositor;
 import screenstudio.sources.Microphone;
 import screenstudio.sources.Screen;
@@ -74,6 +78,7 @@ public class ScreenStudio extends javax.swing.JFrame {
     private java.awt.TrayIcon trayIcon;
     private final com.tulskiy.keymaster.common.Provider mShortcuts;
     private File mBackgroundMusic = null;
+    private HTTPServer mRemote;
 
     /**
      * Creates new form MainVersion3
@@ -116,7 +121,13 @@ public class ScreenStudio extends javax.swing.JFrame {
                 }
             }
         });
-
+        mRemote = new HTTPServer(null, null,mnuCapture);
+        new Thread(mRemote).start();
+        try {
+            lblRemoteMessage.setText("Remote: http://" + Inet4Address.getLocalHost().getHostName() + ".local:" + mRemote.getPort());
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void initControls() {
@@ -124,6 +135,8 @@ public class ScreenStudio extends javax.swing.JFrame {
         while (model.getRowCount() > 0) {
             model.removeRow(0);
         }
+        updateRemoteSources();
+
         cboTarget.setModel(new DefaultComboBoxModel<>(FFMpeg.FORMATS.values()));
         cboTarget.setSelectedIndex(0);
         cboVideoPresets.setModel(new DefaultComboBoxModel<>(FFMpeg.Presets.values()));
@@ -277,6 +290,7 @@ public class ScreenStudio extends javax.swing.JFrame {
             while (model.getRowCount() > 0) {
                 model.removeRow(0);
             }
+
             Webcam[] webcams = Webcam.getSources();
             for (screenstudio.targets.Source s : layout.getSources()) {
                 Object[] row = new Object[model.getColumnCount()];
@@ -345,7 +359,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         } catch (IOException | ParserConfigurationException | SAXException | InterruptedException ex) {
             Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        updateRemoteSources();
         panPreviewLayout.repaint();
     }
 
@@ -441,6 +455,8 @@ public class ScreenStudio extends javax.swing.JFrame {
                                 row[10] = Transition.NAMES.None.name();
                                 row[11] = Transition.NAMES.None.name();
                                 model.addRow(row);
+                                updateRemoteSources();
+
                                 mLayoutPreview.repaint();
                                 tabs.setSelectedComponent(panSources);
                                 break;
@@ -456,6 +472,16 @@ public class ScreenStudio extends javax.swing.JFrame {
             }
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void updateRemoteSources() {
+        ArrayList<String> sources = new ArrayList<>();
+        for (int i = tableSources.getRowCount()-1; i >=0; i--) {
+            sources.add(tableSources.getValueAt(i, 2).toString());
+        }
+        if (mRemote != null) {
+            mRemote.setSourceIDs(sources);
         }
     }
 
@@ -486,6 +512,8 @@ public class ScreenStudio extends javax.swing.JFrame {
                                 row[10] = Transition.NAMES.None.name();
                                 row[11] = Transition.NAMES.None.name();
                                 model.addRow(row);
+                                updateRemoteSources();
+
                                 mLayoutPreview.repaint();
                                 tabs.setSelectedComponent(panSources);
                                 break;
@@ -565,6 +593,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         btnBGMusicBrowse = new javax.swing.JButton();
         panStatus = new javax.swing.JPanel();
         lblMessages = new javax.swing.JLabel();
+        lblRemoteMessage = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
         mnuFile = new javax.swing.JMenu();
         mnuCapture = new javax.swing.JMenuItem();
@@ -1055,10 +1084,16 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         panStatus.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         panStatus.setPreferredSize(new java.awt.Dimension(767, 20));
-        panStatus.setLayout(new javax.swing.BoxLayout(panStatus, javax.swing.BoxLayout.LINE_AXIS));
+        panStatus.setLayout(new java.awt.GridLayout());
 
         lblMessages.setText("Welcome to ScreenStudio");
         panStatus.add(lblMessages);
+
+        lblRemoteMessage.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        lblRemoteMessage.setText("...");
+        panStatus.add(lblRemoteMessage);
+        lblRemoteMessage.getAccessibleContext().setAccessibleName("");
+        lblRemoteMessage.getAccessibleContext().setAccessibleDescription("");
 
         getContentPane().add(panStatus, java.awt.BorderLayout.SOUTH);
 
@@ -1291,6 +1326,8 @@ public class ScreenStudio extends javax.swing.JFrame {
                         txtRTMPKey.setVisible(true);
                     }
                     mnuCapture.setEnabled(true);
+                    mRemote.setCompositor(null);
+
                 }
             }).start();
 
@@ -1314,6 +1351,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                 List<Source> sources = Compositor.getSources(tableSources, (Integer) spinFPS.getValue());
                 Compositor compositor = new Compositor(sources, new Rectangle(0, 0, (Integer) spinWidth.getValue(), (Integer) spinHeight.getValue()), (Integer) spinFPS.getValue());
                 mFFMpeg = new FFMpeg(compositor);
+                mRemote.setCompositor(compositor);
                 String audio = "default";
                 Microphone mic = null;
                 Microphone sys = null;
@@ -1509,6 +1547,7 @@ public class ScreenStudio extends javax.swing.JFrame {
             row[10] = Transition.NAMES.None.name();
             row[11] = Transition.NAMES.None.name();
             model.addRow(row);
+            updateRemoteSources();
         }
         mLayoutPreview.repaint();
         tabs.setSelectedComponent(panSources);
@@ -1530,6 +1569,8 @@ public class ScreenStudio extends javax.swing.JFrame {
         row[10] = Transition.NAMES.None.name();
         row[11] = Transition.NAMES.None.name();
         model.addRow(row);
+        updateRemoteSources();
+
         mLayoutPreview.repaint();
         tabs.setSelectedComponent(panSources);
     }//GEN-LAST:event_mnuMainAddLabelActionPerformed
@@ -1587,6 +1628,7 @@ public class ScreenStudio extends javax.swing.JFrame {
             int index = tableSources.getSelectedRow();
             DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
             model.removeRow(index);
+            updateRemoteSources();
             mLayoutPreview.repaint();
         }
     }//GEN-LAST:event_mnuMainRemoveActionPerformed
@@ -1604,6 +1646,10 @@ public class ScreenStudio extends javax.swing.JFrame {
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         if (trayIcon != null) {
             SystemTray.getSystemTray().remove(trayIcon);
+        }
+        if (mRemote != null) {
+            mRemote.shutdown();
+            mRemote = null;
         }
         if (mShortcuts != null) {
             mShortcuts.stop();
@@ -1739,6 +1785,7 @@ public class ScreenStudio extends javax.swing.JFrame {
     private javax.swing.JLabel lblMessages;
     private javax.swing.JLabel lblRTMPKey;
     private javax.swing.JLabel lblRTMPServer;
+    private javax.swing.JLabel lblRemoteMessage;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem mnuCapture;
     private javax.swing.JMenu mnuEdit;
