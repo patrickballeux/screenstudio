@@ -294,7 +294,7 @@ public class ScreenStudio extends javax.swing.JFrame {
             Webcam[] webcams = Webcam.getSources();
             for (screenstudio.targets.Source s : layout.getSources()) {
                 Object[] row = new Object[model.getColumnCount()];
-                row[0] = true;
+                row[0] = s.remoteDisplay;
                 row[1] = s.Type;
                 row[2] = "Not found!";
                 row[3] = s.X;
@@ -313,7 +313,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                         for (Screen screen : screens) {
                             if (screen.getLabel().equals(s.ID)) {
                                 row[2] = screen;
-                                row[0] = true;
+                                row[0] = s.remoteDisplay;
                                 if (s.CaptureX != 0 || s.CaptureY != 0) {
                                     screen.getSize().width = s.Width;
                                     screen.getSize().height = s.Height;
@@ -326,7 +326,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                         break;
                     case Image:
                         row[2] = new File(s.ID);
-                        row[0] = new File(s.ID).exists();
+                        row[0] = s.remoteDisplay && new File(s.ID).exists();
                         break;
                     case LabelText:
                         LabelText t = new LabelText(s.ID);
@@ -341,14 +341,14 @@ public class ScreenStudio extends javax.swing.JFrame {
                         break;
                     case Video:
                         row[2] = new File(s.ID);
-                        row[0] = new File(s.ID).exists();
+                        row[0] = s.remoteDisplay && new File(s.ID).exists();
                         break;
                     case Webcam:
                         row[0] = false;
                         for (Webcam webcam : webcams) {
                             if (webcam.getDevice().equals(s.ID)) {
                                 row[2] = webcam;
-                                row[0] = true;
+                                row[0] = s.remoteDisplay;
                                 break;
                             }
                         }
@@ -384,7 +384,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         layout.setBackgroundMusic(mBackgroundMusic);
         List<Source> sources = Compositor.getSources(tableSources, (Integer) spinFPS.getValue());
         for (Source s : sources) {
-            layout.addSource(s.getType(), s.getID(), s.getBounds().x, s.getBounds().y, s.getBounds().width, s.getBounds().height, s.getAlpha().getAlpha(), s.getZOrder(), s.getForeground(), s.getBackground(), s.getFontName(), s.getCaptureX(), s.getCaptureY(), s.getStartDisplayTime(), s.getEndDisplayTime(), s.getTransitionStart().name(), s.getTransitionStop().name());
+            layout.addSource(s.getType(), s.getID(), s.getBounds().x, s.getBounds().y, s.getBounds().width, s.getBounds().height, s.getAlpha().getAlpha(), s.getZOrder(), s.getForeground(), s.getBackground(), s.getFontName(), s.getCaptureX(), s.getCaptureY(), s.getStartDisplayTime(), s.getEndDisplayTime(), s.getTransitionStart().name(), s.getTransitionStop().name(),s.isRemoteDisplay());
         }
         try {
             layout.save(file);
