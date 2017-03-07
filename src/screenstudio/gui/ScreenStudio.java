@@ -1587,6 +1587,7 @@ public class ScreenStudio extends javax.swing.JFrame {
             tableSources.setRowSelectionInterval(index, index);
             mLayoutPreview.repaint();
             tabs.setSelectedComponent(panSources);
+            updateRemoteSources();
         }
     }//GEN-LAST:event_mnuMainMoveUpActionPerformed
 
@@ -1602,6 +1603,7 @@ public class ScreenStudio extends javax.swing.JFrame {
             tableSources.setRowSelectionInterval(index, index);
             mLayoutPreview.repaint();
             tabs.setSelectedComponent(panSources);
+            updateRemoteSources();
         }
     }//GEN-LAST:event_mnuMainMoveDownActionPerformed
 

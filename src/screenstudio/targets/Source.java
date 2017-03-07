@@ -33,6 +33,6 @@ public class Source {
     public String fontName;
     public long startTime;
     public long endTime;
-    public String transitionStart;
-    public String transitionStop;
+    public String transitionStart = "None";
+    public String transitionStop = "None";
 }
