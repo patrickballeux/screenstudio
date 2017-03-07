@@ -95,7 +95,8 @@ public class HTTPServer implements Runnable {
                     try {
                         handleRequest(connection);
                     } catch (IOException ex) {
-                        Logger.getLogger(HTTPServer.class.getName()).log(Level.SEVERE, null, ex);
+                        //Logger.getLogger(HTTPServer.class.getName()).log(Level.SEVERE, null, ex);
+                        //do nothing
                     }
                 }).start();
 
@@ -148,13 +149,6 @@ public class HTTPServer implements Runnable {
                         int index = Integer.parseInt(p.split("=")[0].replace("source", ""));
                         Source s = mCompositor.getSources().get(index);
                         s.setRemoteDisplay(p.split("=")[1].equals("on"));
-                        if (s.isRemoteDisplay()) {
-                            Transition t = Transition.getInstance(NAMES.FadeIn, s, mCompositor.getFPS(), new Rectangle(mCompositor.getWidth(), mCompositor.getHeight()));
-                            new Thread(t).start();
-                        } else {
-                            Transition t = Transition.getInstance(NAMES.FadeOut, s, mCompositor.getFPS(), new Rectangle(mCompositor.getWidth(), mCompositor.getHeight()));
-                            new Thread(t).start();
-                        }
                     }
                 }
             }
@@ -211,7 +205,7 @@ public class HTTPServer implements Runnable {
             int newH = mCompositor.getHeight() / 3;
             BufferedImage img = new BufferedImage(mCompositor.getWidth(), mCompositor.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
             byte[] data = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
-            System.arraycopy(mCompositor.getData(), 0, data, 0, data.length);
+            System.arraycopy(mCompositor.getImage(), 0, data, 0, data.length);
             BufferedImage smallImg = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_RGB);
             Graphics2D g = smallImg.createGraphics();
             g.drawImage(img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH), 0, 0, null);
