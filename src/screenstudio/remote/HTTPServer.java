@@ -136,10 +136,12 @@ public class HTTPServer implements Runnable {
                 parameters = new String[0];
             }
             System.out.println("Handling: " + req);
+            boolean requestedToStop = false;
             for (String p : parameters) {
                 if (p.equals("action=record")) {
                     //start stop recording...
                     mMenuAction.doClick();
+                    requestedToStop= true;
                 } else if (p.startsWith("source")) {
                     if (mCompositor != null) {
                         int index = Integer.parseInt(p.split("=")[0].replace("source", ""));
@@ -152,7 +154,7 @@ public class HTTPServer implements Runnable {
                 case "/":
                     System.out.println("Writing homepage");
                     out.write("HTTP/1.0 200 OK\r\n" + "Content-Type: " + "text/html" + "\r\n" + "Date: " + new Date() + "\r\nServer: ScreenStudio Remote\r\n\r\n");
-                    sendHomeScreen(out);
+                    sendHomeScreen(out,requestedToStop);
                     out.flush();
                     break;
                 case "/preview.png":
@@ -186,14 +188,14 @@ public class HTTPServer implements Runnable {
         }
         out.flush();
     }
-    private void sendHomeScreen(BufferedWriter out) throws IOException {
+    private void sendHomeScreen(BufferedWriter out,boolean requestedToStop) throws IOException {
         String html;
         try (InputStream in = this.getClass().getResource("/screenstudio/remote/index.html").openStream()) {
             byte[] buffer = new byte[65536];
             int count = in.read(buffer);
             html = new String(buffer, 0, count);
         }
-        if (mCompositor != null){
+        if (mCompositor != null && !requestedToStop){
             html = html.replace(">Capture<", ">Stop<");
         }
         String sources = "";
