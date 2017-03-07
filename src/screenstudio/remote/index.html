@@ -31,11 +31,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </style>
     <body>
         <div class="header">ScreenStudio Remote</div>
-        <form class="preview" name="refresh"><img width="100%" style="max-width: 400px;max-height: 400px;" src="preview.png" alt="ScreenStudio Preview" onclick="document.forms.refresh.submit();"></form>
+        <form class="preview" name="refresh"><img id="preview" width="100%" style="max-width: 400px;max-height: 400px;" src="preview.png" alt="ScreenStudio Preview" onclick="document.forms.refresh.submit();"></form>
         <hr>
         <div class="action" align="center">
             <form action="/" method="GET">
-                <input type="submit" name="action" value="record" >    
+                <input type="submit" name="action" value="Record" >    
             </form></div>
         <div class="sources">
             <div class="sourcetitle">Sources</div>
@@ -44,9 +44,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <hr>
         <script>
             function reload(){
-                document.forms.refresh.submit();
+            document.getElementById("preview").src = "preview.png?r="+new Date().getTime();
+                //document.forms.refresh.submit();
             }
-            setInterval(reload,8000);
+            setInterval(reload,3000);
         </script>
     </body>
 </html>

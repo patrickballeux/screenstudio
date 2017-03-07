@@ -94,7 +94,7 @@ public class HTTPServer implements Runnable {
                 new Thread(() -> {
                     try {
                         handleRequest(connection);
-                    } catch (IOException ex) {
+                    } catch (Exception ex) {
                         //Logger.getLogger(HTTPServer.class.getName()).log(Level.SEVERE, null, ex);
                         //do nothing
                     }
@@ -198,7 +198,7 @@ public class HTTPServer implements Runnable {
         out.write(html);
     }
 
-    private void sendPreview(OutputStream out) throws IOException {
+    private void sendPreview(OutputStream out) throws IOException,IndexOutOfBoundsException {
 
         if (mCompositor != null) {
             int newW = mCompositor.getWidth() / 3;

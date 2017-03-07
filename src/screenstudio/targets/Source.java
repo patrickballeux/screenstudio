@@ -35,4 +35,5 @@ public class Source {
     public long endTime;
     public String transitionStart = "None";
     public String transitionStop = "None";
+    public boolean remoteDisplay = true;
 }
