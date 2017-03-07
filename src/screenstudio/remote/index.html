@@ -20,22 +20,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <title>ScreenStudio Remote</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="HandheldFriendly" content="True">
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="mobile-web-app-capable" content="yes">
+        <link rel="apple-touch-startup-image" href="logo.png" />
+        <link rel="shortcut icon" sizes="196x196" href="logo.png">
+        <link rel="shortcut icon" sizes="128x128" href="logo.png">
+        <link rel="apple-touch-icon" sizes="128x128" href="logo.png">
+        <link rel="apple-touch-icon-precomposed" sizes="128x128" href="logo.png">
+
     </head>
     <style>
         body {background-color: black; color:white;}
         .header {background-color: black; color:white;text-align: center;font-weight: bold;font-size: 20px;}
         .preview {text-align: center;border: 1px solid lightblue;}
-        .action {border: 1px solid white}
+        .action {border: 1px solid white;padding: 5px;}
         .source {text-align: left;font-size:16px;overflow: hidden;padding: 5px;}
         .sourcetitle {text-align: center;font-size:20px;font-weight: bold;}
+        .note {text-align: center;font-size:10px;font-style: italic; color: lightgrey;}
     </style>
     <body>
         <div class="header">ScreenStudio Remote</div>
         <form class="preview" name="refresh"><img id="preview" width="100%" style="max-width: 400px;max-height: 400px;" src="preview.png" alt="ScreenStudio Preview" onclick="document.forms.refresh.submit();"></form>
+        <div class="note">Click Preview to reload the page...</div>
         <hr>
         <div class="action" align="center">
             <form action="/" method="GET">
-                <input type="submit" name="action" value="Record" >    
+                <button type="submit" name="action" value="record">Capture</button>    
             </form></div>
         <div class="sources">
             <div class="sourcetitle">Sources</div>

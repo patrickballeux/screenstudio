@@ -19,7 +19,6 @@ package screenstudio.remote;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.BufferedReader;
@@ -33,14 +32,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 import screenstudio.sources.Compositor;
 import screenstudio.sources.Source;
-import screenstudio.sources.transitions.Transition;
-import screenstudio.sources.transitions.Transition.NAMES;
 
 /**
  *
@@ -164,17 +160,41 @@ public class HTTPServer implements Runnable {
                     out.flush();
                     sendPreview(conn.getOutputStream());
                     break;
+                case "/logo.png":
+                case "/apple-touch-icon.png":
+                case "/apple-touch-icon-120x120-precomposed.png":
+                case "/apple-touch-icon-120x120.png":
+                    out.write("HTTP/1.0 200 OK\r\n" + "Content-Type: " + "image/png" + "\r\n" + "Date: " + new Date() + "\r\nServer: ScreenStudio Remote\r\n\r\n");
+                    out.flush();
+                    sendResources("/screenstudio/remote/logo128.png",conn.getOutputStream());
+                    break;
+                case "/favicon.ico":
+                    out.write("HTTP/1.0 200 OK\r\n" + "Content-Type: " + "image/png" + "\r\n" + "Date: " + new Date() + "\r\nServer: ScreenStudio Remote\r\n\r\n");
+                    out.flush();
+                     sendResources("/screenstudio/remote/favicon.ico",conn.getOutputStream());
+                    break;
             }
         }
         conn.close();
     }
 
+    private void sendResources(String name, OutputStream out) throws IOException{
+        try (InputStream in = this.getClass().getResource(name).openStream()) {
+            byte[] buffer = new byte[in.available()];
+            int count = in.read(buffer);
+            out.write(buffer, 0, count);
+        }
+        out.flush();
+    }
     private void sendHomeScreen(BufferedWriter out) throws IOException {
         String html;
         try (InputStream in = this.getClass().getResource("/screenstudio/remote/index.html").openStream()) {
             byte[] buffer = new byte[65536];
             int count = in.read(buffer);
             html = new String(buffer, 0, count);
+        }
+        if (mCompositor != null){
+            html = html.replace(">Capture<", ">Stop<");
         }
         String sources = "";
         if (mSourcesIDs != null) {
