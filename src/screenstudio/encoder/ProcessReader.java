@@ -39,13 +39,13 @@ public class ProcessReader implements Runnable {
         while (true) {
             try {
                 count = mIn.read(buffer);
-                if (count > 0) {
-                    line = new String(buffer, 0, count).trim();
-                    if (line.length() > 0) {
-                        System.out.println("FFMPEG: " + line);
-                    }
-                }
-                Thread.sleep(100);
+//                if (count > 0) {
+//                    line = new String(buffer, 0, count).trim();
+//                    if (line.length() > 0) {
+//                        System.out.println("FFMPEG: " + line);
+//                    }
+//                }
+                Thread.sleep(50);
             } catch (IOException | InterruptedException ex) {
                 break;
             }
