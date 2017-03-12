@@ -20,8 +20,6 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import screenstudio.encoder.FFMpeg;
 import screenstudio.encoder.ProcessReader;
 import screenstudio.targets.Layout.SourceType;
@@ -137,6 +135,7 @@ public class SourceFFMpeg extends Source implements Runnable{
 
     public static SourceFFMpeg getWebcamInstance(Webcam webcam, int fps) {
         String input = " -f " + new FFMpeg(null).getWebcamFormat() + " -i " + webcam.getDevice();
+        System.out.println(input);
         return new SourceFFMpeg(webcam.getSize(), new Rectangle(webcam.getSize()), fps, input, SourceType.Webcam, webcam.getDevice());
     }
 

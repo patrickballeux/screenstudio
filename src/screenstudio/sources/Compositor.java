@@ -169,6 +169,8 @@ public class Compositor {
                 list.add(s);
             } else if (source instanceof Webcam) {
                 Webcam webcam = (Webcam) source;
+                webcam.setWidth(sw);
+                webcam.setHeight(sh);
                 SourceFFMpeg s = SourceFFMpeg.getWebcamInstance(webcam, fps);
                 s.getBounds().setBounds(new Rectangle(sx, sy, sw, sh));
                 s.setAlpha(alpha);
