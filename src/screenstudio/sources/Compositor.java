@@ -21,9 +21,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JTable;
@@ -47,6 +45,7 @@ public class Compositor {
     private boolean mRequestStop = false;
     private final BufferedImage mImage;
     private byte[] mPreviewBuffer;
+    private long mTimeDelta = 0;
 
     public Compositor(java.util.List<Source> sources, Rectangle outputSize, int fps) {
         sources.sort((a, b) -> Integer.compare(b.getZOrder(), a.getZOrder()));
@@ -65,6 +64,9 @@ public class Compositor {
         }
         // Apply transitions...
         for (Source s : mSources) {
+            if (!s.isRemoteDisplay()){
+                s.setDisplayTime(-1, -1);
+            }
             if (s.getTransitionStart() != Transition.NAMES.None && s.getStartDisplayTime() == 0) {
                 Transition t = Transition.getInstance(s.getTransitionStart(), s, fps, this.mOutputSize);
                 new Thread(t).start();
@@ -77,6 +79,9 @@ public class Compositor {
         mIsReady = true;
     }
 
+    public long getTimeDelta(){
+        return mTimeDelta;
+    }
     public List<Source> getSources() {
         return mSources;
     }
@@ -92,14 +97,13 @@ public class Compositor {
     public void RequestStop() {
         mRequestStop = true;
     }
-
     public byte[] getData() {
         java.util.Arrays.fill(mData, (byte) 0);
-        long timeDelta = (System.currentTimeMillis() - mStartTime) / 1000;
+        mTimeDelta = (System.currentTimeMillis() - mStartTime) / 1000;
         for (Source s : mSources) {
             BufferedImage img = s.getImage();
-            if (s.isRemoteDisplay() && (s.getEndDisplayTime() == 0 || s.getEndDisplayTime() >= timeDelta)
-                    && (s.getStartDisplayTime() <= timeDelta)) {
+            if ((s.getEndDisplayTime() == 0 || s.getEndDisplayTime() >= mTimeDelta)
+                    && (s.getStartDisplayTime() <= mTimeDelta)) {
                 //Showing for the first time???
                 if (s.getTransitionStart() != Transition.NAMES.None && s.getStartDisplayTime() != 0) {
                     //Then we can trigger the start event...
@@ -107,7 +111,7 @@ public class Compositor {
                     new Thread(t).start();
                     s.setTransitionStart(Transition.NAMES.None);
                 } else {
-                    if (s.getTransitionStop() != Transition.NAMES.None && (mRequestStop || (s.getEndDisplayTime() - 1 == timeDelta))) {
+                    if (s.getTransitionStop() != Transition.NAMES.None && (mRequestStop || (s.getEndDisplayTime() - 1 == mTimeDelta))) {
                         Transition t = Transition.getInstance(s.getTransitionStop(), s, mFPS, mOutputSize);
                         new Thread(t).start();
                         s.setTransitionStop(Transition.NAMES.None);

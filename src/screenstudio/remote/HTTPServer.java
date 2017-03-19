@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 import screenstudio.sources.Compositor;
 import screenstudio.sources.Source;
+import screenstudio.sources.transitions.Transition;
 
 /**
  *
@@ -146,7 +147,19 @@ public class HTTPServer implements Runnable {
                     if (mCompositor != null) {
                         int index = Integer.parseInt(p.split("=")[0].replace("source", ""));
                         Source s = mCompositor.getSources().get(index);
-                        s.setRemoteDisplay(p.split("=")[1].equals("on"));
+                        switch(p.split("=")[1]){
+                            case "on":
+                                s.setTransitionStart(Transition.NAMES.FadeIn);
+                                s.setAlpha(1f);
+                                s.setDisplayTime(mCompositor.getTimeDelta()+1, 0);
+                                s.setRemoteDisplay(true);
+                                break;
+                            case "off":
+                                s.setRemoteDisplay(false);
+                                s.setTransitionStop(Transition.NAMES.FadeOut);
+                                s.setDisplayTime(1, mCompositor.getTimeDelta()+1);
+                                break;
+                        }
                     }
                 }
             }
