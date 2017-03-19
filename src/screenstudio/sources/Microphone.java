@@ -74,13 +74,19 @@ public class Microphone {
             reader.close();
             p.destroy();
         }
+        Microphone jackd = new Microphone();
+        jackd.description = "Jackd Input";
+        jackd.device = "ScreenStudio-jackd";
+        list.add(jackd);
         return list.toArray(new Microphone[list.size()]);
     }
 
     public static String getVirtualAudio(Microphone source1, Microphone source2) throws IOException, InterruptedException {
         ArrayList<String> loadedModules = new ArrayList<>();
         String device = "default";
-        if (Screen.isOSX() || Screen.isWindows()) {
+        if (source1 != null && "ScreenStudio-jackd".equals(source1.device)){
+            device = source1.getDevice();
+        } else if (Screen.isOSX() || Screen.isWindows()) {
             if (source1 != null) {
                 device = source1.getDevice();
             } else if (source1 != null) {

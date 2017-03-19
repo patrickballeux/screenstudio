@@ -151,6 +151,10 @@ public class FFMpeg implements Runnable {
                 break;
         }
         audioInput = input;
+        if ("ScreenStudio-jackd".equals(audioInput)){
+            //Using jackd interface...
+            audioFormat = "jack";
+        }
         if (offset != 0) {
             mITSOffset = offset.toString();
         } else {

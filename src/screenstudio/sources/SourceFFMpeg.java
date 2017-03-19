@@ -93,7 +93,11 @@ public class SourceFFMpeg extends Source implements Runnable{
     protected void disposeStream() throws IOException {
         mStopMe = true;
         mProcess.getOutputStream().write("q\n".getBytes());
-        mProcess.getOutputStream().flush();
+        try {
+            mProcess.getOutputStream().flush();
+        } catch (IOException ex){
+            //just in case the stream is already closed...
+        }
         mProcess.getOutputStream().close();
         mInputData.close();
         mProcess.destroy();
