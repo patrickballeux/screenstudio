@@ -75,7 +75,7 @@ public class Microphone {
             p.destroy();
         }
         Microphone jackd = new Microphone();
-        jackd.description = "Jackd Input";
+        jackd.description = "Jack Input";
         jackd.device = "ScreenStudio-jackd";
         list.add(jackd);
         return list.toArray(new Microphone[list.size()]);
