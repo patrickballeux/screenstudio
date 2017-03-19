@@ -28,7 +28,7 @@ import screenstudio.targets.Layout.SourceType;
  *
  * @author patrick
  */
-public class SourceFFMpeg extends Source implements Runnable{
+public class SourceFFMpeg extends Source implements Runnable {
 
     private FFMpeg mFFMpeg;
     private Process mProcess;
@@ -36,22 +36,23 @@ public class SourceFFMpeg extends Source implements Runnable{
     private final String mInput;
     private int mFPS;
     private final Rectangle mCaptureSize;
-    private boolean mStopMe = false; 
+    private boolean mStopMe = false;
     private byte[] dataBuffer;
 
     @Override
     public void run() {
-        while (!mStopMe){
+        while (!mStopMe) {
             try {
                 byte[] buffer = new byte[dataBuffer.length];
                 mInputData.readFully(buffer);
-                dataBuffer= buffer;
+                dataBuffer = buffer;
             } catch (IOException ex) {
                 //Logger.getLogger(SourceFFMpeg.class.getName()).log(Level.SEVERE, null, ex);
-                mStopMe=true;
+                mStopMe = true;
             }
         }
     }
+
     protected enum DEVICES {
         Desktop,
         Webcam,
@@ -60,7 +61,7 @@ public class SourceFFMpeg extends Source implements Runnable{
     }
 
     public SourceFFMpeg(Rectangle captureSize, Rectangle outputSize, int fps, String input, SourceType type, String id) {
-        super(outputSize, 1, 1, 0, id,BufferedImage.TYPE_3BYTE_BGR);
+        super(outputSize, 1, 1, 0, id, BufferedImage.TYPE_3BYTE_BGR);
         mInput = input;
         mFPS = fps;
         mCaptureSize = captureSize;
@@ -85,7 +86,7 @@ public class SourceFFMpeg extends Source implements Runnable{
         new Thread(new ProcessReader(mProcess.getErrorStream())).start();
         System.out.println(command);
         mInputData = new DataInputStream(mProcess.getInputStream());
-        dataBuffer = new byte[mBounds.width*mBounds.height*3];
+        dataBuffer = new byte[mBounds.width * mBounds.height * 3];
         new Thread(this).start();
     }
 
@@ -95,10 +96,10 @@ public class SourceFFMpeg extends Source implements Runnable{
         mProcess.getOutputStream().write("q\n".getBytes());
         try {
             mProcess.getOutputStream().flush();
-        } catch (IOException ex){
+            mProcess.getOutputStream().close();
+        } catch (IOException ex) {
             //just in case the stream is already closed...
         }
-        mProcess.getOutputStream().close();
         mInputData.close();
         mProcess.destroy();
         mProcess.destroyForcibly();
@@ -126,12 +127,12 @@ public class SourceFFMpeg extends Source implements Runnable{
         return input;
     }
 
-    public static SourceFFMpeg getDesktopInstance(Screen display,Rectangle outputSize, int fps) {
+    public static SourceFFMpeg getDesktopInstance(Screen display, Rectangle outputSize, int fps) {
         String input = " -f " + new FFMpeg(null).getDesktopFormat() + " -video_size " + display.getWidth() + "x" + display.getHeight() + " -i " + display.getId();
-        if (Screen.isWindows()){
+        if (Screen.isWindows()) {
             input = " -f " + new FFMpeg(null).getDesktopFormat() + " -video_size " + display.getWidth() + "x" + display.getHeight() + " -offset_x " + display.getSize().x + " -offset_y " + display.getSize().y + " " + " -i " + display.getId();
         }
-        SourceFFMpeg f = new SourceFFMpeg(display.getSize(),outputSize, fps, input, SourceType.Desktop, display.getLabel());
+        SourceFFMpeg f = new SourceFFMpeg(display.getSize(), outputSize, fps, input, SourceType.Desktop, display.getLabel());
         f.mCaptureX = display.getSize().x;
         f.mCaptureY = display.getSize().y;
         return f;
