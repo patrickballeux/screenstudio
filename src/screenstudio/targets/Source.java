@@ -36,4 +36,5 @@ public class Source {
     public String transitionStart = "None";
     public String transitionStop = "None";
     public boolean remoteDisplay = true;
+    public String effect = "None";
 }

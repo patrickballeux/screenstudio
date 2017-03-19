@@ -23,6 +23,7 @@ import java.awt.image.DataBufferByte;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import screenstudio.sources.effects.Effect;
 import screenstudio.sources.transitions.Transition;
 import screenstudio.targets.Layout.SourceType;
 
@@ -83,6 +84,7 @@ public abstract class Source {
     private Transition.NAMES mTransitionStop =Transition.NAMES.None; 
     private ISourceEvents mListener = null;
     private boolean mRemoteDisplay = true;
+    private Effect.eEffects mEffect = Effect.eEffects.None;
     private String mID = "";
 
     protected SourceType mType = null;
@@ -93,6 +95,13 @@ public abstract class Source {
 
     protected abstract void disposeStream() throws IOException;
 
+    
+    public void setEffect(Effect.eEffects e){
+        mEffect = e;
+    }
+    public Effect.eEffects getEffect(){
+        return mEffect;
+    }
     public void setRemoteDisplay(boolean show){
         mRemoteDisplay = show;
     }

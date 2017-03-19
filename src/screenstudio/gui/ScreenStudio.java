@@ -61,6 +61,7 @@ import screenstudio.sources.Screen;
 import screenstudio.sources.Source;
 import screenstudio.sources.SystemCheck;
 import screenstudio.sources.Webcam;
+import screenstudio.sources.effects.Effect;
 import screenstudio.sources.transitions.Transition;
 import screenstudio.targets.Layout;
 import screenstudio.targets.Layout.SourceType;
@@ -219,6 +220,20 @@ public class ScreenStudio extends javax.swing.JFrame {
                 }
             });
         }
+        for (Effect.eEffects e : Effect.eEffects.values()){
+            popMnuSourceEffect.add(e.name());
+        }
+        for (int i = 0; i< popMnuSourceEffect.getItemCount();i++){
+            JMenuItem m = popMnuSourceEffect.getItem(i);
+            m.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (tableSources.getSelectedRow() != -1) {
+                        tableSources.setValueAt(e.getActionCommand(), tableSources.getSelectedRow(), 12);
+                    }
+                }
+            });
+        }
     }
 
     private void updateControls(boolean enabled) {
@@ -306,6 +321,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                 row[9] = s.endTime;
                 row[10] = s.transitionStart;
                 row[11] = s.transitionStop;
+                row[12] = s.effect;
                 switch (s.Type) {
                     case Desktop:
                         row[0] = false;
@@ -384,7 +400,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         layout.setBackgroundMusic(mBackgroundMusic);
         List<Source> sources = Compositor.getSources(tableSources, (Integer) spinFPS.getValue());
         for (Source s : sources) {
-            layout.addSource(s.getType(), s.getID(), s.getBounds().x, s.getBounds().y, s.getBounds().width, s.getBounds().height, s.getAlpha().getAlpha(), s.getZOrder(), s.getForeground(), s.getBackground(), s.getFontName(), s.getCaptureX(), s.getCaptureY(), s.getStartDisplayTime(), s.getEndDisplayTime(), s.getTransitionStart().name(), s.getTransitionStop().name(), s.isRemoteDisplay());
+            layout.addSource(s.getType(), s.getID(), s.getBounds().x, s.getBounds().y, s.getBounds().width, s.getBounds().height, s.getAlpha().getAlpha(), s.getZOrder(), s.getForeground(), s.getBackground(), s.getFontName(), s.getCaptureX(), s.getCaptureY(), s.getStartDisplayTime(), s.getEndDisplayTime(), s.getTransitionStart().name(), s.getTransitionStop().name(), s.isRemoteDisplay(),s.getEffect().name());
         }
         try {
             layout.save(file);
@@ -454,6 +470,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                                 row[9] = 0L;
                                 row[10] = Transition.NAMES.None.name();
                                 row[11] = Transition.NAMES.None.name();
+                row[12] = Effect.eEffects.None.name();
                                 model.addRow(row);
                                 updateRemoteSources();
 
@@ -511,6 +528,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                                 row[9] = 0L;
                                 row[10] = Transition.NAMES.None.name();
                                 row[11] = Transition.NAMES.None.name();
+                row[12] = Effect.eEffects.None.name();
                                 model.addRow(row);
                                 updateRemoteSources();
 
@@ -544,6 +562,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         popSources = new javax.swing.JPopupMenu();
         popMnuSourceTransitionIn = new javax.swing.JMenu();
         popMnuSourceTransitionOut = new javax.swing.JMenu();
+        popMnuSourceEffect = new javax.swing.JMenu();
         tabs = new javax.swing.JTabbedPane();
         panOutput = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -616,6 +635,9 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         popMnuSourceTransitionOut.setText("Transition Out");
         popSources.add(popMnuSourceTransitionOut);
+
+        popMnuSourceEffect.setLabel("Effects");
+        popSources.add(popMnuSourceEffect);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("ScreenStudio");
@@ -798,20 +820,20 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         tableSources.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                " ", "Source", "Description", "X", "Y", "Width", "Height", "Alpha", "Start", "End", "Trans-In", "Trans-Out"
+                " ", "Source", "Description", "X", "Y", "Width", "Height", "Alpha", "Start", "End", "Trans-In", "Trans-Out", "Effect"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Float.class, java.lang.Long.class, java.lang.Long.class, java.lang.String.class, java.lang.String.class
+                java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Float.class, java.lang.Long.class, java.lang.Long.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                true, false, false, true, true, true, true, true, true, true, false, false
+                true, false, false, true, true, true, true, true, true, true, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -872,6 +894,8 @@ public class ScreenStudio extends javax.swing.JFrame {
             tableSources.getColumnModel().getColumn(10).setPreferredWidth(95);
             tableSources.getColumnModel().getColumn(11).setResizable(false);
             tableSources.getColumnModel().getColumn(11).setPreferredWidth(95);
+            tableSources.getColumnModel().getColumn(12).setResizable(false);
+            tableSources.getColumnModel().getColumn(12).setPreferredWidth(95);
         }
 
         splitterSources.setLeftComponent(scrollSources);
@@ -1546,6 +1570,7 @@ public class ScreenStudio extends javax.swing.JFrame {
             row[9] = 0L;
             row[10] = Transition.NAMES.None.name();
             row[11] = Transition.NAMES.None.name();
+                row[12] = Effect.eEffects.None.name();
             model.addRow(row);
             updateRemoteSources();
         }
@@ -1568,6 +1593,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         row[9] = 0L;
         row[10] = Transition.NAMES.None.name();
         row[11] = Transition.NAMES.None.name();
+                row[12] = Effect.eEffects.None.name();
         model.addRow(row);
         updateRemoteSources();
 
@@ -1809,6 +1835,7 @@ public class ScreenStudio extends javax.swing.JFrame {
     private javax.swing.JPanel panSources;
     private javax.swing.JPanel panStatus;
     private javax.swing.JPanel panTargetSettings;
+    private javax.swing.JMenu popMnuSourceEffect;
     private javax.swing.JMenu popMnuSourceTransitionIn;
     private javax.swing.JMenu popMnuSourceTransitionOut;
     private javax.swing.JPopupMenu popSources;

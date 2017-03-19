@@ -240,7 +240,7 @@ public class Layout {
         }
     }
 
-    public void addSource(SourceType typeValue, String idValue, int xValue, int yValue, int wValue, int hValue, float alphaValue, int orderValue, int fg, int bg, String font, int captureX, int captureY, long start, long end, String transStart, String transStop,boolean display) {
+    public void addSource(SourceType typeValue, String idValue, int xValue, int yValue, int wValue, int hValue, float alphaValue, int orderValue, int fg, int bg, String font, int captureX, int captureY, long start, long end, String transStart, String transStop,boolean display, String effect) {
         String nodeName = "";
         switch (typeValue) {
             case Desktop:
@@ -275,6 +275,7 @@ public class Layout {
         Node transitionStart = document.createAttribute("transstart");
         Node transitionStop = document.createAttribute("transstop");
         Node remoteDisplay = document.createAttribute("display");
+        Node effectFilter = document.createAttribute("effect");
         x.setNodeValue("" + xValue);
         y.setNodeValue("" + yValue);
         capx.setNodeValue("" + captureX);
@@ -292,6 +293,7 @@ public class Layout {
         transitionStart.setNodeValue(transStart);
         transitionStop.setNodeValue(transStop);
         remoteDisplay.setNodeValue("" + display);
+        effectFilter.setNodeValue(effect);
         switch (typeValue) {
             case LabelText:
                 type.setNodeValue("text");
@@ -318,6 +320,7 @@ public class Layout {
         node.getAttributes().setNamedItem(transitionStart);
         node.getAttributes().setNamedItem(transitionStop);
         node.getAttributes().setNamedItem(remoteDisplay);
+        node.getAttributes().setNamedItem(effectFilter);
         root.appendChild(node);
     }
 
@@ -355,6 +358,11 @@ public class Layout {
             } else {
                 s.remoteDisplay= true;
             }
+            if (n.getAttributes().getNamedItem("effect") != null){
+                s.effect = n.getAttributes().getNamedItem("effect").getNodeValue();
+            } else {
+                s.effect= "None";
+            }
             sources[i] = s;
         }
         return sources;
@@ -386,6 +394,11 @@ public class Layout {
                 s.remoteDisplay = Boolean.parseBoolean(n.getAttributes().getNamedItem("display").getNodeValue());
             } else {
                 s.remoteDisplay= true;
+            }
+            if (n.getAttributes().getNamedItem("effect") != null){
+                s.effect = n.getAttributes().getNamedItem("effect").getNodeValue();
+            } else {
+                s.effect= "None";
             }
             sources[i] = s;
         }
@@ -429,6 +442,11 @@ public class Layout {
             } else {
                 s.remoteDisplay= true;
             }
+            if (n.getAttributes().getNamedItem("effect") != null){
+                s.effect = n.getAttributes().getNamedItem("effect").getNodeValue();
+            } else {
+                s.effect= "None";
+            }
             sources[i] = s;
         }
         return sources;
@@ -468,6 +486,11 @@ public class Layout {
                 s.remoteDisplay = Boolean.parseBoolean(n.getAttributes().getNamedItem("display").getNodeValue());
             } else {
                 s.remoteDisplay= true;
+            }
+            if (n.getAttributes().getNamedItem("effect") != null){
+                s.effect = n.getAttributes().getNamedItem("effect").getNodeValue();
+            } else {
+                s.effect= "None";
             }
             sources[i] = s;
         }

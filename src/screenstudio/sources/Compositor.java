@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JTable;
 import screenstudio.gui.LabelText;
+import screenstudio.sources.effects.Effect;
 import screenstudio.sources.transitions.Transition;
 import screenstudio.targets.Layout;
 
@@ -46,6 +47,7 @@ public class Compositor {
     private final BufferedImage mImage;
     private byte[] mPreviewBuffer;
     private long mTimeDelta = 0;
+    private Effect mEffects = new Effect();
 
     public Compositor(java.util.List<Source> sources, Rectangle outputSize, int fps) {
         sources.sort((a, b) -> Integer.compare(b.getZOrder(), a.getZOrder()));
@@ -64,7 +66,7 @@ public class Compositor {
         }
         // Apply transitions...
         for (Source s : mSources) {
-            if (!s.isRemoteDisplay()){
+            if (!s.isRemoteDisplay()) {
                 s.setDisplayTime(-1, -1);
             }
             if (s.getTransitionStart() != Transition.NAMES.None && s.getStartDisplayTime() == 0) {
@@ -79,9 +81,10 @@ public class Compositor {
         mIsReady = true;
     }
 
-    public long getTimeDelta(){
+    public long getTimeDelta() {
         return mTimeDelta;
     }
+
     public List<Source> getSources() {
         return mSources;
     }
@@ -97,11 +100,12 @@ public class Compositor {
     public void RequestStop() {
         mRequestStop = true;
     }
+
     public byte[] getData() {
         java.util.Arrays.fill(mData, (byte) 0);
         mTimeDelta = (System.currentTimeMillis() - mStartTime) / 1000;
         for (Source s : mSources) {
-            BufferedImage img = s.getImage();
+            BufferedImage img = mEffects.apply(s.getEffect(), s.getImage());
             if ((s.getEndDisplayTime() == 0 || s.getEndDisplayTime() >= mTimeDelta)
                     && (s.getStartDisplayTime() <= mTimeDelta)) {
                 //Showing for the first time???
@@ -158,6 +162,7 @@ public class Compositor {
             long timeend = (Long) sources.getValueAt(i, 9);
             String transIn = sources.getValueAt(i, 10).toString();
             String transOut = sources.getValueAt(i, 11).toString();
+            String effect = sources.getValueAt(i, 12).toString();
             Object source = sources.getValueAt(i, 2);
             // Detect type of source...
             if (source instanceof Screen) {
@@ -170,6 +175,7 @@ public class Compositor {
                 s.setTransitionStart(Transition.NAMES.valueOf(transIn));
                 s.setTransitionStop(Transition.NAMES.valueOf(transOut));
                 s.setRemoteDisplay((Boolean) sources.getValueAt(i, 0));
+                s.setEffect(Effect.eEffects.valueOf(effect));
                 list.add(s);
             } else if (source instanceof Webcam) {
                 Webcam webcam = (Webcam) source;
@@ -184,6 +190,7 @@ public class Compositor {
                 s.setTransitionStart(Transition.NAMES.valueOf(transIn));
                 s.setTransitionStop(Transition.NAMES.valueOf(transOut));
                 s.setRemoteDisplay((Boolean) sources.getValueAt(i, 0));
+                s.setEffect(Effect.eEffects.valueOf(effect));
                 list.add(s);
             } else if (source instanceof File) {
                 switch ((Layout.SourceType) sources.getValueAt(i, 1)) {
@@ -193,6 +200,7 @@ public class Compositor {
                         s.setTransitionStart(Transition.NAMES.valueOf(transIn));
                         s.setTransitionStop(Transition.NAMES.valueOf(transOut));
                         s.setRemoteDisplay((Boolean) sources.getValueAt(i, 0));
+                        s.setEffect(Effect.eEffects.valueOf(effect));
                         list.add(s);
                         break;
                     case Video:
@@ -203,6 +211,7 @@ public class Compositor {
                         sf.setTransitionStart(Transition.NAMES.valueOf(transIn));
                         sf.setTransitionStop(Transition.NAMES.valueOf(transOut));
                         sf.setRemoteDisplay((Boolean) sources.getValueAt(i, 0));
+                        sf.setEffect(Effect.eEffects.valueOf(effect));
                         list.add(sf);
                         break;
                 }
@@ -212,6 +221,7 @@ public class Compositor {
                 s.setTransitionStart(Transition.NAMES.valueOf(transIn));
                 s.setTransitionStop(Transition.NAMES.valueOf(transOut));
                 s.setRemoteDisplay((Boolean) sources.getValueAt(i, 0));
+                s.setEffect(Effect.eEffects.valueOf(effect));
                 list.add(s);
             }
         }
