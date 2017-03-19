@@ -485,6 +485,7 @@ public class FFMpeg implements Runnable {
                     System.err.println("Exception while writing...  " + exWrite.getMessage());
                     this.lastErrorMessage = exWrite.getMessage();
                     state = RunningState.Error;
+                    mStopDelay = System.currentTimeMillis();
                     mStopMe = true;
                 }
                 long wait = nextPTS - System.nanoTime();
