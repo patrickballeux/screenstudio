@@ -39,25 +39,43 @@ public class SourceImage extends Source {
     private int currentIndex = 0;
 
     public SourceImage(Rectangle bounds, int zOrder, float alpha, File image) {
-        super(bounds, zOrder, alpha, 1000, image.getAbsolutePath(),BufferedImage.TYPE_4BYTE_ABGR);
+        super(bounds, zOrder, alpha, 1000, image.getAbsolutePath(), BufferedImage.TYPE_4BYTE_ABGR);
         mFile = image;
+        mType = Layout.SourceType.Image;
+    }
+
+    public SourceImage(Rectangle bounds, int zOrder, float alpha, BufferedImage image, String id) {
+        super(bounds, zOrder, alpha, 1000, id, image.getType());
+        mFile = null;
+        images = new BufferedImage[1];
+        images[0] = image;
         mType = Layout.SourceType.Image;
     }
 
     @Override
     protected void getData(byte[] buffer) throws IOException {
         currentIndex++;
-        if (currentIndex >= images.length) currentIndex = 0;
+        if (currentIndex >= images.length) {
+            currentIndex = 0;
+        }
         data = ((DataBufferByte) images[currentIndex].getRaster().getDataBuffer()).getData();
         System.arraycopy(data, 0, buffer, 0, buffer.length);
     }
 
     @Override
     protected void initStream() throws IOException {
-        if (mFile.getName().toUpperCase().endsWith(".GIF")) {
-            images = readGif(mFile);
-        } else {
-            BufferedImage buffer = javax.imageio.ImageIO.read(mFile);
+        if (mFile != null) {
+            if (mFile.getName().toUpperCase().endsWith(".GIF")) {
+                images = readGif(mFile);
+            } else {
+                BufferedImage buffer = javax.imageio.ImageIO.read(mFile);
+                images = new BufferedImage[1];
+                images[0] = new BufferedImage(mBounds.width, mBounds.height, mImageType);
+                images[0].createGraphics().drawImage(buffer.getScaledInstance(mBounds.width, mBounds.height, Image.SCALE_SMOOTH), 0, 0, null);
+                data = ((DataBufferByte) images[0].getRaster().getDataBuffer()).getData();
+            }
+        } else if (images.length == 1) {
+            BufferedImage buffer = images[0];
             images = new BufferedImage[1];
             images[0] = new BufferedImage(mBounds.width, mBounds.height, mImageType);
             images[0].createGraphics().drawImage(buffer.getScaledInstance(mBounds.width, mBounds.height, Image.SCALE_SMOOTH), 0, 0, null);

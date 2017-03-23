@@ -49,7 +49,9 @@
   <SubComponents>
     <Component class="javax.swing.JToggleButton" name="tglPreview">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Preview"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="screenstudio/Languages.properties" key="PREVIEW" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+        </Property>
         <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;&lt;body&gt;&#xa;Preview the current layout&#xa;&lt;br&gt;&#xa;&lt;i&gt;&lt;font size=-2 color=red&gt;Remember to stop the preview before recording...&lt;/font&gt;&lt;/i&gt;&#xa;&lt;/body&gt;&#xa;&lt;/html&gt;"/>
       </Properties>
       <Events>

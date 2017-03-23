@@ -16,13 +16,16 @@
  */
 package screenstudio.gui;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Stroke;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.util.List;
@@ -119,25 +122,36 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                             if (sy + sh > y + h) {
                                 sh = y + h - sy;
                             }
+                            
                             switch ((SourceType) mSources.getValueAt(i, 1)) {
                                 case Desktop:
                                     g.setColor(Color.red);
+                                    g.fillRect(sx, sy, sw, sh);
                                     break;
                                 case Webcam:
                                     g.setColor(Color.blue);
+                                    g.fillRect(sx, sy, sw, sh);
                                     break;
                                 case Image:
                                     g.setColor(Color.ORANGE);
+                                    g.fillRect(sx, sy, sw, sh);
                                     break;
                                 case LabelText:
                                     g.setColor(Color.darkGray);
                                     g.setFont(new Font(font.getFontName(), font.getStyle(), font.getSize()));
+                                    g.fillRect(sx, sy, sw, sh);
+                                    break;
+                                case Frame:
+                                    g.setColor(Color.LIGHT_GRAY);
+                                    ((Graphics2D)g).setStroke(new BasicStroke(20));
+                                    g.drawRect(sx+10, sy+10, sw-20, sh-20);
+                                    ((Graphics2D)g).setStroke(new BasicStroke(1));
                                     break;
                                 default:
                                     g.setColor(Color.gray);
+                                    g.fillRect(sx, sy, sw, sh);
                                     break;
                             }
-                            g.fillRect(sx, sy, sw, sh);
                             if (i == mSources.getSelectedRow()) {
                                 g.setColor(Color.green);
                                 g.drawRect(sx, sy, sw, sh);
@@ -191,7 +205,8 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
             }
         });
 
-        tglPreview.setText("Preview");
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("screenstudio/Languages"); // NOI18N
+        tglPreview.setText(bundle.getString("PREVIEW")); // NOI18N
         tglPreview.setToolTipText("<html>\n<body>\nPreview the current layout\n<br>\n<i><font size=-2 color=red>Remember to stop the preview before recording...</font></i>\n</body>\n</html>");
         tglPreview.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

@@ -29,7 +29,6 @@ import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -39,7 +38,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
-import javax.swing.Action;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
@@ -53,6 +51,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import screenstudio.Version;
 import screenstudio.encoder.FFMpeg;
+import screenstudio.gui.images.frames.Frames;
 import screenstudio.panel.editor.Editor;
 import screenstudio.remote.HTTPServer;
 import screenstudio.sources.Compositor;
@@ -80,6 +79,7 @@ public class ScreenStudio extends javax.swing.JFrame {
     private final com.tulskiy.keymaster.common.Provider mShortcuts;
     private File mBackgroundMusic = null;
     private HTTPServer mRemote;
+    private java.util.ResourceBundle LANGUAGES = java.util.ResourceBundle.getBundle("screenstudio/Languages"); // NOI18N
 
     /**
      * Creates new form MainVersion3
@@ -98,7 +98,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         ToolTipManager.sharedInstance().setInitialDelay(2000);
         new Thread(() -> {
             if (Version.hasNewVersion()) {
-                lblMessages.setText("A new version is available...");
+                lblMessages.setText(LANGUAGES.getString("MSG_NEW_VERSION_AVAILABLE"));
             }
             String text = "";
             for (String msg : SystemCheck.getSystemCheck(false)) {
@@ -125,7 +125,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         mRemote = new HTTPServer(null, null, mnuCapture);
         new Thread(mRemote).start();
         try {
-            lblRemoteMessage.setText("Remote: http://" + Inet4Address.getLocalHost().getHostName() + ".local:" + mRemote.getPort());
+            lblRemoteMessage.setText(LANGUAGES.getString("REMOTE_ACCESS") + ": http://" + Inet4Address.getLocalHost().getHostName() + ".local:" + mRemote.getPort());
         } catch (UnknownHostException ex) {
             Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -174,9 +174,9 @@ public class ScreenStudio extends javax.swing.JFrame {
         cboDefaultRecordingAction.setSelectedIndex(p.getInt("DefaultRecAction", 0));
         chkDoNotUseTrayIcon.setSelected(p.getBoolean("DoNotUseTrayIcon", chkDoNotUseTrayIcon.isSelected()));
         if (SystemTray.isSupported() && !chkDoNotUseTrayIcon.isSelected()) {
-            trayIcon = new TrayIcon(this.getIconImage(), "ScreenStudio: Double-click to activate recording...");
+            trayIcon = new TrayIcon(this.getIconImage(), LANGUAGES.getString("TIP_SCREENSTUDIO_DOUBLE_CLICK_TO_ACTIVATE_RECORDING"));
             if (Screen.isOSX()) {
-                trayIcon.setToolTip("ScreenStudio: CTRL-Click to activate recording...");
+                trayIcon.setToolTip(LANGUAGES.getString("TIP_SCREENSTUDIO_DOUBLE_CLICK_TO_ACTIVATE_RECORDING"));
             }
             trayIcon.setImageAutoSize(true);
             trayIcon.addActionListener((ActionEvent e) -> {
@@ -220,10 +220,10 @@ public class ScreenStudio extends javax.swing.JFrame {
                 }
             });
         }
-        for (Effect.eEffects e : Effect.eEffects.values()){
+        for (Effect.eEffects e : Effect.eEffects.values()) {
             popMnuSourceEffect.add(e.name());
         }
-        for (int i = 0; i< popMnuSourceEffect.getItemCount();i++){
+        for (int i = 0; i < popMnuSourceEffect.getItemCount(); i++) {
             JMenuItem m = popMnuSourceEffect.getItem(i);
             m.addActionListener(new ActionListener() {
                 @Override
@@ -231,6 +231,34 @@ public class ScreenStudio extends javax.swing.JFrame {
                     if (tableSources.getSelectedRow() != -1) {
                         tableSources.setValueAt(e.getActionCommand(), tableSources.getSelectedRow(), 12);
                     }
+                }
+            });
+        }
+        for (Frames.eList f : Frames.eList.values()) {
+            JMenuItem menu = new JMenuItem(Frames.getDescription(f));
+            menu.setActionCommand(f.name());
+            mnuMainFrames.add(menu);
+            menu.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
+                    Object[] row = new Object[model.getColumnCount()];
+                    row[0] = true;
+                    row[1] = SourceType.Frame;
+                    row[2] = Frames.eList.valueOf(e.getActionCommand());
+                    row[3] = 0;
+                    row[4] = 0;
+                    row[5] = (Integer)spinWidth.getValue(); // width
+                    row[6] = (Integer)spinHeight.getValue(); // height
+                    row[7] = 1.0f;
+                    row[8] = 0L;
+                    row[9] = 0L;
+                    row[10] = Transition.NAMES.None.name();
+                    row[11] = Transition.NAMES.None.name();
+                    row[12] = Effect.eEffects.None.name();
+                    model.addRow(row);
+                    updateRemoteSources();
+
                 }
             });
         }
@@ -349,7 +377,6 @@ public class ScreenStudio extends javax.swing.JFrame {
                         t.setForegroundColor(s.foregroundColor);
                         t.setBackgroundColor(s.backgroundColor);
                         t.setFontName(s.fontName);
-                        System.out.println("Font: " + s.fontName);
                         row[2] = t;
                         break;
                     case Stream:
@@ -368,6 +395,9 @@ public class ScreenStudio extends javax.swing.JFrame {
                                 break;
                             }
                         }
+                        break;
+                    case Frame:
+                        row[2] = Frames.eList.valueOf(s.ID);
                         break;
                 }
                 model.addRow(row);
@@ -400,7 +430,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         layout.setBackgroundMusic(mBackgroundMusic);
         List<Source> sources = Compositor.getSources(tableSources, (Integer) spinFPS.getValue());
         for (Source s : sources) {
-            layout.addSource(s.getType(), s.getID(), s.getBounds().x, s.getBounds().y, s.getBounds().width, s.getBounds().height, s.getAlpha().getAlpha(), s.getZOrder(), s.getForeground(), s.getBackground(), s.getFontName(), s.getCaptureX(), s.getCaptureY(), s.getStartDisplayTime(), s.getEndDisplayTime(), s.getTransitionStart().name(), s.getTransitionStop().name(), s.isRemoteDisplay(),s.getEffect().name());
+            layout.addSource(s.getType(), s.getID(), s.getBounds().x, s.getBounds().y, s.getBounds().width, s.getBounds().height, s.getAlpha().getAlpha(), s.getZOrder(), s.getForeground(), s.getBackground(), s.getFontName(), s.getCaptureX(), s.getCaptureY(), s.getStartDisplayTime(), s.getEndDisplayTime(), s.getTransitionStart().name(), s.getTransitionStop().name(), s.isRemoteDisplay(), s.getEffect().name());
         }
         try {
             layout.save(file);
@@ -451,7 +481,7 @@ public class ScreenStudio extends javax.swing.JFrame {
             for (Webcam w : Webcam.getSources()) {
                 JMenuItem menu = new JMenuItem(w.getDescription());
                 menu.setActionCommand(w.getDevice());
-                menu.setToolTipText("Device: " + w.getDevice());
+                menu.setToolTipText(LANGUAGES.getString("DEVICE") + ": " + w.getDevice());
                 menu.addActionListener((ActionEvent e) -> {
                     DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
                     Object[] row = new Object[model.getColumnCount()];
@@ -470,7 +500,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                                 row[9] = 0L;
                                 row[10] = Transition.NAMES.None.name();
                                 row[11] = Transition.NAMES.None.name();
-                row[12] = Effect.eEffects.None.name();
+                                row[12] = Effect.eEffects.None.name();
                                 model.addRow(row);
                                 updateRemoteSources();
 
@@ -509,7 +539,7 @@ public class ScreenStudio extends javax.swing.JFrame {
             for (Screen s : Screen.getSources()) {
                 JMenuItem menu = new JMenuItem(s.getDetailledLabel());
                 menu.setActionCommand(s.getLabel());
-                menu.setToolTipText("Size: " + s.getDetailledLabel());
+                menu.setToolTipText(LANGUAGES.getString("SIZE") + ": " + s.getDetailledLabel());
                 menu.addActionListener((ActionEvent e) -> {
                     DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
                     Object[] row = new Object[model.getColumnCount()];
@@ -528,7 +558,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                                 row[9] = 0L;
                                 row[10] = Transition.NAMES.None.name();
                                 row[11] = Transition.NAMES.None.name();
-                row[12] = Effect.eEffects.None.name();
+                                row[12] = Effect.eEffects.None.name();
                                 model.addRow(row);
                                 updateRemoteSources();
 
@@ -624,6 +654,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         mnuMainDestops = new javax.swing.JMenu();
         mnuMainAddImage = new javax.swing.JMenuItem();
         mnuMainAddLabel = new javax.swing.JMenuItem();
+        mnuMainFrames = new javax.swing.JMenu();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
         mnuMainMoveUp = new javax.swing.JMenuItem();
         mnuMainMoveDown = new javax.swing.JMenuItem();
@@ -652,7 +683,8 @@ public class ScreenStudio extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setText("Output Format");
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("screenstudio/Languages"); // NOI18N
+        jLabel1.setText(bundle.getString("OUTPUT_FORMAT")); // NOI18N
 
         spinWidth.setModel(new javax.swing.SpinnerNumberModel(720, 640, 1920, 1));
         spinWidth.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -670,11 +702,11 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         jLabel2.setText("X");
 
-        jLabel3.setText("Framerate");
+        jLabel3.setText(bundle.getString("FRAME_RATE")); // NOI18N
 
         spinFPS.setModel(new javax.swing.SpinnerNumberModel(10, 1, 60, 1));
 
-        jLabel4.setText("Target");
+        jLabel4.setText(bundle.getString("TARGET")); // NOI18N
 
         cboTarget.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -682,17 +714,17 @@ public class ScreenStudio extends javax.swing.JFrame {
             }
         });
 
-        panTargetSettings.setBorder(javax.swing.BorderFactory.createTitledBorder("Settings"));
+        panTargetSettings.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("SETTINGS"))); // NOI18N
 
-        jLabel5.setText("Video Bitrate");
+        jLabel5.setText(bundle.getString("VIDEO_BITRATE")); // NOI18N
 
-        jLabel6.setText("Video Preset");
+        jLabel6.setText(bundle.getString("VIDEO_PRESET")); // NOI18N
 
-        jLabel7.setText("Audio Bitrate");
+        jLabel7.setText(bundle.getString("AUDIO_BITRATE")); // NOI18N
 
-        lblRTMPServer.setText("RTMP Server");
+        lblRTMPServer.setText(bundle.getString("RTMP_SERVER")); // NOI18N
 
-        lblRTMPKey.setText("RTMP Secret Key");
+        lblRTMPKey.setText(bundle.getString("RTMP_SECRET_KEY")); // NOI18N
 
         numVideoBitrate.setModel(new javax.swing.SpinnerNumberModel(1000, 1, 9000, 50));
 
@@ -751,7 +783,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        chkKeepScreenRatio.setText("Keep Screen Ratio");
+        chkKeepScreenRatio.setText(bundle.getString("KEEP_SCREEN_RATIO")); // NOI18N
 
         javax.swing.GroupLayout panOutputLayout = new javax.swing.GroupLayout(panOutput);
         panOutput.setLayout(panOutputLayout);
@@ -804,7 +836,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        tabs.addTab("Output", panOutput);
+        tabs.addTab(bundle.getString("OUTPUT"), panOutput); // NOI18N
 
         panSources.setLayout(new java.awt.BorderLayout());
 
@@ -812,11 +844,11 @@ public class ScreenStudio extends javax.swing.JFrame {
         splitterSources.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
         panPreviewLayout.setBackground(new java.awt.Color(51, 51, 51));
-        panPreviewLayout.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Layout", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 12), new java.awt.Color(255, 255, 255))); // NOI18N
+        panPreviewLayout.setBorder(javax.swing.BorderFactory.createTitledBorder(null, bundle.getString("LAYOUT"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 12), new java.awt.Color(255, 255, 255))); // NOI18N
         panPreviewLayout.setLayout(new java.awt.BorderLayout());
         splitterSources.setRightComponent(panPreviewLayout);
 
-        scrollSources.setBorder(javax.swing.BorderFactory.createTitledBorder("Video Sources"));
+        scrollSources.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("VIDEO_SOURCES"))); // NOI18N
 
         tableSources.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -874,43 +906,53 @@ public class ScreenStudio extends javax.swing.JFrame {
             tableSources.getColumnModel().getColumn(0).setPreferredWidth(25);
             tableSources.getColumnModel().getColumn(1).setResizable(false);
             tableSources.getColumnModel().getColumn(1).setPreferredWidth(100);
+            tableSources.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("SOURCE")); // NOI18N
             tableSources.getColumnModel().getColumn(2).setMinWidth(150);
             tableSources.getColumnModel().getColumn(2).setPreferredWidth(150);
+            tableSources.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("DESCRIPTION")); // NOI18N
             tableSources.getColumnModel().getColumn(3).setResizable(false);
             tableSources.getColumnModel().getColumn(3).setPreferredWidth(60);
             tableSources.getColumnModel().getColumn(4).setResizable(false);
             tableSources.getColumnModel().getColumn(4).setPreferredWidth(60);
             tableSources.getColumnModel().getColumn(5).setResizable(false);
             tableSources.getColumnModel().getColumn(5).setPreferredWidth(60);
+            tableSources.getColumnModel().getColumn(5).setHeaderValue(bundle.getString("WIDTH")); // NOI18N
             tableSources.getColumnModel().getColumn(6).setResizable(false);
             tableSources.getColumnModel().getColumn(6).setPreferredWidth(60);
+            tableSources.getColumnModel().getColumn(6).setHeaderValue(bundle.getString("HEIGHT")); // NOI18N
             tableSources.getColumnModel().getColumn(7).setResizable(false);
             tableSources.getColumnModel().getColumn(7).setPreferredWidth(60);
+            tableSources.getColumnModel().getColumn(7).setHeaderValue(bundle.getString("ALPHA")); // NOI18N
             tableSources.getColumnModel().getColumn(8).setResizable(false);
             tableSources.getColumnModel().getColumn(8).setPreferredWidth(60);
+            tableSources.getColumnModel().getColumn(8).setHeaderValue(bundle.getString("START_TIME")); // NOI18N
             tableSources.getColumnModel().getColumn(9).setResizable(false);
             tableSources.getColumnModel().getColumn(9).setPreferredWidth(60);
+            tableSources.getColumnModel().getColumn(9).setHeaderValue(bundle.getString("END_TIME")); // NOI18N
             tableSources.getColumnModel().getColumn(10).setResizable(false);
             tableSources.getColumnModel().getColumn(10).setPreferredWidth(95);
+            tableSources.getColumnModel().getColumn(10).setHeaderValue(bundle.getString("TRANSITION_IN")); // NOI18N
             tableSources.getColumnModel().getColumn(11).setResizable(false);
             tableSources.getColumnModel().getColumn(11).setPreferredWidth(95);
+            tableSources.getColumnModel().getColumn(11).setHeaderValue(bundle.getString("TRANSITION_OUT")); // NOI18N
             tableSources.getColumnModel().getColumn(12).setResizable(false);
             tableSources.getColumnModel().getColumn(12).setPreferredWidth(95);
+            tableSources.getColumnModel().getColumn(12).setHeaderValue(bundle.getString("EFFECT")); // NOI18N
         }
 
         splitterSources.setLeftComponent(scrollSources);
 
         panSources.add(splitterSources, java.awt.BorderLayout.CENTER);
 
-        tabs.addTab("Sources", panSources);
+        tabs.addTab(bundle.getString("SOURCES"), panSources); // NOI18N
 
-        panSettingsAudios.setBorder(javax.swing.BorderFactory.createTitledBorder("Audio"));
+        panSettingsAudios.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("AUDIO"))); // NOI18N
 
-        jLabel8.setText("Microphone Input");
+        jLabel8.setText(bundle.getString("MICROPHONE_INPUT")); // NOI18N
 
-        jLabel9.setText("Audio System Input");
+        jLabel9.setText(bundle.getString("AUDIO_SYSTEM_INPUT")); // NOI18N
 
-        jLabel10.setText("Audio Delay");
+        jLabel10.setText(bundle.getString("AUDIO_DELAY")); // NOI18N
 
         spinAudioDelay.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(-5.0f), Float.valueOf(5.0f), Float.valueOf(0.1f)));
         spinAudioDelay.setToolTipText("<HTML><BODY>\nApply a delay (in seconds) to the audio.\n<BR><I>If video is late, apply a positive value...</I>\n</BODY></HTML>");
@@ -957,9 +999,9 @@ public class ScreenStudio extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        panSettingsVideos.setBorder(javax.swing.BorderFactory.createTitledBorder("Video Folders"));
+        panSettingsVideos.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("VIDEO_FOLDER"))); // NOI18N
 
-        btnSetVideoFolder.setText("Browse");
+        btnSetVideoFolder.setText(bundle.getString("BROWSE")); // NOI18N
         btnSetVideoFolder.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSetVideoFolderActionPerformed(evt);
@@ -997,9 +1039,9 @@ public class ScreenStudio extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        panSettingsMisc.setBorder(javax.swing.BorderFactory.createTitledBorder("Misc"));
+        panSettingsMisc.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MISCELANEOUS"))); // NOI18N
 
-        jLabel11.setText("When recording");
+        jLabel11.setText(bundle.getString("ACTION_WHEN_RECORDING")); // NOI18N
 
         cboDefaultRecordingAction.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Hide", "Minimize", "Stay Visible" }));
         cboDefaultRecordingAction.addActionListener(new java.awt.event.ActionListener() {
@@ -1010,23 +1052,23 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         jLabel12.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
         jLabel12.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel12.setText("Contrl Shift R can be used as a global shortcut");
+        jLabel12.setText(bundle.getString("TIP_KEYBOARD_SHORTCUT_GLOBAL")); // NOI18N
 
-        chkDoNotUseTrayIcon.setText("Do not use Tray Icon");
+        chkDoNotUseTrayIcon.setText(bundle.getString("ACTION_DO_NOT_USE_TRAY_ICON")); // NOI18N
         chkDoNotUseTrayIcon.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 chkDoNotUseTrayIconActionPerformed(evt);
             }
         });
 
-        jLabel13.setText("When starting,");
+        jLabel13.setText(bundle.getString("ACTION_WHEN_STARTING")); // NOI18N
 
-        jLabel14.setText("Background Music");
+        jLabel14.setText(bundle.getString("BACKGROUND_MUSIC")); // NOI18N
 
         lblBGMusic.setText(" ");
         lblBGMusic.setToolTipText("<html>\n<body>\nSelect an audio file to play in the background<br>\nSet the proper audio volume and duration using a software like <b>Audacity</b><br>\n<i>Tip: Make the duration last a bit longer than your recording to have a background music for all the lenght of your video</i>\n</body>\n</html>");
 
-        btnBGMusicBrowse.setText("Browse");
+        btnBGMusicBrowse.setText(bundle.getString("BROWSE")); // NOI18N
         btnBGMusicBrowse.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnBGMusicBrowseActionPerformed(evt);
@@ -1102,15 +1144,16 @@ public class ScreenStudio extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        tabs.addTab("Options", panOptions);
+        tabs.addTab(bundle.getString("OPTIONS"), panOptions); // NOI18N
 
         getContentPane().add(tabs, java.awt.BorderLayout.CENTER);
+        tabs.getAccessibleContext().setAccessibleName(bundle.getString("OUTPUT")); // NOI18N
 
         panStatus.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         panStatus.setPreferredSize(new java.awt.Dimension(767, 20));
         panStatus.setLayout(new java.awt.GridLayout(1, 0));
 
-        lblMessages.setText("Welcome to ScreenStudio");
+        lblMessages.setText(bundle.getString("WELCOME_SCREENSTUDIO")); // NOI18N
         panStatus.add(lblMessages);
 
         lblRemoteMessage.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
@@ -1121,10 +1164,10 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         getContentPane().add(panStatus, java.awt.BorderLayout.SOUTH);
 
-        mnuFile.setText("Layout");
+        mnuFile.setText(bundle.getString("MAIN_MENU_LAYOUT")); // NOI18N
 
         mnuCapture.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
-        mnuCapture.setText("Record");
+        mnuCapture.setText(bundle.getString("ACTION_RECORD")); // NOI18N
         mnuCapture.setToolTipText("<html><body>\nStart recording/streaming using CTRL-R.  \n<BR><B>ScreenStudio</B> will automatically hide in the taskbar of your system.  \n<BR>To stop the recording, simply restore the <B>ScreenStudio</B> window.\n</body></html>");
         mnuCapture.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1135,7 +1178,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         mnuFile.add(jSeparator1);
 
         mnuFileLoad.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
-        mnuFileLoad.setText("Open");
+        mnuFileLoad.setText(bundle.getString("ACTION_OPEN")); // NOI18N
         mnuFileLoad.setToolTipText("<HTML><BODY>\nOpen a <B>ScreenStudio</B> XML layout file\n</BODY></HTML>");
         mnuFileLoad.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1145,7 +1188,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         mnuFile.add(mnuFileLoad);
 
         mnuFileSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
-        mnuFileSave.setText("Save");
+        mnuFileSave.setText(bundle.getString("ACTION_SAVE")); // NOI18N
         mnuFileSave.setToolTipText("<HTML><BODY>\nSave the current layour to a <B>ScreenStudio</B> XML layout file\n</BODY></HTML>");
         mnuFileSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1156,15 +1199,15 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         menuBar.add(mnuFile);
 
-        mnuEdit.setText("Sources");
+        mnuEdit.setText(bundle.getString("MAIN_MENU_SOURCES")); // NOI18N
 
-        mnuMainWebcams.setText("Webcams");
+        mnuMainWebcams.setText(bundle.getString("WEBCAMS")); // NOI18N
         mnuEdit.add(mnuMainWebcams);
 
-        mnuMainDestops.setText("Desktops");
+        mnuMainDestops.setText(bundle.getString("DESKTOPS")); // NOI18N
         mnuEdit.add(mnuMainDestops);
 
-        mnuMainAddImage.setText("Add Image...");
+        mnuMainAddImage.setText(bundle.getString("MENU_ADD_IMAGES")); // NOI18N
         mnuMainAddImage.setToolTipText("Browse your hard disk to add a source image file");
         mnuMainAddImage.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1173,7 +1216,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         });
         mnuEdit.add(mnuMainAddImage);
 
-        mnuMainAddLabel.setText("Add Label");
+        mnuMainAddLabel.setText(bundle.getString("MENU_ADD_LABEL")); // NOI18N
         mnuMainAddLabel.setToolTipText("<HTML><BODY>\nAdd a new text label.  \n<BR>Double-click on the source to edit the content.\n</BODY></HTML>");
         mnuMainAddLabel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1181,10 +1224,13 @@ public class ScreenStudio extends javax.swing.JFrame {
             }
         });
         mnuEdit.add(mnuMainAddLabel);
+
+        mnuMainFrames.setText(bundle.getString("ACTION_ADD_FRAMES")); // NOI18N
+        mnuEdit.add(mnuMainFrames);
         mnuEdit.add(jSeparator3);
 
         mnuMainMoveUp.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_UP, java.awt.event.InputEvent.ALT_MASK));
-        mnuMainMoveUp.setText("Move Up");
+        mnuMainMoveUp.setText(bundle.getString("MOVE_UP")); // NOI18N
         mnuMainMoveUp.setToolTipText("Move the currently selected source to a higher layer");
         mnuMainMoveUp.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1194,7 +1240,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         mnuEdit.add(mnuMainMoveUp);
 
         mnuMainMoveDown.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DOWN, java.awt.event.InputEvent.ALT_MASK));
-        mnuMainMoveDown.setText("Move Down");
+        mnuMainMoveDown.setText(bundle.getString("MOVE_DOWN")); // NOI18N
         mnuMainMoveDown.setToolTipText("Move the currently selected source to a lower layer");
         mnuMainMoveDown.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1205,7 +1251,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         mnuEdit.add(jSeparator2);
 
         mnuMainRemove.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
-        mnuMainRemove.setText("Remove Source");
+        mnuMainRemove.setText(bundle.getString("REMOVE_SOURCE")); // NOI18N
         mnuMainRemove.setToolTipText("Remove the currently selected source");
         mnuMainRemove.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1306,7 +1352,7 @@ public class ScreenStudio extends javax.swing.JFrame {
             if (mFFMpeg.getState() == FFMpeg.RunningState.Error) {
                 lblMessages.setText(mFFMpeg.getLastErrorMessage());
             } else {
-                lblMessages.setText("Stopped...");
+                lblMessages.setText(LANGUAGES.getString("STOPPED"));
             }
             mnuCapture.setEnabled(false);
             new Thread(new Runnable() {
@@ -1326,7 +1372,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                         Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     mFFMpeg = null;
-                    mnuCapture.setText("Record");
+                    mnuCapture.setText(LANGUAGES.getString("ACTION_RECORD"));
                     switch (cboDefaultRecordingAction.getSelectedIndex()) {
                         case 0: // Hide
                             if (trayIcon != null) {
@@ -1364,11 +1410,13 @@ public class ScreenStudio extends javax.swing.JFrame {
             }
             boolean abort = false;
             if (tableSources.getRowCount() == 0) {
-                lblMessages.setText("No video source to display...");
+
+                lblMessages.setText(LANGUAGES.getString("WARNING_NO_VIDEO_SOURCE"));
                 abort = true;
             }
             if (cboTarget.getSelectedItem() != FFMpeg.FORMATS.GIF && cboAudioMicrophones.getSelectedIndex() == 0 && cboAudioSystems.getSelectedIndex() == 0) {
-                lblMessages.setText("No audio source selected...");
+
+                lblMessages.setText(LANGUAGES.getString("WARNING_NO_AUDIO_SOURCE"));
                 abort = true;
             }
             if (!abort) {
@@ -1402,8 +1450,10 @@ public class ScreenStudio extends javax.swing.JFrame {
                 }
                 mFFMpeg.setOutputFormat((FFMpeg.FORMATS) cboTarget.getSelectedItem(), (FFMpeg.Presets) cboVideoPresets.getSelectedItem(), (Integer) numVideoBitrate.getValue(), server, txtRTMPKey.getText(), mVideoOutputFolder);
                 new Thread(mFFMpeg).start();
-                lblMessages.setText("Recording...");
-                mnuCapture.setText("Stop");
+
+                lblMessages.setText(LANGUAGES.getString("RECORDING"));
+
+                mnuCapture.setText(LANGUAGES.getString("STOP"));
 
                 updateControls(false);
 
@@ -1435,9 +1485,9 @@ public class ScreenStudio extends javax.swing.JFrame {
                         }
                         long seconds = (System.currentTimeMillis() - mRecordingTimestamp) / 1000;
                         if (seconds < 60) {
-                            setTitle("Recording! (" + seconds + " sec)");
+                            setTitle(LANGUAGES.getString("RECORDING") + "! (" + seconds + " sec)");
                         } else {
-                            setTitle("Recording! (" + (seconds / 60) + " min " + (seconds % 60) + " sec)");
+                            setTitle(LANGUAGES.getString("RECORDING") + "! (" + (seconds / 60) + " min " + (seconds % 60) + " sec)");
                         }
                         if (f.getState() == FFMpeg.RunningState.Error) {
                             System.err.println("Encoder error detected...");
@@ -1570,7 +1620,7 @@ public class ScreenStudio extends javax.swing.JFrame {
             row[9] = 0L;
             row[10] = Transition.NAMES.None.name();
             row[11] = Transition.NAMES.None.name();
-                row[12] = Effect.eEffects.None.name();
+            row[12] = Effect.eEffects.None.name();
             model.addRow(row);
             updateRemoteSources();
         }
@@ -1593,7 +1643,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         row[9] = 0L;
         row[10] = Transition.NAMES.None.name();
         row[11] = Transition.NAMES.None.name();
-                row[12] = Effect.eEffects.None.name();
+        row[12] = Effect.eEffects.None.name();
         model.addRow(row);
         updateRemoteSources();
 
@@ -1766,7 +1816,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         }
         //</editor-fold>
         //</editor-fold>
-        
+
         //</editor-fold>
         //</editor-fold>
 
@@ -1821,6 +1871,7 @@ public class ScreenStudio extends javax.swing.JFrame {
     private javax.swing.JMenuItem mnuMainAddImage;
     private javax.swing.JMenuItem mnuMainAddLabel;
     private javax.swing.JMenu mnuMainDestops;
+    private javax.swing.JMenu mnuMainFrames;
     private javax.swing.JMenuItem mnuMainMoveDown;
     private javax.swing.JMenuItem mnuMainMoveUp;
     private javax.swing.JMenuItem mnuMainRemove;

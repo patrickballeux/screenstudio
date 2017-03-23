@@ -21,11 +21,13 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JTable;
 import screenstudio.gui.LabelText;
+import screenstudio.gui.images.frames.Frames;
 import screenstudio.sources.effects.Effect;
 import screenstudio.sources.transitions.Transition;
 import screenstudio.targets.Layout;
@@ -223,6 +225,17 @@ public class Compositor {
                 s.setRemoteDisplay((Boolean) sources.getValueAt(i, 0));
                 s.setEffect(Effect.eEffects.valueOf(effect));
                 list.add(s);
+            } else if (source instanceof Frames.eList) {
+                try {
+                    SourceImage s = new SourceImage(new Rectangle(sx, sy, sw, sh), i, alpha, (BufferedImage) Frames.getImage((Frames.eList) source), source.toString());
+                    s.setDisplayTime(timestart, timeend);
+                    s.setTransitionStart(Transition.NAMES.valueOf(transIn));
+                    s.setTransitionStop(Transition.NAMES.valueOf(transOut));
+                    s.setRemoteDisplay((Boolean) sources.getValueAt(i, 0));
+                    s.setEffect(Effect.eEffects.valueOf(effect));
+                    list.add(s);
+                } catch (IOException ex) {
+                }
             }
         }
         return list;

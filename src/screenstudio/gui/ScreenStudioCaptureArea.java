@@ -66,7 +66,8 @@ public class ScreenStudioCaptureArea extends javax.swing.JDialog {
 
         jPanel1.setBackground(new java.awt.Color(244, 55, 15));
 
-        btnOK.setText("Ok");
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("screenstudio/Languages"); // NOI18N
+        btnOK.setText(bundle.getString("OK")); // NOI18N
         btnOK.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnOKActionPerformed(evt);

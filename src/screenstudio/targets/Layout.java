@@ -58,7 +58,7 @@ public class Layout {
     private Node settings = null;
 
     public enum SourceType {
-        Desktop, Webcam, Image, LabelText, Video, Stream
+        Desktop, Webcam, Image, LabelText, Video, Stream, Frame
     }
 
     public Layout() {
@@ -255,6 +255,9 @@ public class Layout {
             case Webcam:
                 nodeName = "webcam";
                 break;
+            case Frame:
+                nodeName = "frame";
+                break;
         }
         Node node = document.createElement(nodeName);
         Node x = document.createAttribute("x");
@@ -411,16 +414,53 @@ public class Layout {
         list.addAll(Arrays.asList(getWebcams()));
         list.addAll(Arrays.asList(getDesktops()));
         list.addAll(Arrays.asList(getLabels()));
+        list.addAll(Arrays.asList(getFrames()));
         list.sort((Source o1, Source o2) -> o1.Order - o2.Order);
         return list;
     }
-
     private Source[] getImages() {
         NodeList nodes = document.getElementsByTagName("image");
         Source[] sources = new Source[nodes.getLength()];
         for (int i = 0; i < sources.length; i++) {
             Source s = new Source();
             s.Type = SourceType.Image;
+            Node n = nodes.item(i);
+            s.X = new Integer(n.getAttributes().getNamedItem("x").getNodeValue());
+            s.Y = new Integer(n.getAttributes().getNamedItem("y").getNodeValue());
+            s.Width = new Integer(n.getAttributes().getNamedItem("w").getNodeValue());
+            s.Height = new Integer(n.getAttributes().getNamedItem("h").getNodeValue());
+            s.ID = n.getAttributes().getNamedItem("id").getNodeValue();
+            s.Alpha = new Float(n.getAttributes().getNamedItem("alpha").getNodeValue());
+            s.Order = new Integer(n.getAttributes().getNamedItem("order").getNodeValue());
+            if (n.getAttributes().getNamedItem("start") != null){
+                s.startTime = Long.parseLong(n.getAttributes().getNamedItem("start").getNodeValue());
+                s.endTime = Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue());
+            }
+            if (n.getAttributes().getNamedItem("transstart") != null){
+                s.transitionStart = n.getAttributes().getNamedItem("transstart").getNodeValue();
+                s.transitionStop = n.getAttributes().getNamedItem("transstop").getNodeValue();
+            }
+            if (n.getAttributes().getNamedItem("display") != null){
+                s.remoteDisplay = Boolean.parseBoolean(n.getAttributes().getNamedItem("display").getNodeValue());
+            } else {
+                s.remoteDisplay= true;
+            }
+            if (n.getAttributes().getNamedItem("effect") != null){
+                s.effect = n.getAttributes().getNamedItem("effect").getNodeValue();
+            } else {
+                s.effect= "None";
+            }
+            sources[i] = s;
+        }
+        return sources;
+    }
+
+    private Source[] getFrames() {
+        NodeList nodes = document.getElementsByTagName("frame");
+        Source[] sources = new Source[nodes.getLength()];
+        for (int i = 0; i < sources.length; i++) {
+            Source s = new Source();
+            s.Type = SourceType.Frame;
             Node n = nodes.item(i);
             s.X = new Integer(n.getAttributes().getNamedItem("x").getNodeValue());
             s.Y = new Integer(n.getAttributes().getNamedItem("y").getNodeValue());
