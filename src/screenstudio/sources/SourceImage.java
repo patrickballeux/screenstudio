@@ -49,7 +49,7 @@ public class SourceImage extends Source {
         mFile = null;
         images = new BufferedImage[1];
         images[0] = image;
-        mType = Layout.SourceType.Image;
+        mType = Layout.SourceType.Frame;
     }
 
     @Override
