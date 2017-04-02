@@ -30,6 +30,9 @@ public class Frames {
         Frame_001,
         Frame_002,
         Frame_003,
+	Frame_004,
+	Frame_005,
+	Frame_006,
     }
     
     public static BufferedImage getImage(eList img) throws IOException{
@@ -48,7 +51,16 @@ public class Frames {
                 break;
             case Frame_003:
                 d = "Classic Wood";
+		break;
+	    case Frame_004:
+		d = "Flare";
                 break;
+	    case Frame_005:
+		d = "Dark Fade";
+		break;
+	    case Frame_006:
+		d = "Bright Eliptical";
+		break;
         }
         return d;
     }
