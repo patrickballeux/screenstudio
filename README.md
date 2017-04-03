@@ -1,5 +1,5 @@
 # ScreenStudio
-<a align=center src="http://screenstudio.crombz.com/logo.png" width=200 />
+![ScreenStudio Logo](http://screenstudio.crombz.com/logo.png)
 Streaming, made easy!
 
 ScreenStudio 3
