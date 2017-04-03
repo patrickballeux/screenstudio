@@ -38,7 +38,7 @@ ScreenStudio to adjust the proper command to use with FFMpeg.
 Binaries available at: http://screenstudio.crombz.com
 
 -----------------------------------------------------------------
-##USAGE:
+## USAGE:
 
 ### Output
 Select the output size that you want to record.  By default, the size of your main display will be used.
