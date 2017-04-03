@@ -1,8 +1,10 @@
 # ScreenStudio
+---
 ![ScreenStudio Logo](http://screenstudio.crombz.com/logo.png)
-Streaming, made easy!
 
-ScreenStudio 3
+> Streaming, made easy!
+
+# ScreenStudio 3
 -----------------------------------------------------------------
 INSTALLATION:
 
