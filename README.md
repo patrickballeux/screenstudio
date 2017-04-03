@@ -3,12 +3,10 @@
 ![ScreenStudio Logo](http://screenstudio.crombz.com/logo.png)
 
 > Streaming, made easy!
-
-# ScreenStudio 3
 -----------------------------------------------------------------
-INSTALLATION:
+## INSTALLATION:
 
-FOR UBUNTU:
+### FOR UBUNTU:
 - Copy the content of the archive into any folder
 - Execute the script "createDesktopIcon.sh" to create a shortcut on your desktop
 - Make sure that Java JRE 8 is installed
@@ -22,7 +20,7 @@ NOTE:  ScreenStudio is relying heavily on FFMpeg provided with Ubuntu 16.04.  An
 may not be supported.  If ScreenStudio does not work on your distro (or custom build), download the source code of
 ScreenStudio to adjust the proper command to use with FFMpeg.
 
-FOR OSX:
+### FOR OSX:
 - Install Java 8 JRE from http://java.com
 - Uncompress the archive
 - An Application folder will be available
@@ -30,7 +28,7 @@ FOR OSX:
 - OS X will ask you to confirm since the origin of the application cannot be validated.
 - Answer yes and ScreenStudio will start.
 
-FOR WINDOWS:
+### FOR WINDOWS:
 - Install Java 8 JRE from http://java.com
 - Uncompress the archive
 - A folder will be available
@@ -40,9 +38,9 @@ FOR WINDOWS:
 Binaries available at: http://screenstudio.crombz.com
 
 -----------------------------------------------------------------
-USAGE:
+##USAGE:
 
-- Output
+### Output
 Select the output size that you want to record.  By default, the size of your main display will be used.
 Then select the output format.  Some settings will be available according to the selected format.
 > FLV, TS, MP4, MOV are to record into a local file
@@ -57,7 +55,7 @@ For example: ftp://username:pass@ftp.yourserver.com/public_html/livestream
 If your computer is not really fast and powerful, use a 10 frame per second and a lower output size for better
 performances. 
 
-- SOURCES
+### SOURCES
 This is where you can add video sources.  Supported formats are:
 > Webcams (V4L2)
 > Desktop (screen capture)
@@ -70,7 +68,7 @@ others.  You can see a preview at the bottom.  You can use your mouse to move th
 You can save the current layout by using the File menu.  This will generate an XML file that can be used to reload all
 your sources and settings the next time you launch ScreenStudio.
 
-- OPTIONS
+### OPTIONS
 
 ScreenStudio is relying on Pulseaudio for audio recording.  When two audio input are selected (Mic+Internal), ScreenStudio will
 add a virtual audio input that will mix both Mic and Internal audio input.  This virtual audio input will only exists while
@@ -84,7 +82,7 @@ Select a music file for the Background Music and the file will be mixed with you
 It can be a simple jingle or for a loop the file to have music in the background as long as your
 recording will last...
 
-- HTML Text label
+### HTML Text label
 
 HTML file are the best of showing content in your recording/live streaming.  Use any text editor to create your own overlay
 using basic HTML tags.  Javascript is not supported.  For more dynamic content, your can use a URL file to load content
@@ -104,7 +102,7 @@ set the width and height also in the body tag.
 
 See http://www.w3schools.com/tags/ for a list of tags to use...
 
-- TAGS
+### TAGS
 
 In the text/html content, some tags are supported to udate the text content with values like the current date and time.
 
@@ -118,7 +116,7 @@ In the text/html content, some tags are supported to udate the text content with
     @ONELINER (Displays content one line at a time)
     file:///path/to/text/file.txt (URL will be parsed and load the content)
 
-- HTTP LIVE STREAMING
+### HTTP LIVE STREAMING
 
 To view your M3U8 video stream in a webpage, just add this code:
 ```
@@ -138,7 +136,7 @@ To view your M3U8 video stream in a webpage, just add this code:
 </script>
 ```
 -----------------------------------------------------------------
-CONTACT:
+## CONTACT:
 
 Main website: http://screenstudio.crombz.com
 Twitter: http://twitter.com/patrickballeux
