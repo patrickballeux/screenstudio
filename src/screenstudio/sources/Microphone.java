@@ -17,25 +17,92 @@
 package screenstudio.sources;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import screenstudio.encoder.FFMpeg;
+import screenstudio.encoder.ProcessReader;
 
 /**
  *
  * @author patrick
  */
-public class Microphone {
+public class Microphone implements Runnable {
 
     private String device = null;
     private String description = "None";
+    private int mCurrentAudioLevel = 0;
+    private boolean mStopMe = false;
+    private Thread mMonitor = null;
 
     @Override
     public String toString() {
         return getDescription().trim();
+    }
+
+    public void startMonitoring() {
+        if (mMonitor != null) {
+            mStopMe = true;
+            while (mStopMe) {
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Microphone.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        mMonitor = new Thread(this);
+        mMonitor.start();
+    }
+
+    @Override
+    public void run() {
+        mStopMe = false;
+        FFMpeg ffmpeg = new FFMpeg(null);
+        String bin = ffmpeg.getBin();
+        try {
+            Process p = Runtime.getRuntime().exec(bin + " -f " + ffmpeg.getAudioFormat() + " -i " + this.device + " -ar 11050 -ac 1 -f s8 -");
+            java.io.DataInputStream input = new java.io.DataInputStream(p.getInputStream());
+            ProcessReader reader = new ProcessReader(p.getErrorStream());
+            OutputStream output = p.getOutputStream();
+            byte[] buffer = new byte[11050 / 10];
+            while (!mStopMe) {
+                try {
+                    input.readFully(buffer);
+                    int level = 0;
+                    for (int i = 0; i < buffer.length; i++) {
+                        if (level < Math.abs(buffer[i])) {
+                            level = Math.abs(buffer[i]);
+                        }
+                    }
+                    mCurrentAudioLevel = level;
+                    //System.out.println("\nCurrent Audio Level: " + mCurrentAudioLevel);
+                } catch (Exception ex) {
+                    mStopMe = true;
+                }
+            }
+            output.write("q\n".getBytes());
+            output.close();
+            input.close();
+            p.waitFor();
+        } catch (IOException | InterruptedException ex) {
+            mCurrentAudioLevel = 0;
+        }
+        mStopMe = false;
+        mMonitor = null;
+    }
+
+    public void stopMonitoring() {
+        mStopMe = true;
+    }
+
+    public int getCurrentAudioLevel() {
+        return mCurrentAudioLevel;
     }
 
     public static Microphone[] getSources() throws IOException, InterruptedException {
@@ -43,9 +110,10 @@ public class Microphone {
         System.out.println("Source Audio List:");
         if (Screen.isOSX()) {
             list = getOSXDevices();
-        } if (Screen.isWindows()) {
+        }
+        if (Screen.isWindows()) {
             list = getWINDevices();
-        }else {
+        } else {
             Process p = Runtime.getRuntime().exec("pactl list sources");
             InputStream in = p.getInputStream();
             InputStreamReader isr = new InputStreamReader(in);
@@ -84,7 +152,7 @@ public class Microphone {
     public static String getVirtualAudio(Microphone source1, Microphone source2) throws IOException, InterruptedException {
         ArrayList<String> loadedModules = new ArrayList<>();
         String device = "default";
-        if (source1 != null && "ScreenStudio-jackd".equals(source1.device)){
+        if (source1 != null && "ScreenStudio-jackd".equals(source1.device)) {
             device = source1.getDevice();
         } else if (Screen.isOSX() || Screen.isWindows()) {
             if (source1 != null) {
@@ -215,7 +283,7 @@ public class Microphone {
         System.out.println(command);
         Process p = Runtime.getRuntime().exec(command);
         InputStream in = p.getErrorStream();
-        InputStreamReader isr = new InputStreamReader(in,"utf-8");
+        InputStreamReader isr = new InputStreamReader(in, "utf-8");
         BufferedReader reader = new BufferedReader(isr);
         line = reader.readLine();
         while (line != null) {
@@ -228,10 +296,10 @@ public class Microphone {
                         m.description = "";
                         String[] parts = line.trim().split("] ");
                         System.out.println(line);
-                        
+
                         for (int i = parts.length - 1; i >= 0; i--) {
                             m.description = parts[i].trim().replaceAll("\"", "");
-                            m.device = "audio=" + parts[i].trim();                           
+                            m.device = "audio=" + parts[i].trim();
                             break;
                         }
                         System.out.println(m.description);
@@ -265,4 +333,5 @@ public class Microphone {
     public String getDescription() {
         return description;
     }
+
 }

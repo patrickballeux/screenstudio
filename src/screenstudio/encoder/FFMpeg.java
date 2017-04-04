@@ -388,6 +388,9 @@ public class FFMpeg implements Runnable {
         return bin + " " + nonVerboseMode;
     }
 
+    public String getAudioFormat(){
+        return audioFormat;
+    }
     public String getDesktopFormat() {
         return desktopFormat;
     }

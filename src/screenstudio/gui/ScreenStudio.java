@@ -80,7 +80,7 @@ public class ScreenStudio extends javax.swing.JFrame {
     private File mBackgroundMusic = null;
     private HTTPServer mRemote;
     private java.util.ResourceBundle LANGUAGES = java.util.ResourceBundle.getBundle("screenstudio/Languages"); // NOI18N
-
+    private Microphone mCurrentAudioMonitor = null;
     /**
      * Creates new form MainVersion3
      */
@@ -628,6 +628,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         cboAudioSystems = new javax.swing.JComboBox<>();
         jLabel10 = new javax.swing.JLabel();
         spinAudioDelay = new javax.swing.JSpinner();
+        pgAudioLevels = new javax.swing.JProgressBar();
         panSettingsVideos = new javax.swing.JPanel();
         btnSetVideoFolder = new javax.swing.JButton();
         txtVideoFolder = new javax.swing.JTextField();
@@ -952,6 +953,12 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         jLabel9.setText(bundle.getString("AUDIO_SYSTEM_INPUT")); // NOI18N
 
+        cboAudioMicrophones.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cboAudioMicrophonesActionPerformed(evt);
+            }
+        });
+
         jLabel10.setText(bundle.getString("AUDIO_DELAY")); // NOI18N
 
         spinAudioDelay.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(-5.0f), Float.valueOf(5.0f), Float.valueOf(0.1f)));
@@ -962,6 +969,8 @@ public class ScreenStudio extends javax.swing.JFrame {
                 spinAudioDelayStateChanged(evt);
             }
         });
+
+        pgAudioLevels.setMaximum(255);
 
         javax.swing.GroupLayout panSettingsAudiosLayout = new javax.swing.GroupLayout(panSettingsAudios);
         panSettingsAudios.setLayout(panSettingsAudiosLayout);
@@ -979,7 +988,8 @@ public class ScreenStudio extends javax.swing.JFrame {
                     .addComponent(cboAudioSystems, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(panSettingsAudiosLayout.createSequentialGroup()
                         .addComponent(spinAudioDelay, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pgAudioLevels, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panSettingsAudiosLayout.setVerticalGroup(
@@ -993,9 +1003,11 @@ public class ScreenStudio extends javax.swing.JFrame {
                     .addComponent(jLabel9)
                     .addComponent(cboAudioSystems, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel10)
-                    .addComponent(spinAudioDelay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel10)
+                        .addComponent(spinAudioDelay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(pgAudioLevels, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1725,6 +1737,10 @@ public class ScreenStudio extends javax.swing.JFrame {
         if (trayIcon != null) {
             SystemTray.getSystemTray().remove(trayIcon);
         }
+        if (mCurrentAudioMonitor != null){
+            mCurrentAudioMonitor.stopMonitoring();
+            mCurrentAudioMonitor = null;
+        }
         if (mRemote != null) {
             mRemote.shutdown();
             mRemote = null;
@@ -1792,6 +1808,36 @@ public class ScreenStudio extends javax.swing.JFrame {
         mVideoOutputFolder = txtVideoFolder.getText();
         txtVideoFolder.setToolTipText(mVideoOutputFolder);
     }//GEN-LAST:event_txtVideoFolderKeyTyped
+
+    private void cboAudioMicrophonesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboAudioMicrophonesActionPerformed
+        
+        if (cboAudioMicrophones.getSelectedItem() != null){
+            Microphone m = (Microphone) cboAudioMicrophones.getSelectedItem();
+            if (mCurrentAudioMonitor != null){
+                mCurrentAudioMonitor.stopMonitoring();
+                mCurrentAudioMonitor = null;
+                pgAudioLevels.setValue(0);
+            }
+            if (m.getDevice() != null){
+                mCurrentAudioMonitor = m;
+                m.startMonitoring();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (mCurrentAudioMonitor != null){
+                            pgAudioLevels.setValue(mCurrentAudioMonitor.getCurrentAudioLevel());
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException ex) {
+                                Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    }
+                }).start();
+                
+            } 
+        }
+    }//GEN-LAST:event_cboAudioMicrophonesActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1886,6 +1932,7 @@ public class ScreenStudio extends javax.swing.JFrame {
     private javax.swing.JPanel panSources;
     private javax.swing.JPanel panStatus;
     private javax.swing.JPanel panTargetSettings;
+    private javax.swing.JProgressBar pgAudioLevels;
     private javax.swing.JMenu popMnuSourceEffect;
     private javax.swing.JMenu popMnuSourceTransitionIn;
     private javax.swing.JMenu popMnuSourceTransitionOut;

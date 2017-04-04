@@ -782,7 +782,8 @@
                               <Component id="cboAudioSystems" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="spinAudioDelay" min="-2" pref="97" max="-2" attributes="0"/>
-                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="pgAudioLevels" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
@@ -802,9 +803,12 @@
                               <Component id="cboAudioSystems" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="jLabel10" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="spinAudioDelay" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="jLabel10" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="spinAudioDelay" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <Component id="pgAudioLevels" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
@@ -827,6 +831,9 @@
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JComboBox" name="cboAudioMicrophones">
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cboAudioMicrophonesActionPerformed"/>
+                  </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;Microphone&gt;"/>
                   </AuxValues>
@@ -856,6 +863,11 @@
                   <Events>
                     <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="spinAudioDelayStateChanged"/>
                   </Events>
+                </Component>
+                <Component class="javax.swing.JProgressBar" name="pgAudioLevels">
+                  <Properties>
+                    <Property name="maximum" type="int" value="255"/>
+                  </Properties>
                 </Component>
               </SubComponents>
             </Container>
