@@ -448,6 +448,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                 case FLV:
                 case TS:
                 case GIF:
+                case TIMELAPSE:
                 case HTTP:
                     cboRTMPServers.setModel(new DefaultComboBoxModel());
                     txtRTMPKey.setText((""));
@@ -1426,8 +1427,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                 lblMessages.setText(LANGUAGES.getString("WARNING_NO_VIDEO_SOURCE"));
                 abort = true;
             }
-            if (cboTarget.getSelectedItem() != FFMpeg.FORMATS.GIF && cboAudioMicrophones.getSelectedIndex() == 0 && cboAudioSystems.getSelectedIndex() == 0) {
-
+            if (cboTarget.getSelectedItem() != FFMpeg.FORMATS.GIF && cboTarget.getSelectedItem() != FFMpeg.FORMATS.TIMELAPSE && cboAudioMicrophones.getSelectedIndex() == 0 && cboAudioSystems.getSelectedIndex() == 0) {
                 lblMessages.setText(LANGUAGES.getString("WARNING_NO_AUDIO_SOURCE"));
                 abort = true;
             }

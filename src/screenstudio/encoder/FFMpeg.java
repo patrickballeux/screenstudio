@@ -151,7 +151,7 @@ public class FFMpeg implements Runnable {
                 break;
         }
         audioInput = input;
-        if ("ScreenStudio-jackd".equals(audioInput)){
+        if ("ScreenStudio-jackd".equals(audioInput)) {
             //Using jackd interface...
             audioFormat = "jack";
         }
@@ -226,6 +226,12 @@ public class FFMpeg implements Runnable {
                 preset = "";
                 String randomName = generateRandomName();
                 output = outputFolder + randomName + ".gif";
+                break;
+            case TIMELAPSE:
+                muxer = "mov";
+                videoEncoder = "libx264";
+                audioEncoder = "";
+                output = outputFolder + generateRandomName() + "-timelaps.mov";
                 break;
             case RTMP:
             case HITBOX:
@@ -302,8 +308,12 @@ public class FFMpeg implements Runnable {
         c.add("-i");
         c.add(tcpServer);
 
+        if (output.endsWith("timelaps.mov")) {
+            c.add("-filter:v");
+            c.add("setpts=0.1*PTS");
+        }
         // Capture Audio
-        if (!videoEncoder.equals("gif")) {
+        if (audioEncoder.length() != 0) {
             c.add("-f");
             c.add(audioFormat);
             if (mITSOffset.length() > 0) {
@@ -347,14 +357,14 @@ public class FFMpeg implements Runnable {
             c.add("-maxrate");
             c.add("" + videoBitrate + "k ");
         }
-        if (!videoEncoder.equals("gif")) {
+        if (audioEncoder.length() != 0) {
             c.add("-ab");
             c.add("" + audioBitrate + "k");
             c.add("-ar");
             c.add("" + audioRate);
             c.add("-acodec");
             c.add("" + audioEncoder);
-        }
+        } 
         c.add("-vcodec");
         c.add(videoEncoder);
 
@@ -370,6 +380,7 @@ public class FFMpeg implements Runnable {
             c.add("-hls_wrap");
             c.add("6");
         }
+
         c.add("-g");
         c.add("" + (compositor.getFPS() * 2));
         c.add("-y");
@@ -388,9 +399,10 @@ public class FFMpeg implements Runnable {
         return bin + " " + nonVerboseMode;
     }
 
-    public String getAudioFormat(){
+    public String getAudioFormat() {
         return audioFormat;
     }
+
     public String getDesktopFormat() {
         return desktopFormat;
     }
@@ -477,10 +489,10 @@ public class FFMpeg implements Runnable {
             System.out.println("Starting encoding...");
             long mStopDelay = 0;
             while (mStopDelay == 0 || mStopDelay > System.currentTimeMillis()) {
-                if (mStopMe){
+                if (mStopMe) {
                     mStopDelay = System.currentTimeMillis() + mDefaultStopDelay;
                     compositor.RequestStop();
-                    mStopMe=false;  // disable one acknowledged
+                    mStopMe = false;  // disable one acknowledged
                 }
                 try {
                     pipe.write(compositor.getData());
@@ -506,7 +518,10 @@ public class FFMpeg implements Runnable {
             in.close();
             pipe.close();
             out.write("q\n".getBytes());
-            out.close();
+            try {
+                out.close();
+            } catch (Exception ex) {
+            }
             out = null;
             try {
                 p.waitFor(15, TimeUnit.SECONDS);
@@ -542,6 +557,7 @@ public class FFMpeg implements Runnable {
         FACEBOOK,
         RTMP,
         HTTP,
+        TIMELAPSE,
         BROADCAST,
     }
 
