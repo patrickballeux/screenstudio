@@ -51,6 +51,7 @@ public class HTTPServer implements Runnable {
     private int mPort = 8080;
     private ArrayList<String> mSourcesIDs;
     private final JMenuItem mMenuAction;
+    private int mSelectedViewIndex = 0;
 
     public HTTPServer(Compositor comp, ArrayList<String> sourceIDs, JMenuItem recordAction) {
         mCompositor = comp;
@@ -68,6 +69,13 @@ public class HTTPServer implements Runnable {
 
     public void setCompositor(Compositor c) {
         mCompositor = c;
+    }
+
+    public void setCurrentView(int index) {
+        if (mCompositor != null) {
+            mCompositor.setCurrentView(index);
+        }
+        mSelectedViewIndex = index;
     }
 
     @Override
@@ -142,22 +150,28 @@ public class HTTPServer implements Runnable {
                 if (p.equals("action=record")) {
                     //start stop recording...
                     mMenuAction.doClick();
-                    requestedToStop= true;
+                    requestedToStop = true;
+
+                } else if (p.startsWith("view=")) {
+                    if (mCompositor != null) {
+                        mSelectedViewIndex = new Integer(p.replace("view=", ""));
+                        mCompositor.setCurrentView(mSelectedViewIndex);
+                    }
                 } else if (p.startsWith("source")) {
                     if (mCompositor != null) {
                         int index = Integer.parseInt(p.split("=")[0].replace("source", ""));
                         Source s = mCompositor.getSources().get(index);
-                        switch(p.split("=")[1]){
+                        switch (p.split("=")[1]) {
                             case "on":
                                 s.setTransitionStart(Transition.NAMES.FadeIn);
                                 s.setAlpha(1f);
-                                s.setDisplayTime(mCompositor.getTimeDelta()+1, 0);
+                                s.setDisplayTime(mCompositor.getTimeDelta() + 1, 0);
                                 s.setRemoteDisplay(true);
                                 break;
                             case "off":
                                 s.setRemoteDisplay(false);
                                 s.setTransitionStop(Transition.NAMES.FadeOut);
-                                s.setDisplayTime(1, mCompositor.getTimeDelta()+1);
+                                s.setDisplayTime(1, mCompositor.getTimeDelta() + 1);
                                 break;
                         }
                     }
@@ -167,7 +181,7 @@ public class HTTPServer implements Runnable {
                 case "/":
                     System.out.println("Writing homepage");
                     out.write("HTTP/1.0 200 OK\r\n" + "Content-Type: " + "text/html" + "\r\n" + "Date: " + new Date() + "\r\nServer: ScreenStudio Remote\r\n\r\n");
-                    sendHomeScreen(out,requestedToStop);
+                    sendHomeScreen(out, requestedToStop);
                     out.flush();
                     break;
                 case "/preview.png":
@@ -181,19 +195,19 @@ public class HTTPServer implements Runnable {
                 case "/apple-touch-icon-120x120.png":
                     out.write("HTTP/1.0 200 OK\r\n" + "Content-Type: " + "image/png" + "\r\n" + "Date: " + new Date() + "\r\nServer: ScreenStudio Remote\r\n\r\n");
                     out.flush();
-                    sendResources("/screenstudio/remote/logo128.png",conn.getOutputStream());
+                    sendResources("/screenstudio/remote/logo128.png", conn.getOutputStream());
                     break;
                 case "/favicon.ico":
                     out.write("HTTP/1.0 200 OK\r\n" + "Content-Type: " + "image/png" + "\r\n" + "Date: " + new Date() + "\r\nServer: ScreenStudio Remote\r\n\r\n");
                     out.flush();
-                     sendResources("/screenstudio/remote/favicon.ico",conn.getOutputStream());
+                    sendResources("/screenstudio/remote/favicon.ico", conn.getOutputStream());
                     break;
             }
         }
         conn.close();
     }
 
-    private void sendResources(String name, OutputStream out) throws IOException{
+    private void sendResources(String name, OutputStream out) throws IOException {
         try (InputStream in = this.getClass().getResource(name).openStream()) {
             byte[] buffer = new byte[in.available()];
             int count = in.read(buffer);
@@ -201,14 +215,15 @@ public class HTTPServer implements Runnable {
         }
         out.flush();
     }
-    private void sendHomeScreen(BufferedWriter out,boolean requestedToStop) throws IOException {
+
+    private void sendHomeScreen(BufferedWriter out, boolean requestedToStop) throws IOException {
         String html;
         try (InputStream in = this.getClass().getResource("/screenstudio/remote/index.html").openStream()) {
             byte[] buffer = new byte[65536];
             int count = in.read(buffer);
             html = new String(buffer, 0, count);
         }
-        if (mCompositor != null && !requestedToStop){
+        if (mCompositor != null && !requestedToStop) {
             html = html.replace(">Capture<", ">Stop<");
         }
         String sources = "";
@@ -230,10 +245,16 @@ public class HTTPServer implements Runnable {
             }
         }
         html = html.replace("@SOURCES", sources);
+        html = html.replaceAll("@VIEWSELECTED" + mSelectedViewIndex, "selected");
+        html = html.replaceAll("@VIEWSELECTED0", "");
+        html = html.replaceAll("@VIEWSELECTED1", "");
+        html = html.replaceAll("@VIEWSELECTED2", "");
+        html = html.replaceAll("@VIEWSELECTED3", "");
+        html = html.replaceAll("@VIEWSELECTED4", "");
         out.write(html);
     }
 
-    private void sendPreview(OutputStream out) throws IOException,IndexOutOfBoundsException {
+    private void sendPreview(OutputStream out) throws IOException, IndexOutOfBoundsException {
 
         if (mCompositor != null) {
             int newW = mCompositor.getWidth() / 3;

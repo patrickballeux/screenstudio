@@ -17,6 +17,7 @@
 package screenstudio.sources;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,9 +57,9 @@ public class SourceLabel extends Source {
     private long mLastReloadTime = System.currentTimeMillis();
     private String mLastRenderedText = "";
 
-    public SourceLabel(Rectangle bounds, int zOrder, float alpha, LabelText text) {
-        super(bounds, zOrder, alpha, 100, text.getText(),BufferedImage.TYPE_4BYTE_ABGR);
-        mOriginalAlpha = alpha;
+    public SourceLabel(List<screenstudio.targets.Source.View> views , LabelText text) {
+        super(views, 100, text.getText(),BufferedImage.TYPE_4BYTE_ABGR);
+        mOriginalAlpha = views.get(0).Alpha;
         mText = updateWithTextTags(text.getText());
         mLastRenderedText = replaceTags(mText);
         mLabel.setText(mLastRenderedText);
@@ -69,12 +71,12 @@ public class SourceLabel extends Source {
         mLabel.setBackground(new Color(text.getBackgroundColor()));
         mLabel.setHorizontalAlignment(JLabel.CENTER);
         mLabel.setVerticalAlignment(JLabel.CENTER);
-        mLabel.setFont(new Font(text.getFontName(), Font.BOLD, bounds.height - 20));
+        mLabel.setFont(new Font(text.getFontName(), Font.BOLD, views.get(0).Height - 20));
         super.setFontName(text.getFontName());
         this.mType = Layout.SourceType.LabelText;
-        mImage = new BufferedImage(bounds.width, bounds.height, mImageType);
+        mImage = new BufferedImage(views.get(0).Width, views.get(0).Height, mImageType);
         mData = ((DataBufferByte) mImage.getRaster().getDataBuffer()).getData();
-        mLabel.setSize(bounds.getSize());
+        mLabel.setSize(new Dimension(views.get(0).Width,views.get(0).Height));
         Graphics2D g = mImage.createGraphics();
         mLabel.paint(g);
         mLastReloadTime = System.currentTimeMillis();

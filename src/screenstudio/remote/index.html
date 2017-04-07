@@ -46,9 +46,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <div class="note">Click Preview to reload the page...</div>
         <hr>
         <div class="action" align="center">
-            <form action="/" method="GET">
-                <button type="submit" name="action" value="record">Capture</button>    
+            <form id="action" name="action" action="/" method="GET">
+                <button type="submit" name="action" value="record">Capture</button> 
             </form></div>
+        <div class="action" align="center">
+            <form name="view" id="view" action="/" method="GET">
+                <select  name="view" onchange="document.forms.view.submit();">
+                    <option value="0" @VIEWSELECTED0 >Default</option>
+                    <option value="1" @VIEWSELECTED1 >View 1</option>
+                    <option value="2" @VIEWSELECTED2 >View 2</option>
+                    <option value="3" @VIEWSELECTED3 >View 3</option>
+                    <option value="4" @VIEWSELECTED4 >View 4</option>
+                </select>
+            </form></div>
+        </div>
         <div class="sources">
             <div class="sourcetitle">Sources</div>
             @SOURCES

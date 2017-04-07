@@ -21,6 +21,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import screenstudio.sources.effects.Effect;
@@ -31,7 +32,7 @@ import screenstudio.targets.Layout.SourceType;
  *
  * @author patrick
  */
-public abstract class Source {
+public abstract class Source  {
 
     /**
      * @return the mTransitionStart
@@ -87,7 +88,8 @@ public abstract class Source {
     private Effect.eEffects mEffect = Effect.eEffects.None;
     private String mID = "";
 
-    protected SourceType mType = null;
+    protected SourceType mType;
+    private List<screenstudio.targets.Source.View> mViews;
 
     protected abstract void getData(byte[] buffer) throws IOException;
 
@@ -105,13 +107,22 @@ public abstract class Source {
     public void setRemoteDisplay(boolean show){
         mRemoteDisplay = show;
     }
+    
+    public void setViewIndex(int index){
+        mBounds = new Rectangle(mViews.get(index).X,mViews.get(index).Y,mViews.get(index).Width,mViews.get(index).Height);
+        mZ = mViews.get(index).Order;
+        mRemoteDisplay = mViews.get(index).remoteDisplay;
+        mAlpha = mAlpha.derive(mViews.get(index).Alpha);
+    }
     public boolean isRemoteDisplay(){
         return mRemoteDisplay;
     }
-    protected Source(Rectangle bounds, int zOrder, float alpha, int delayTime, String id, int imageType) {
-        mBounds = bounds;
-        mZ = zOrder;
-        mAlpha = mAlpha.derive(alpha);
+    protected Source(List<screenstudio.targets.Source.View> views,int delayTime, String id, int imageType) {
+        mViews = views;
+        mBounds = new Rectangle(views.get(0).X,views.get(0).Y,views.get(0).Width,views.get(0).Height);
+        mZ = views.get(0).Order;
+        mRemoteDisplay = mViews.get(0).remoteDisplay; 
+        mAlpha = mAlpha.derive(views.get(0).Alpha);
         mID = id;
         mImageType = imageType;
         mImage = new BufferedImage(mBounds.width, mBounds.height, mImageType);

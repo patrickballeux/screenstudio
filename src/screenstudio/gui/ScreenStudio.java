@@ -45,6 +45,8 @@ import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 import javax.swing.ToolTipManager;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.xml.parsers.ParserConfigurationException;
@@ -69,7 +71,7 @@ import screenstudio.targets.Layout.SourceType;
  *
  * @author patrick
  */
-public class ScreenStudio extends javax.swing.JFrame {
+public class ScreenStudio extends javax.swing.JFrame implements TableModelListener {
 
     private final SourceLayoutPreview mLayoutPreview;
     private FFMpeg mFFMpeg = null;
@@ -81,11 +83,15 @@ public class ScreenStudio extends javax.swing.JFrame {
     private HTTPServer mRemote;
     private java.util.ResourceBundle LANGUAGES = java.util.ResourceBundle.getBundle("screenstudio/Languages"); // NOI18N
     private Microphone mCurrentAudioMonitor = null;
+    private Layout mCurrentLayout = new Layout();
+    private ArrayList<screenstudio.targets.Source> mSources = new ArrayList<>();
+
     /**
      * Creates new form MainVersion3
      */
     public ScreenStudio() {
         initComponents();
+
         this.setIconImage(new ImageIcon(ScreenStudio.class.getResource("/screenstudio/gui/images/icon.png")).getImage());
         initControls();
         mLayoutPreview = new SourceLayoutPreview(tableSources);
@@ -129,6 +135,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         } catch (UnknownHostException ex) {
             Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
         }
+        tableSources.getModel().addTableModelListener(this);
     }
 
     private void initControls() {
@@ -241,24 +248,27 @@ public class ScreenStudio extends javax.swing.JFrame {
             menu.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
-                    Object[] row = new Object[model.getColumnCount()];
-                    row[0] = true;
-                    row[1] = SourceType.Frame;
-                    row[2] = Frames.eList.valueOf(e.getActionCommand());
-                    row[3] = 0;
-                    row[4] = 0;
-                    row[5] = (Integer)spinWidth.getValue(); // width
-                    row[6] = (Integer)spinHeight.getValue(); // height
-                    row[7] = 1.0f;
-                    row[8] = 0L;
-                    row[9] = 0L;
-                    row[10] = Transition.NAMES.None.name();
-                    row[11] = Transition.NAMES.None.name();
-                    row[12] = Effect.eEffects.None.name();
-                    model.addRow(row);
-                    updateRemoteSources();
+                    screenstudio.targets.Source source = new screenstudio.targets.Source(cboSourceViews.getItemCount());
+                    source.Views.add(new screenstudio.targets.Source.View());
+                    source.CurrentViewIndex = cboSourceViews.getSelectedIndex();
 
+                    source.Views.get(source.CurrentViewIndex).remoteDisplay = true;
+                    source.Type = SourceType.Frame;
+                    source.SourceObject = Frames.eList.valueOf(e.getActionCommand());
+                    source.Views.get(source.CurrentViewIndex).X = 0;
+                    source.Views.get(source.CurrentViewIndex).Y = 0;
+                    source.Views.get(source.CurrentViewIndex).Width = (Integer) spinWidth.getValue();
+                    source.Views.get(source.CurrentViewIndex).Height = (Integer) spinHeight.getValue();
+                    source.Views.get(source.CurrentViewIndex).Alpha = 1f;
+                    source.Views.get(source.CurrentViewIndex).Order = mSources.size();
+                    source.startTime = 0L;
+                    source.endTime = 0L;
+                    source.transitionStart = Transition.NAMES.None.name();
+                    source.transitionStop = Transition.NAMES.None.name();
+                    source.effect = Effect.eEffects.None.name();
+                    source.initOtherViews();
+                    mSources.add(source);
+                    addNewSourceToTable(source);
                 }
             });
         }
@@ -294,35 +304,51 @@ public class ScreenStudio extends javax.swing.JFrame {
         btnBGMusicBrowse.setEnabled(enabled);
     }
 
+    private void selectCurrentView(int index) {
+        DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
+        while (model.getRowCount() > 0) {
+            model.removeRow(0);
+        }
+        for (screenstudio.targets.Source source : mSources) {
+            source.CurrentViewIndex = index;
+        }
+        mSources.sort((a, b) -> Integer.compare(b.Views.get(index).Order, a.Views.get(index).Order));
+        for (screenstudio.targets.Source source : mSources) {
+            addNewSourceToTable(source);
+        }
+        mRemote.setCurrentView(index);
+       
+    }
+
     private void loadLayout(File file) {
-        Layout layout = new Layout();
+        mCurrentLayout = new Layout();
         try {
-            layout.load(file);
-            cboAudioBitrate.setSelectedItem(layout.getAudioBitrate());
+            mCurrentLayout.load(file);
+            cboAudioBitrate.setSelectedItem(mCurrentLayout.getAudioBitrate());
             for (int i = 0; i < cboAudioMicrophones.getItemCount(); i++) {
-                if (cboAudioMicrophones.getItemAt(i).getDescription().equals(layout.getAudioMicrophone())) {
+                if (cboAudioMicrophones.getItemAt(i).getDescription().equals(mCurrentLayout.getAudioMicrophone())) {
                     cboAudioMicrophones.setSelectedIndex(i);
                     break;
                 }
             }
             for (int i = 0; i < cboAudioSystems.getItemCount(); i++) {
-                if (cboAudioSystems.getItemAt(i).getDescription().equals(layout.getAudioSystem())) {
+                if (cboAudioSystems.getItemAt(i).getDescription().equals(mCurrentLayout.getAudioSystem())) {
                     cboAudioSystems.setSelectedIndex(i);
                     break;
                 }
             }
-            spinFPS.setValue(layout.getOutputFramerate());
-            spinHeight.setValue(layout.getOutputHeight());
-            cboVideoPresets.setSelectedItem(layout.getOutputPreset());
-            cboTarget.setSelectedItem(layout.getOutputTarget());
-            txtRTMPKey.setText(layout.getOutputRTMPKey());
-            cboRTMPServers.setSelectedItem(layout.getOutputRTMPServer());
-            mVideoOutputFolder = layout.getOutputVideoFolder();
+            spinFPS.setValue(mCurrentLayout.getOutputFramerate());
+            spinHeight.setValue(mCurrentLayout.getOutputHeight());
+            cboVideoPresets.setSelectedItem(mCurrentLayout.getOutputPreset());
+            cboTarget.setSelectedItem(mCurrentLayout.getOutputTarget());
+            txtRTMPKey.setText(mCurrentLayout.getOutputRTMPKey());
+            cboRTMPServers.setSelectedItem(mCurrentLayout.getOutputRTMPServer());
+            mVideoOutputFolder = mCurrentLayout.getOutputVideoFolder();
             txtVideoFolder.setText(mVideoOutputFolder);
             txtVideoFolder.setToolTipText(mVideoOutputFolder);
-            spinWidth.setValue(layout.getOutputWidth());
-            numVideoBitrate.setValue(layout.getVideoBitrate());
-            mBackgroundMusic = layout.getBackgroundMusic();
+            spinWidth.setValue(mCurrentLayout.getOutputWidth());
+            numVideoBitrate.setValue(mCurrentLayout.getVideoBitrate());
+            mBackgroundMusic = mCurrentLayout.getBackgroundMusic();
             if (mBackgroundMusic == null) {
                 lblBGMusic.setText("");
             } else {
@@ -335,32 +361,29 @@ public class ScreenStudio extends javax.swing.JFrame {
             }
 
             Webcam[] webcams = Webcam.getSources();
-            for (screenstudio.targets.Source s : layout.getSources()) {
-                Object[] row = new Object[model.getColumnCount()];
-                row[0] = s.remoteDisplay;
-                row[1] = s.Type;
-                row[2] = "Not found!";
-                row[3] = s.X;
-                row[4] = s.Y;
-                row[5] = s.Width;
-                row[6] = s.Height;
-                row[7] = s.Alpha;
-                row[8] = s.startTime;
-                row[9] = s.endTime;
-                row[10] = s.transitionStart;
-                row[11] = s.transitionStop;
-                row[12] = s.effect;
+            mSources.clear();
+            cboSourceViews.setSelectedIndex(0);
+            for (screenstudio.targets.Source s : mCurrentLayout.getSources()) {
+                while (s.Views.size() < cboSourceViews.getItemCount()) {
+                    screenstudio.targets.Source.View v = new screenstudio.targets.Source.View();
+                    v.X = s.Views.get(0).X;
+                    v.Y = s.Views.get(0).Y;
+                    v.Width = s.Views.get(0).Width;
+                    v.Height = s.Views.get(0).Height;
+                    v.Order = s.Views.get(0).Order;
+                    v.Alpha = s.Views.get(0).Alpha;
+                    v.remoteDisplay = s.Views.get(0).remoteDisplay;
+                    s.Views.add(v);
+                }
                 switch (s.Type) {
                     case Desktop:
-                        row[0] = false;
                         Screen[] screens = Screen.getSources();
                         for (Screen screen : screens) {
                             if (screen.getLabel().equals(s.ID)) {
-                                row[2] = screen;
-                                row[0] = s.remoteDisplay;
+                                s.SourceObject = screen;
                                 if (s.CaptureX != 0 || s.CaptureY != 0) {
-                                    screen.getSize().width = s.Width;
-                                    screen.getSize().height = s.Height;
+                                    screen.getSize().width = s.Views.get(s.CurrentViewIndex).Width;
+                                    screen.getSize().height = s.Views.get(s.CurrentViewIndex).Height;
                                     screen.getSize().x = s.CaptureX;
                                     screen.getSize().y = s.CaptureY;
                                 }
@@ -369,38 +392,29 @@ public class ScreenStudio extends javax.swing.JFrame {
                         }
                         break;
                     case Image:
-                        row[2] = new File(s.ID);
-                        row[0] = s.remoteDisplay && new File(s.ID).exists();
+                        s.SourceObject = new File(s.ID);
                         break;
                     case LabelText:
                         LabelText t = new LabelText(s.ID);
                         t.setForegroundColor(s.foregroundColor);
                         t.setBackgroundColor(s.backgroundColor);
                         t.setFontName(s.fontName);
-                        row[2] = t;
-                        break;
-                    case Stream:
-                        row[2] = s.ID;
-                        break;
-                    case Video:
-                        row[2] = new File(s.ID);
-                        row[0] = s.remoteDisplay && new File(s.ID).exists();
+                        s.SourceObject = t;
                         break;
                     case Webcam:
-                        row[0] = false;
                         for (Webcam webcam : webcams) {
                             if (webcam.getDevice().equals(s.ID)) {
-                                row[2] = webcam;
-                                row[0] = s.remoteDisplay;
+                                s.SourceObject = webcam;
                                 break;
                             }
                         }
                         break;
                     case Frame:
-                        row[2] = Frames.eList.valueOf(s.ID);
+                        s.SourceObject = Frames.eList.valueOf(s.ID);
                         break;
                 }
-                model.addRow(row);
+                mSources.add(s);
+                addNewSourceToTable(s);
             }
         } catch (IOException | ParserConfigurationException | SAXException | InterruptedException ex) {
             Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
@@ -410,30 +424,40 @@ public class ScreenStudio extends javax.swing.JFrame {
     }
 
     private void saveLayout(File file) {
-        Layout layout = new Layout();
-        layout.setAudioBitrate(cboAudioBitrate.getItemAt(cboAudioBitrate.getSelectedIndex()));
-        layout.setAudioMicrophone(cboAudioMicrophones.getItemAt(cboAudioMicrophones.getSelectedIndex()).getDescription());
-        layout.setAudioSystem(cboAudioSystems.getItemAt(cboAudioSystems.getSelectedIndex()).getDescription());
-        layout.setOutputFramerate((Integer) spinFPS.getValue());
-        layout.setOutputHeight((Integer) spinHeight.getValue());
-        layout.setOutputPreset(cboVideoPresets.getItemAt(cboVideoPresets.getSelectedIndex()));
-        layout.setOutputRTMPKey(txtRTMPKey.getText());
+        mCurrentLayout = new Layout();
+        mCurrentLayout.setAudioBitrate(cboAudioBitrate.getItemAt(cboAudioBitrate.getSelectedIndex()));
+        mCurrentLayout.setAudioMicrophone(cboAudioMicrophones.getItemAt(cboAudioMicrophones.getSelectedIndex()).getDescription());
+        mCurrentLayout.setAudioSystem(cboAudioSystems.getItemAt(cboAudioSystems.getSelectedIndex()).getDescription());
+        mCurrentLayout.setOutputFramerate((Integer) spinFPS.getValue());
+        mCurrentLayout.setOutputHeight((Integer) spinHeight.getValue());
+        mCurrentLayout.setOutputPreset(cboVideoPresets.getItemAt(cboVideoPresets.getSelectedIndex()));
+        mCurrentLayout.setOutputRTMPKey(txtRTMPKey.getText());
         if (cboRTMPServers.getSelectedIndex() != -1) {
-            layout.setOutputRTMPServer(cboRTMPServers.getSelectedItem().toString());
+            mCurrentLayout.setOutputRTMPServer(cboRTMPServers.getSelectedItem().toString());
         } else {
-            layout.setOutputRTMPServer("");
+            mCurrentLayout.setOutputRTMPServer("");
         }
-        layout.setOutputTarget(cboTarget.getItemAt(cboTarget.getSelectedIndex()));
-        layout.setOutputVideoFolder(mVideoOutputFolder);
-        layout.setOutputWith((Integer) spinWidth.getValue());
-        layout.setVideoBitrate((Integer) numVideoBitrate.getValue());
-        layout.setBackgroundMusic(mBackgroundMusic);
-        List<Source> sources = Compositor.getSources(tableSources, (Integer) spinFPS.getValue());
-        for (Source s : sources) {
-            layout.addSource(s.getType(), s.getID(), s.getBounds().x, s.getBounds().y, s.getBounds().width, s.getBounds().height, s.getAlpha().getAlpha(), s.getZOrder(), s.getForeground(), s.getBackground(), s.getFontName(), s.getCaptureX(), s.getCaptureY(), s.getStartDisplayTime(), s.getEndDisplayTime(), s.getTransitionStart().name(), s.getTransitionStop().name(), s.isRemoteDisplay(), s.getEffect().name());
+        mCurrentLayout.setOutputTarget(cboTarget.getItemAt(cboTarget.getSelectedIndex()));
+        mCurrentLayout.setOutputVideoFolder(mVideoOutputFolder);
+        mCurrentLayout.setOutputWith((Integer) spinWidth.getValue());
+        mCurrentLayout.setVideoBitrate((Integer) numVideoBitrate.getValue());
+        mCurrentLayout.setBackgroundMusic(mBackgroundMusic);
+        for (screenstudio.targets.Source s : mSources) {
+            if (s.SourceObject instanceof File){
+                s.ID = ((File)s.SourceObject).getAbsolutePath();
+            } else if (s.SourceObject instanceof Screen){
+                s.ID = ((Screen)s.SourceObject).getLabel();
+            } else if (s.SourceObject instanceof Frames.eList){
+                s.ID = ((Frames.eList)s.SourceObject).name();
+            } else if (s.SourceObject instanceof Webcam){
+                s.ID = ((Webcam)s.SourceObject).getDevice();
+            } else if (s.SourceObject instanceof LabelText){
+                s.ID = ((LabelText)s.SourceObject).getText();
+            }
+            mCurrentLayout.addSource(s);
         }
         try {
-            layout.save(file);
+            mCurrentLayout.save(file);
         } catch (Exception ex) {
             Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -475,6 +499,12 @@ public class ScreenStudio extends javax.swing.JFrame {
         }
     }
 
+    private void updateSourcesOrder() {
+        for (int i = 0; i < mSources.size(); i++) {
+            mSources.get(i).Views.get(mSources.get(i).CurrentViewIndex).Order = i;
+        }
+    }
+
     private void updateMenuWebcams() {
 
         mnuMainWebcams.removeAll();
@@ -484,31 +514,30 @@ public class ScreenStudio extends javax.swing.JFrame {
                 menu.setActionCommand(w.getDevice());
                 menu.setToolTipText(LANGUAGES.getString("DEVICE") + ": " + w.getDevice());
                 menu.addActionListener((ActionEvent e) -> {
-                    DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
-                    Object[] row = new Object[model.getColumnCount()];
                     try {
                         for (Webcam webcam : Webcam.getSources()) {
                             if (webcam.getDevice().equals(e.getActionCommand())) {
-                                row[0] = true;
-                                row[1] = SourceType.Webcam;
-                                row[2] = webcam;
-                                row[3] = 0;
-                                row[4] = 0;
-                                row[5] = webcam.getWidth();
-                                row[6] = webcam.getHeight();
-                                row[7] = 1f;
-                                row[8] = 0L;
-                                row[9] = 0L;
-                                row[10] = Transition.NAMES.None.name();
-                                row[11] = Transition.NAMES.None.name();
-                                row[12] = Effect.eEffects.None.name();
-                                model.addRow(row);
-                                updateRemoteSources();
-
-                                mLayoutPreview.repaint();
-                                tabs.setSelectedComponent(panSources);
+                                screenstudio.targets.Source source = new screenstudio.targets.Source(cboSourceViews.getItemCount());
+                                source.Views.add(new screenstudio.targets.Source.View());
+                                source.CurrentViewIndex = cboSourceViews.getSelectedIndex();;
+                                source.Views.get(source.CurrentViewIndex).remoteDisplay = true;
+                                source.Type = SourceType.Webcam;
+                                source.SourceObject = webcam;
+                                source.Views.get(source.CurrentViewIndex).X = 0;
+                                source.Views.get(source.CurrentViewIndex).Y = 0;
+                                source.Views.get(source.CurrentViewIndex).Width = webcam.getWidth();
+                                source.Views.get(source.CurrentViewIndex).Height = webcam.getHeight();
+                                source.Views.get(source.CurrentViewIndex).Alpha = 1f;
+                                source.Views.get(source.CurrentViewIndex).Order = mSources.size();
+                                source.startTime = 0L;
+                                source.endTime = 0L;
+                                source.transitionStart = Transition.NAMES.None.name();
+                                source.transitionStop = Transition.NAMES.None.name();
+                                source.effect = Effect.eEffects.None.name();
+                                mSources.add(source);
+                                source.initOtherViews();
+                                addNewSourceToTable(source);
                                 break;
-
                             }
                         }
                     } catch (IOException | InterruptedException ex) {
@@ -520,6 +549,91 @@ public class ScreenStudio extends javax.swing.JFrame {
             }
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void addNewSourceToTable(screenstudio.targets.Source source) {
+        DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
+        tableSources.setEnabled(false);
+        Object[] row = new Object[model.getColumnCount()];
+        row[0] = source.Views.get(source.CurrentViewIndex).remoteDisplay;
+        row[1] = source.Type;
+        row[2] = source.SourceObject;
+        row[3] = source.Views.get(source.CurrentViewIndex).X;
+        row[4] = source.Views.get(source.CurrentViewIndex).Y;
+        row[5] = source.Views.get(source.CurrentViewIndex).Width;
+        row[6] = source.Views.get(source.CurrentViewIndex).Height;
+        row[7] = source.Views.get(source.CurrentViewIndex).Alpha;
+        row[8] = source.startTime;
+        row[9] = source.endTime;
+        row[10] = source.transitionStart;
+        row[11] = source.transitionStop;
+        row[12] = source.effect;
+
+        model.addRow(row);
+        updateRemoteSources();
+        mLayoutPreview.repaint();
+        tabs.setSelectedComponent(panSources);
+        updateSourcesOrder();
+        tableSources.setEnabled(true);
+    }
+
+    @Override
+    public void tableChanged(TableModelEvent e) {
+        if (e.getType() == TableModelEvent.UPDATE && tableSources.isEnabled()) {
+            screenstudio.targets.Source source = mSources.get(e.getFirstRow());
+            switch (e.getColumn()) {
+                case 0: // display...
+                    boolean b = (Boolean) tableSources.getValueAt(e.getFirstRow(), e.getColumn());
+                    source.Views.get(source.CurrentViewIndex).remoteDisplay = b;
+                    break;
+                case 2:
+                    if (source.SourceObject instanceof LabelText){
+                        String text =tableSources.getValueAt(e.getFirstRow(), e.getColumn()).toString();
+                        ((LabelText)source.SourceObject).setText(text);
+                    }
+                    break;
+                case 3: //X
+                    int x = (int) tableSources.getValueAt(e.getFirstRow(), e.getColumn());
+                    source.Views.get(source.CurrentViewIndex).X = x;
+                    break;
+                case 4: //Y
+                    int y = (int) tableSources.getValueAt(e.getFirstRow(), e.getColumn());
+                    source.Views.get(source.CurrentViewIndex).Y = y;
+                    break;
+                case 5: //Width
+                    int w = (int) tableSources.getValueAt(e.getFirstRow(), e.getColumn());
+                    source.Views.get(source.CurrentViewIndex).Width = w;
+                    break;
+                case 6: //Height
+                    int h = (int) tableSources.getValueAt(e.getFirstRow(), e.getColumn());
+                    source.Views.get(source.CurrentViewIndex).Height = h;
+                    break;
+                case 7: //Alpha
+                    float f = (float) tableSources.getValueAt(e.getFirstRow(), e.getColumn());
+                    source.Views.get(source.CurrentViewIndex).Alpha = f;
+                    break;
+                case 8: // start time
+                    long start = (Long) tableSources.getValueAt(e.getFirstRow(), e.getColumn());
+                    source.startTime = start;
+                    break;
+                case 9: // end time
+                    long end = (Long) tableSources.getValueAt(e.getFirstRow(), e.getColumn());
+                    source.endTime = end;
+                    break;
+                case 10: // trans in
+                    String ti = tableSources.getValueAt(e.getFirstRow(), e.getColumn()).toString();
+                    source.transitionStart = ti;
+                    break;
+                case 11: // trans out
+                    String to = tableSources.getValueAt(e.getFirstRow(), e.getColumn()).toString();
+                    source.transitionStop = to;
+                    break;
+                case 12: // effect
+                    String ef = tableSources.getValueAt(e.getFirstRow(), e.getColumn()).toString();
+                    source.effect = ef;
+                    break;
+            }
         }
     }
 
@@ -542,29 +656,30 @@ public class ScreenStudio extends javax.swing.JFrame {
                 menu.setActionCommand(s.getLabel());
                 menu.setToolTipText(LANGUAGES.getString("SIZE") + ": " + s.getDetailledLabel());
                 menu.addActionListener((ActionEvent e) -> {
-                    DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
-                    Object[] row = new Object[model.getColumnCount()];
                     try {
                         for (Screen screen : Screen.getSources()) {
                             if (screen.getLabel().equals(e.getActionCommand())) {
-                                row[0] = true;
-                                row[1] = SourceType.Desktop;
-                                row[2] = screen;
-                                row[3] = 0;
-                                row[4] = 0;
-                                row[5] = spinWidth.getValue();
-                                row[6] = spinHeight.getValue();
-                                row[7] = 1f;
-                                row[8] = 0L;
-                                row[9] = 0L;
-                                row[10] = Transition.NAMES.None.name();
-                                row[11] = Transition.NAMES.None.name();
-                                row[12] = Effect.eEffects.None.name();
-                                model.addRow(row);
-                                updateRemoteSources();
+                                screenstudio.targets.Source source = new screenstudio.targets.Source(cboSourceViews.getItemCount());
+                                source.Views.add(new screenstudio.targets.Source.View());
+                                source.CurrentViewIndex = cboSourceViews.getSelectedIndex();;
+                                source.Views.get(source.CurrentViewIndex).remoteDisplay = true;
+                                source.Type = SourceType.Desktop;
+                                source.SourceObject = screen;
+                                source.Views.get(source.CurrentViewIndex).X = 0;
+                                source.Views.get(source.CurrentViewIndex).Y = 0;
+                                source.Views.get(source.CurrentViewIndex).Width = (int) spinWidth.getValue();
+                                source.Views.get(source.CurrentViewIndex).Height = (int) spinHeight.getValue();
+                                source.Views.get(source.CurrentViewIndex).Alpha = 1f;
+                                source.Views.get(source.CurrentViewIndex).Order = mSources.size();
+                                source.startTime = 0L;
+                                source.endTime = 0L;
+                                source.transitionStart = Transition.NAMES.None.name();
+                                source.transitionStop = Transition.NAMES.None.name();
+                                source.effect = Effect.eEffects.None.name();
+                                mSources.add(source);
+                                source.initOtherViews();
 
-                                mLayoutPreview.repaint();
-                                tabs.setSelectedComponent(panSources);
+                                addNewSourceToTable(source);
                                 break;
                             }
 
@@ -617,6 +732,9 @@ public class ScreenStudio extends javax.swing.JFrame {
         txtRTMPKey = new javax.swing.JTextField();
         chkKeepScreenRatio = new javax.swing.JCheckBox();
         panSources = new javax.swing.JPanel();
+        panSourcesViews = new javax.swing.JPanel();
+        lblSourceViewsCount = new javax.swing.JLabel();
+        cboSourceViews = new javax.swing.JComboBox<>();
         splitterSources = new javax.swing.JSplitPane();
         panPreviewLayout = new javax.swing.JPanel();
         scrollSources = new javax.swing.JScrollPane();
@@ -841,6 +959,40 @@ public class ScreenStudio extends javax.swing.JFrame {
         tabs.addTab(bundle.getString("OUTPUT"), panOutput); // NOI18N
 
         panSources.setLayout(new java.awt.BorderLayout());
+
+        panSourcesViews.setMaximumSize(new java.awt.Dimension(212, 52));
+
+        lblSourceViewsCount.setText(bundle.getString("SELECTED_VIEW")); // NOI18N
+
+        cboSourceViews.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Default", "View 1", "View 2", "View 3", "View 4" }));
+        cboSourceViews.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cboSourceViewsActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout panSourcesViewsLayout = new javax.swing.GroupLayout(panSourcesViews);
+        panSourcesViews.setLayout(panSourcesViewsLayout);
+        panSourcesViewsLayout.setHorizontalGroup(
+            panSourcesViewsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panSourcesViewsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblSourceViewsCount)
+                .addGap(18, 18, 18)
+                .addComponent(cboSourceViews, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(370, Short.MAX_VALUE))
+        );
+        panSourcesViewsLayout.setVerticalGroup(
+            panSourcesViewsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panSourcesViewsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panSourcesViewsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblSourceViewsCount)
+                    .addComponent(cboSourceViews, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(17, Short.MAX_VALUE))
+        );
+
+        panSources.add(panSourcesViews, java.awt.BorderLayout.NORTH);
 
         splitterSources.setDividerLocation(150);
         splitterSources.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
@@ -1432,7 +1584,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                 abort = true;
             }
             if (!abort) {
-                List<Source> sources = Compositor.getSources(tableSources, (Integer) spinFPS.getValue());
+                List<Source> sources = Compositor.getSources(mSources, (Integer) spinFPS.getValue());
                 Compositor compositor = new Compositor(sources, new Rectangle(0, 0, (Integer) spinWidth.getValue(), (Integer) spinHeight.getValue()), (Integer) spinFPS.getValue());
                 mFFMpeg = new FFMpeg(compositor);
                 mRemote.setCompositor(compositor);
@@ -1618,53 +1770,57 @@ public class ScreenStudio extends javax.swing.JFrame {
         if (chooser.getSelectedFile() != null) {
             File image = chooser.getSelectedFile();
             //add new source...
-            DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
-            Object[] row = new Object[model.getColumnCount()];
-            row[0] = true;
-            row[1] = SourceType.Image;
-            row[2] = image;
-            row[3] = 0;
-            row[4] = 0;
-            row[5] = 200;
-            row[6] = 200;
-            row[7] = 1.0f;
-            row[8] = 0L;
-            row[9] = 0L;
-            row[10] = Transition.NAMES.None.name();
-            row[11] = Transition.NAMES.None.name();
-            row[12] = Effect.eEffects.None.name();
-            model.addRow(row);
-            updateRemoteSources();
+            screenstudio.targets.Source source = new screenstudio.targets.Source(cboSourceViews.getItemCount());
+            source.CurrentViewIndex = cboSourceViews.getSelectedIndex();
+            source.Views.get(source.CurrentViewIndex).remoteDisplay = true;
+            source.Type = SourceType.Image;
+            source.SourceObject = image;
+            source.Views.get(source.CurrentViewIndex).X = 0;
+            source.Views.get(source.CurrentViewIndex).Y = 0;
+            source.Views.get(source.CurrentViewIndex).Width = 200;
+            source.Views.get(source.CurrentViewIndex).Height = 200;
+            source.Views.get(source.CurrentViewIndex).Alpha = 1f;
+            source.Views.get(source.CurrentViewIndex).Order = mSources.size();
+            source.startTime = 0L;
+            source.endTime = 0L;
+            source.transitionStart = Transition.NAMES.None.name();
+            source.transitionStop = Transition.NAMES.None.name();
+            source.effect = Effect.eEffects.None.name();
+            mSources.add(source);
+            source.initOtherViews();
+
+            addNewSourceToTable(source);
         }
-        mLayoutPreview.repaint();
-        tabs.setSelectedComponent(panSources);
     }//GEN-LAST:event_mnuMainAddImageActionPerformed
 
     private void mnuMainAddLabelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuMainAddLabelActionPerformed
-        DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
-        Object[] row = new Object[model.getColumnCount()];
-        row[0] = true;
-        row[1] = SourceType.LabelText;
-        row[2] = new LabelText("<HTML><BODY>New Label...</BODY><HTML>");
-        row[3] = 0;
-        row[4] = 0;
-        row[5] = 300;
-        row[6] = 100;
-        row[7] = 1.0f;
-        row[8] = 0L;
-        row[9] = 0L;
-        row[10] = Transition.NAMES.None.name();
-        row[11] = Transition.NAMES.None.name();
-        row[12] = Effect.eEffects.None.name();
-        model.addRow(row);
-        updateRemoteSources();
 
-        mLayoutPreview.repaint();
-        tabs.setSelectedComponent(panSources);
+        screenstudio.targets.Source source = new screenstudio.targets.Source(cboSourceViews.getItemCount());
+        source.CurrentViewIndex = cboSourceViews.getSelectedIndex();
+        source.Views.get(source.CurrentViewIndex).remoteDisplay = true;
+        source.Type = SourceType.LabelText;
+        source.SourceObject = new LabelText("<HTML><BODY>New Label...</BODY><HTML>");
+        source.Views.get(source.CurrentViewIndex).X = 0;
+        source.Views.get(source.CurrentViewIndex).Y = 0;
+        source.Views.get(source.CurrentViewIndex).Width = 600;
+        source.Views.get(source.CurrentViewIndex).Height = 100;
+        source.Views.get(source.CurrentViewIndex).Alpha = 1f;
+        source.Views.get(source.CurrentViewIndex).Order = mSources.size();
+        source.startTime = 0L;
+        source.endTime = 0L;
+        source.transitionStart = Transition.NAMES.None.name();
+        source.transitionStop = Transition.NAMES.None.name();
+        source.effect = Effect.eEffects.None.name();
+        mSources.add(source);
+        source.initOtherViews();
+
+        addNewSourceToTable(source);
+
     }//GEN-LAST:event_mnuMainAddLabelActionPerformed
 
     private void mnuMainMoveUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuMainMoveUpActionPerformed
         if (tableSources.getSelectedRow() != -1 && tableSources.getSelectedRow() > 0) {
+            tableSources.setEnabled(false);
             Object[] row = new Object[tableSources.getColumnCount()];
             for (int i = 0; i < row.length; i++) {
                 row[i] = tableSources.getValueAt(tableSources.getSelectedRow(), i);
@@ -1672,15 +1828,20 @@ public class ScreenStudio extends javax.swing.JFrame {
                 tableSources.setValueAt(row[i], tableSources.getSelectedRow() - 1, i);
             }
             int index = tableSources.getSelectedRow() - 1;
+            screenstudio.targets.Source source = mSources.remove(index);
+            mSources.add(index + 1, source);
             tableSources.setRowSelectionInterval(index, index);
             mLayoutPreview.repaint();
             tabs.setSelectedComponent(panSources);
             updateRemoteSources();
+            updateSourcesOrder();
+            tableSources.setEnabled(true);
         }
     }//GEN-LAST:event_mnuMainMoveUpActionPerformed
 
     private void mnuMainMoveDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuMainMoveDownActionPerformed
         if (tableSources.getSelectedRow() != -1 && tableSources.getSelectedRow() < tableSources.getRowCount() - 1) {
+            tableSources.setEnabled(false);
             Object[] row = new Object[tableSources.getColumnCount()];
             for (int i = 0; i < row.length; i++) {
                 row[i] = tableSources.getValueAt(tableSources.getSelectedRow(), i);
@@ -1688,10 +1849,14 @@ public class ScreenStudio extends javax.swing.JFrame {
                 tableSources.setValueAt(row[i], tableSources.getSelectedRow() + 1, i);
             }
             int index = tableSources.getSelectedRow() + 1;
+            screenstudio.targets.Source source = mSources.remove(index - 1);
+            mSources.add(index, source);
             tableSources.setRowSelectionInterval(index, index);
             mLayoutPreview.repaint();
             tabs.setSelectedComponent(panSources);
             updateRemoteSources();
+            updateSourcesOrder();
+            tableSources.setEnabled(true);
         }
     }//GEN-LAST:event_mnuMainMoveDownActionPerformed
 
@@ -1718,8 +1883,10 @@ public class ScreenStudio extends javax.swing.JFrame {
             int index = tableSources.getSelectedRow();
             DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
             model.removeRow(index);
+            mSources.remove(index);
             updateRemoteSources();
             mLayoutPreview.repaint();
+            updateSourcesOrder();
         }
     }//GEN-LAST:event_mnuMainRemoveActionPerformed
 
@@ -1737,7 +1904,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         if (trayIcon != null) {
             SystemTray.getSystemTray().remove(trayIcon);
         }
-        if (mCurrentAudioMonitor != null){
+        if (mCurrentAudioMonitor != null) {
             mCurrentAudioMonitor.stopMonitoring();
             mCurrentAudioMonitor = null;
         }
@@ -1810,21 +1977,21 @@ public class ScreenStudio extends javax.swing.JFrame {
     }//GEN-LAST:event_txtVideoFolderKeyTyped
 
     private void cboAudioMicrophonesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboAudioMicrophonesActionPerformed
-        
-        if (cboAudioMicrophones.getSelectedItem() != null){
+
+        if (cboAudioMicrophones.getSelectedItem() != null) {
             Microphone m = (Microphone) cboAudioMicrophones.getSelectedItem();
-            if (mCurrentAudioMonitor != null){
+            if (mCurrentAudioMonitor != null) {
                 mCurrentAudioMonitor.stopMonitoring();
                 mCurrentAudioMonitor = null;
                 pgAudioLevels.setValue(0);
             }
-            if (m.getDevice() != null){
+            if (m.getDevice() != null) {
                 mCurrentAudioMonitor = m;
                 m.startMonitoring();
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        while (mCurrentAudioMonitor != null){
+                        while (mCurrentAudioMonitor != null) {
                             pgAudioLevels.setValue(mCurrentAudioMonitor.getCurrentAudioLevel());
                             try {
                                 Thread.sleep(100);
@@ -1834,10 +2001,14 @@ public class ScreenStudio extends javax.swing.JFrame {
                         }
                     }
                 }).start();
-                
-            } 
+
+            }
         }
     }//GEN-LAST:event_cboAudioMicrophonesActionPerformed
+
+    private void cboSourceViewsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboSourceViewsActionPerformed
+        selectCurrentView(cboSourceViews.getSelectedIndex());
+    }//GEN-LAST:event_cboSourceViewsActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1882,6 +2053,7 @@ public class ScreenStudio extends javax.swing.JFrame {
     private javax.swing.JComboBox<Microphone> cboAudioSystems;
     private javax.swing.JComboBox<String> cboDefaultRecordingAction;
     private javax.swing.JComboBox<String> cboRTMPServers;
+    private javax.swing.JComboBox<String> cboSourceViews;
     private javax.swing.JComboBox<FFMpeg.FORMATS> cboTarget;
     private javax.swing.JComboBox<FFMpeg.Presets> cboVideoPresets;
     private javax.swing.JCheckBox chkDoNotUseTrayIcon;
@@ -1908,6 +2080,7 @@ public class ScreenStudio extends javax.swing.JFrame {
     private javax.swing.JLabel lblRTMPKey;
     private javax.swing.JLabel lblRTMPServer;
     private javax.swing.JLabel lblRemoteMessage;
+    private javax.swing.JLabel lblSourceViewsCount;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem mnuCapture;
     private javax.swing.JMenu mnuEdit;
@@ -1930,6 +2103,7 @@ public class ScreenStudio extends javax.swing.JFrame {
     private javax.swing.JPanel panSettingsMisc;
     private javax.swing.JPanel panSettingsVideos;
     private javax.swing.JPanel panSources;
+    private javax.swing.JPanel panSourcesViews;
     private javax.swing.JPanel panStatus;
     private javax.swing.JPanel panTargetSettings;
     private javax.swing.JProgressBar pgAudioLevels;
@@ -1948,4 +2122,5 @@ public class ScreenStudio extends javax.swing.JFrame {
     private javax.swing.JTextField txtRTMPKey;
     private javax.swing.JTextField txtVideoFolder;
     // End of variables declaration//GEN-END:variables
+
 }

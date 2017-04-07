@@ -17,11 +17,11 @@
 package screenstudio.sources;
 
 import java.awt.Image;
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
@@ -38,14 +38,14 @@ public class SourceImage extends Source {
     private BufferedImage[] images;
     private int currentIndex = 0;
 
-    public SourceImage(Rectangle bounds, int zOrder, float alpha, File image) {
-        super(bounds, zOrder, alpha, 1000, image.getAbsolutePath(), BufferedImage.TYPE_4BYTE_ABGR);
+    public SourceImage(List<screenstudio.targets.Source.View> views,  File image) {
+        super(views, 1000, image.getAbsolutePath(), BufferedImage.TYPE_4BYTE_ABGR);
         mFile = image;
         mType = Layout.SourceType.Image;
     }
 
-    public SourceImage(Rectangle bounds, int zOrder, float alpha, BufferedImage image, String id) {
-        super(bounds, zOrder, alpha, 1000, id, image.getType());
+    public SourceImage(List<screenstudio.targets.Source.View> views ,BufferedImage image, String id) {
+        super(views, 1000, id, image.getType());
         mFile = null;
         images = new BufferedImage[1];
         images[0] = image;

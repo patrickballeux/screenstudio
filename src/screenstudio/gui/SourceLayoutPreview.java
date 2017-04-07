@@ -120,12 +120,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                         sy = (int) (y + (sy * h / outputSize.getHeight()));
                         sw = (int) ((sw * w / outputSize.getWidth()));
                         sh = (int) ((sh * h / outputSize.getHeight()));
-                        if (sw + sx > x + w) {
-                            sw = (x + w - sx);
-                        }
-                        if (sy + sh > y + h) {
-                            sh = y + h - sy;
-                        }
+                        
                         BufferedImage img = null;
                         ((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1).derive(salpha));
 
@@ -133,7 +128,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                             case Desktop:
                                 Screen s = (Screen) mSources.getValueAt(i, 2);
                                 img = mRobot.createScreenCapture(s.getSize());
-                                g.drawImage(img.getScaledInstance((int) (img.getWidth() * w / outputSize.getWidth()), (int) (img.getHeight() * h / outputSize.getHeight()), Image.SCALE_FAST), sx, sy, null);
+                                g.drawImage(img.getScaledInstance(sw,sh, Image.SCALE_FAST), sx, sy, null);
                                 break;
                             case Webcam:
                                 g.setColor(Color.blue);
@@ -144,7 +139,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                                  {
                                     try {
                                         img = javax.imageio.ImageIO.read(sourceImg);
-                                        g.drawImage(img.getScaledInstance((int) ((int) mSources.getValueAt(i, 5) * w / outputSize.getWidth()), (int) ((int) mSources.getValueAt(i, 6) * h / outputSize.getHeight()), Image.SCALE_FAST), sx, sy, null);
+                                        g.drawImage(img.getScaledInstance(sw,sh, Image.SCALE_FAST), sx, sy, null);
                                     } catch (IOException ex) {
                                         Logger.getLogger(SourceLayoutPreview.class.getName()).log(Level.SEVERE, null, ex);
                                     }
@@ -155,7 +150,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                                 LabelText text = (LabelText) mSources.getValueAt(i, 2);
                                 JLabel label = new JLabel(text.getText());
                                 label.setFont(new Font(text.getFontName(), Font.PLAIN, sh));
-                                label.setSize((int) (((int) mSources.getValueAt(i, 5)) * w / outputSize.getWidth()), (int) (((int) mSources.getValueAt(i, 6)) * h / outputSize.getHeight()));
+                                label.setSize( sw, sh);
                                 label.setLocation(0, 0);
                                 label.setOpaque(true);
                                 label.setForeground(new Color(text.getForegroundColor()));
@@ -168,7 +163,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                                  {
                                     try {
                                         img = Frames.getImage(frameName);
-                                        g.drawImage(img.getScaledInstance((int) ((int) mSources.getValueAt(i, 5) * w / outputSize.getWidth()), (int) ((int) mSources.getValueAt(i, 6) * h / outputSize.getHeight()), Image.SCALE_FAST), sx, sy, null);
+                                        g.drawImage(img.getScaledInstance(sw,sh,Image.SCALE_FAST), sx, sy, null);
                                     } catch (IOException ex) {
                                         Logger.getLogger(SourceLayoutPreview.class.getName()).log(Level.SEVERE, null, ex);
                                     }

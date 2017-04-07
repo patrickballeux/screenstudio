@@ -28,6 +28,9 @@ public class LabelText {
     public LabelText(String text){
         mText = text;
     }
+    public void setText(String text){
+        mText = text;
+    }
     public void setForegroundColor(int value){
         mforegroundColor = value;
     }
