@@ -16,7 +16,8 @@
  */
 package screenstudio.gui;
 
-import java.awt.BasicStroke;
+import java.awt.AWTException;
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
@@ -25,16 +26,18 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Stroke;
+import java.awt.Robot;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.util.List;
+import java.io.File;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JLabel;
 import javax.swing.JTable;
+import screenstudio.gui.images.frames.Frames;
 import screenstudio.sources.Compositor;
-import static screenstudio.sources.Compositor.getSources;
-import screenstudio.sources.Source;
+import screenstudio.sources.Screen;
 import screenstudio.targets.Layout.SourceType;
 
 /**
@@ -46,7 +49,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
     private final JTable mSources;
     private final Rectangle outputSize = new Rectangle(0, 0, 720, 480);
     private Compositor compositer = null;
-    private int mFPS = 10;
+    private Robot mRobot = null;
 
     /**
      * Creates new form SourceLayoutPreview
@@ -57,6 +60,11 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
         initComponents();
         this.setDoubleBuffered(true);
         mSources = sources;
+        try {
+            mRobot = new Robot();
+        } catch (AWTException ex) {
+            Logger.getLogger(SourceLayoutPreview.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void setOutputWidth(int value) {
@@ -65,10 +73,6 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
 
     public void setOutputHeight(int value) {
         outputSize.setSize(outputSize.width, value);
-    }
-
-    public void setFPS(int value) {
-        mFPS = value;
     }
 
     @Override
@@ -93,89 +97,101 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                 h = (int) (w / ratio) - 1;
             }
             x = (getWidth() - w) / 2;
-            if (compositer != null) {
-                BufferedImage img = new BufferedImage(outputSize.width, outputSize.height, BufferedImage.TYPE_3BYTE_BGR);
-                byte[] data = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
-                System.arraycopy(compositer.getData(), 0, data, 0, data.length);
-                g.drawImage(img.getScaledInstance(w, h, Image.SCALE_FAST), x, y, this);
-            } else {
-                int fontSize = h / 25;
-                Font font = new Font(getFont().getFontName(), getFont().getStyle(), fontSize);
-                g.setFont(font);
-                g.setColor(Color.BLACK);
-                g.fillRect(x, y, w, h);
-                if (mSources != null) {
-                    for (int i = mSources.getRowCount() - 1; i >= 0; i--) {
-                        if ((Boolean) mSources.getValueAt(i, 0)) {
-                            g.setFont(font);
-                            int sx = (int) mSources.getValueAt(i, 3);
-                            int sy = (int) mSources.getValueAt(i, 4);
-                            int sw = (int) mSources.getValueAt(i, 5);
-                            int sh = (int) mSources.getValueAt(i, 6);
-                            sx = (int) (x + (sx * w / outputSize.getWidth()));
-                            sy = (int) (y + (sy * h / outputSize.getHeight()));
-                            sw = (int) ((sw * w / outputSize.getWidth()));
-                            sh = (int) ((sh * h / outputSize.getHeight()));
-                            if (sw + sx > x + w) {
-                                sw = (x + w - sx);
-                            }
-                            if (sy + sh > y + h) {
-                                sh = y + h - sy;
-                            }
-                            
-                            switch ((SourceType) mSources.getValueAt(i, 1)) {
-                                case Desktop:
-                                    g.setColor(Color.red);
-                                    g.fillRect(sx, sy, sw, sh);
-                                    break;
-                                case Webcam:
-                                    g.setColor(Color.blue);
-                                    g.fillRect(sx, sy, sw, sh);
-                                    break;
-                                case Image:
-                                    g.setColor(Color.ORANGE);
-                                    g.fillRect(sx, sy, sw, sh);
-                                    break;
-                                case LabelText:
-                                    g.setColor(Color.darkGray);
-                                    g.setFont(new Font(font.getFontName(), font.getStyle(), font.getSize()));
-                                    g.fillRect(sx, sy, sw, sh);
-                                    break;
-                                case Frame:
-                                    g.setColor(Color.LIGHT_GRAY);
-                                    ((Graphics2D)g).setStroke(new BasicStroke(20));
-                                    g.drawRect(sx+10, sy+10, sw-20, sh-20);
-                                    ((Graphics2D)g).setStroke(new BasicStroke(1));
-                                    break;
-                                default:
-                                    g.setColor(Color.gray);
-                                    g.fillRect(sx, sy, sw, sh);
-                                    break;
-                            }
-                            if (i == mSources.getSelectedRow()) {
-                                g.setColor(Color.green);
-                                g.drawRect(sx, sy, sw, sh);
-                            }
-                            g.setColor(Color.white);
-                            g.drawString(stripHTML(mSources.getValueAt(i, 2).toString()), sx + 5, sy + sh - 10);
+            g.setClip(x, y, w, h);
+
+            int fontSize = h / 25;
+            Font font = new Font(getFont().getFontName(), getFont().getStyle(), fontSize);
+            g.setFont(font);
+            g.setColor(Color.BLACK);
+            g.fillRect(x, y, w, h);
+            if (mSources != null) {
+                for (int i = mSources.getRowCount() - 1; i >= 0; i--) {
+                    if ((Boolean) mSources.getValueAt(i, 0)) {
+                        //Draw Preview...
+                        g.setFont(font);
+                        int sx = (int) mSources.getValueAt(i, 3);
+                        int sy = (int) mSources.getValueAt(i, 4);
+                        int sw = (int) mSources.getValueAt(i, 5);
+                        int sh = (int) mSources.getValueAt(i, 6);
+                        float salpha = (float) mSources.getValueAt(i, 7);
+                        if (salpha < 0f) salpha = 0f;
+                        if (salpha > 1f) salpha = 1f;
+                        sx = (int) (x + (sx * w / outputSize.getWidth()));
+                        sy = (int) (y + (sy * h / outputSize.getHeight()));
+                        sw = (int) ((sw * w / outputSize.getWidth()));
+                        sh = (int) ((sh * h / outputSize.getHeight()));
+                        if (sw + sx > x + w) {
+                            sw = (x + w - sx);
+                        }
+                        if (sy + sh > y + h) {
+                            sh = y + h - sy;
+                        }
+                        BufferedImage img = null;
+                        ((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1).derive(salpha));
+
+                        switch ((SourceType) mSources.getValueAt(i, 1)) {
+                            case Desktop:
+                                Screen s = (Screen) mSources.getValueAt(i, 2);
+                                img = mRobot.createScreenCapture(s.getSize());
+                                g.drawImage(img.getScaledInstance((int) (img.getWidth() * w / outputSize.getWidth()), (int) (img.getHeight() * h / outputSize.getHeight()), Image.SCALE_FAST), sx, sy, null);
+                                break;
+                            case Webcam:
+                                g.setColor(Color.blue);
+                                g.fillRect(sx, sy, sw, sh);
+                                break;
+                            case Image:
+                                File sourceImg = (File) mSources.getValueAt(i, 2);
+                                 {
+                                    try {
+                                        img = javax.imageio.ImageIO.read(sourceImg);
+                                        g.drawImage(img.getScaledInstance((int) ((int) mSources.getValueAt(i, 5) * w / outputSize.getWidth()), (int) ((int) mSources.getValueAt(i, 6) * h / outputSize.getHeight()), Image.SCALE_FAST), sx, sy, null);
+                                    } catch (IOException ex) {
+                                        Logger.getLogger(SourceLayoutPreview.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+                                }
+                                break;
+                            case LabelText:
+                                img = new BufferedImage(sw, sh, BufferedImage.TYPE_INT_ARGB);
+                                LabelText text = (LabelText) mSources.getValueAt(i, 2);
+                                JLabel label = new JLabel(text.getText());
+                                label.setFont(new Font(text.getFontName(), Font.PLAIN, sh));
+                                label.setSize((int) (((int) mSources.getValueAt(i, 5)) * w / outputSize.getWidth()), (int) (((int) mSources.getValueAt(i, 6)) * h / outputSize.getHeight()));
+                                label.setLocation(0, 0);
+                                label.setOpaque(true);
+                                label.setForeground(new Color(text.getForegroundColor()));
+                                label.setBackground(new Color(text.getBackgroundColor()));
+                                label.paint(img.createGraphics());
+                                g.drawImage(img, sx, sy, null);
+                                break;
+                            case Frame:
+                                Frames.eList frameName = (Frames.eList) mSources.getValueAt(i, 2);
+                                 {
+                                    try {
+                                        img = Frames.getImage(frameName);
+                                        g.drawImage(img.getScaledInstance((int) ((int) mSources.getValueAt(i, 5) * w / outputSize.getWidth()), (int) ((int) mSources.getValueAt(i, 6) * h / outputSize.getHeight()), Image.SCALE_FAST), sx, sy, null);
+                                    } catch (IOException ex) {
+                                        Logger.getLogger(SourceLayoutPreview.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+                                }
+                                break;
+                            default:
+                                g.setColor(Color.gray);
+                                g.fillRect(sx, sy, sw, sh);
+                                break;
+                        }
+                        if (i == mSources.getSelectedRow()) {
+                            g.setColor(Color.green);
+                            g.drawRect(sx, sy, sw, sh);
                         }
                     }
                 }
-                g.setFont(font);
-                //draw output format that will be used...
-                g.setColor(Color.WHITE);
-                g.drawString("Output : " + outputSize.width + "X" + outputSize.height, x + 5, y + 20);
             }
+            g.setFont(font);
+            //draw output format that will be used...
+            g.setColor(Color.WHITE);
+            g.drawString("Output : " + outputSize.width + "X" + outputSize.height, x + 5, y + 20);
         }
-        tglPreview.paint(g);
-    }
 
-    private String stripHTML(String text) {
-        String retValue = text.replaceAll("\\<[^>]*>", "");
-        if (retValue.length() > 25) {
-            retValue = "..." + retValue.substring(retValue.length() - 25, retValue.length());
-        }
-        return retValue;
     }
 
     /**
@@ -186,8 +202,6 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-
-        tglPreview = new javax.swing.JToggleButton();
 
         setBackground(new java.awt.Color(51, 51, 51));
         setPreferredSize(new java.awt.Dimension(320, 240));
@@ -205,30 +219,15 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
             }
         });
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("screenstudio/Languages"); // NOI18N
-        tglPreview.setText(bundle.getString("PREVIEW")); // NOI18N
-        tglPreview.setToolTipText("<html>\n<body>\nPreview the current layout\n<br>\n<i><font size=-2 color=red>Remember to stop the preview before recording...</font></i>\n</body>\n</html>");
-        tglPreview.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tglPreviewActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(tglPreview)
-                .addContainerGap(232, Short.MAX_VALUE))
+            .addGap(0, 320, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(tglPreview)
-                .addContainerGap(198, Short.MAX_VALUE))
+            .addGap(0, 240, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -253,47 +252,6 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
     private void formMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseReleased
         this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_formMouseReleased
-
-    private void tglPreviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tglPreviewActionPerformed
-        if (tglPreview.isSelected()) {
-            tglPreview.setEnabled(false);
-            List<Source> list = getSources(mSources, mFPS);
-            compositer = new Compositor(list, outputSize, 10);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    tglPreview.setEnabled(true);
-                    while (compositer != null) {
-                        repaint();
-                        try {
-                            Thread.sleep(200);
-                        } catch (InterruptedException ex) {
-                            Logger.getLogger(SourceLayoutPreview.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                    repaint();
-                }
-            }).start();
-        } else if (compositer != null) {
-            compositer.RequestStop();
-            tglPreview.setEnabled(false);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(SourceLayoutPreview.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    compositer.stop();
-                    compositer = null;
-                    tglPreview.setEnabled(true);
-                    repaint();
-                }
-            }).start();
-
-        }
-    }//GEN-LAST:event_tglPreviewActionPerformed
 
     private Point getTranslatedPosition(int mouseX, int mouseY) {
         int w = outputSize.width;
@@ -321,6 +279,5 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JToggleButton tglPreview;
     // End of variables declaration//GEN-END:variables
 }

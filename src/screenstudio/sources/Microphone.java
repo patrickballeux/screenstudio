@@ -24,6 +24,11 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Line;
+import javax.sound.sampled.Mixer;
+import javax.sound.sampled.TargetDataLine;
+import javax.sound.sampled.spi.AudioFileReader;
 import screenstudio.encoder.FFMpeg;
 import screenstudio.encoder.ProcessReader;
 

@@ -496,7 +496,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                                 row[4] = 0;
                                 row[5] = webcam.getWidth();
                                 row[6] = webcam.getHeight();
-                                row[7] = 1;
+                                row[7] = 1f;
                                 row[8] = 0L;
                                 row[9] = 0L;
                                 row[10] = Transition.NAMES.None.name();
@@ -554,7 +554,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                                 row[4] = 0;
                                 row[5] = spinWidth.getValue();
                                 row[6] = spinHeight.getValue();
-                                row[7] = 1;
+                                row[7] = 1f;
                                 row[8] = 0L;
                                 row[9] = 0L;
                                 row[10] = Transition.NAMES.None.name();
