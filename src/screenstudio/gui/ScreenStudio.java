@@ -313,11 +313,12 @@ public class ScreenStudio extends javax.swing.JFrame implements TableModelListen
             source.CurrentViewIndex = index;
         }
         mSources.sort((a, b) -> Integer.compare(b.Views.get(index).Order, a.Views.get(index).Order));
-        for (screenstudio.targets.Source source : mSources) {
+        for (int i = mSources.size() - 1; i >= 0; i--) {
+            screenstudio.targets.Source source = mSources.get(i);
             addNewSourceToTable(source);
         }
         mRemote.setCurrentView(index);
-       
+
     }
 
     private void loadLayout(File file) {
@@ -443,16 +444,16 @@ public class ScreenStudio extends javax.swing.JFrame implements TableModelListen
         mCurrentLayout.setVideoBitrate((Integer) numVideoBitrate.getValue());
         mCurrentLayout.setBackgroundMusic(mBackgroundMusic);
         for (screenstudio.targets.Source s : mSources) {
-            if (s.SourceObject instanceof File){
-                s.ID = ((File)s.SourceObject).getAbsolutePath();
-            } else if (s.SourceObject instanceof Screen){
-                s.ID = ((Screen)s.SourceObject).getLabel();
-            } else if (s.SourceObject instanceof Frames.eList){
-                s.ID = ((Frames.eList)s.SourceObject).name();
-            } else if (s.SourceObject instanceof Webcam){
-                s.ID = ((Webcam)s.SourceObject).getDevice();
-            } else if (s.SourceObject instanceof LabelText){
-                s.ID = ((LabelText)s.SourceObject).getText();
+            if (s.SourceObject instanceof File) {
+                s.ID = ((File) s.SourceObject).getAbsolutePath();
+            } else if (s.SourceObject instanceof Screen) {
+                s.ID = ((Screen) s.SourceObject).getLabel();
+            } else if (s.SourceObject instanceof Frames.eList) {
+                s.ID = ((Frames.eList) s.SourceObject).name();
+            } else if (s.SourceObject instanceof Webcam) {
+                s.ID = ((Webcam) s.SourceObject).getDevice();
+            } else if (s.SourceObject instanceof LabelText) {
+                s.ID = ((LabelText) s.SourceObject).getText();
             }
             mCurrentLayout.addSource(s);
         }
@@ -500,9 +501,16 @@ public class ScreenStudio extends javax.swing.JFrame implements TableModelListen
     }
 
     private void updateSourcesOrder() {
-        for (int i = 0; i < mSources.size(); i++) {
-            mSources.get(i).Views.get(mSources.get(i).CurrentViewIndex).Order = i;
+        for (int i = 0; i < tableSources.getRowCount(); i++) {
+            Object sourceObject = tableSources.getValueAt(i, 2);
+            for (int j = 0; j < mSources.size(); j++) {
+                if (mSources.get(j).SourceObject == sourceObject) {
+                    mSources.get(j).Views.get(cboSourceViews.getSelectedIndex()).Order = i;
+                    break;
+                }
+            }
         }
+        mSources.sort((a, b) -> Integer.compare(b.Views.get(cboSourceViews.getSelectedIndex()).Order, a.Views.get(cboSourceViews.getSelectedIndex()).Order));
     }
 
     private void updateMenuWebcams() {
@@ -574,7 +582,6 @@ public class ScreenStudio extends javax.swing.JFrame implements TableModelListen
         updateRemoteSources();
         mLayoutPreview.repaint();
         tabs.setSelectedComponent(panSources);
-        updateSourcesOrder();
         tableSources.setEnabled(true);
     }
 
@@ -588,9 +595,9 @@ public class ScreenStudio extends javax.swing.JFrame implements TableModelListen
                     source.Views.get(source.CurrentViewIndex).remoteDisplay = b;
                     break;
                 case 2:
-                    if (source.SourceObject instanceof LabelText){
-                        String text =tableSources.getValueAt(e.getFirstRow(), e.getColumn()).toString();
-                        ((LabelText)source.SourceObject).setText(text);
+                    if (source.SourceObject instanceof LabelText) {
+                        String text = tableSources.getValueAt(e.getFirstRow(), e.getColumn()).toString();
+                        ((LabelText) source.SourceObject).setText(text);
                     }
                     break;
                 case 3: //X
@@ -1828,14 +1835,12 @@ public class ScreenStudio extends javax.swing.JFrame implements TableModelListen
                 tableSources.setValueAt(row[i], tableSources.getSelectedRow() - 1, i);
             }
             int index = tableSources.getSelectedRow() - 1;
-            screenstudio.targets.Source source = mSources.remove(index);
-            mSources.add(index + 1, source);
             tableSources.setRowSelectionInterval(index, index);
             mLayoutPreview.repaint();
             tabs.setSelectedComponent(panSources);
             updateRemoteSources();
-            updateSourcesOrder();
             tableSources.setEnabled(true);
+            updateSourcesOrder();
         }
     }//GEN-LAST:event_mnuMainMoveUpActionPerformed
 
@@ -1849,14 +1854,12 @@ public class ScreenStudio extends javax.swing.JFrame implements TableModelListen
                 tableSources.setValueAt(row[i], tableSources.getSelectedRow() + 1, i);
             }
             int index = tableSources.getSelectedRow() + 1;
-            screenstudio.targets.Source source = mSources.remove(index - 1);
-            mSources.add(index, source);
             tableSources.setRowSelectionInterval(index, index);
             mLayoutPreview.repaint();
             tabs.setSelectedComponent(panSources);
             updateRemoteSources();
-            updateSourcesOrder();
             tableSources.setEnabled(true);
+            updateSourcesOrder();
         }
     }//GEN-LAST:event_mnuMainMoveDownActionPerformed
 

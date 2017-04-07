@@ -38,7 +38,7 @@ import screenstudio.sources.transitions.Transition;
  */
 public class Compositor {
 
-    private final java.util.List<Source> mSources;
+    private java.util.List<Source> mSources;
     private final int mFPS;
     private final Rectangle mOutputSize;
     private final byte[] mData;
@@ -84,10 +84,13 @@ public class Compositor {
     }
 
     public void setCurrentView(int index){
+        ArrayList<Source> newList = new ArrayList<>();
         for (Source s : mSources){
             s.setViewIndex(index);
         }
-        mSources.sort((a, b) -> Integer.compare(b.getZOrder(), a.getZOrder()));
+        newList.addAll(mSources);
+        newList.sort((a, b) -> Integer.compare(b.getZOrder(), a.getZOrder()));
+        mSources=newList;
     }
     public long getTimeDelta() {
         return mTimeDelta;
