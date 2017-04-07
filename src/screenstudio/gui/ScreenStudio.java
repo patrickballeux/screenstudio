@@ -235,7 +235,7 @@ public class ScreenStudio extends javax.swing.JFrame {
             });
         }
         for (Frames.eList f : Frames.eList.values()) {
-            JMenuItem menu = new JMenuItem(Frames.getDescription(f));
+            JMenuItem menu = new JMenuItem(f.toString());
             menu.setActionCommand(f.name());
             mnuMainFrames.add(menu);
             menu.addActionListener(new ActionListener() {

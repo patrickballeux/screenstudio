@@ -227,7 +227,7 @@ public class Compositor {
                 list.add(s);
             } else if (source instanceof Frames.eList) {
                 try {
-                    SourceImage s = new SourceImage(new Rectangle(sx, sy, sw, sh), i, alpha, (BufferedImage) Frames.getImage((Frames.eList) source), source.toString());
+                    SourceImage s = new SourceImage(new Rectangle(sx, sy, sw, sh), i, alpha, (BufferedImage) Frames.getImage((Frames.eList) source), ((Frames.eList) source).name());
                     s.setDisplayTime(timestart, timeend);
                     s.setTransitionStart(Transition.NAMES.valueOf(transIn));
                     s.setTransitionStop(Transition.NAMES.valueOf(transOut));
