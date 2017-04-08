@@ -305,6 +305,7 @@ public class ScreenStudio extends javax.swing.JFrame implements TableModelListen
     }
 
     private void selectCurrentView(int index) {
+        tableSources.setEnabled(false);
         DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
         while (model.getRowCount() > 0) {
             model.removeRow(0);
@@ -312,13 +313,13 @@ public class ScreenStudio extends javax.swing.JFrame implements TableModelListen
         for (screenstudio.targets.Source source : mSources) {
             source.CurrentViewIndex = index;
         }
-        mSources.sort((a, b) -> Integer.compare(b.Views.get(index).Order, a.Views.get(index).Order));
-        for (int i = mSources.size() - 1; i >= 0; i--) {
+        mSources.sort((b, a) -> Integer.compare(b.Views.get(index).Order, a.Views.get(index).Order));
+        for (int i = 0; i < mSources.size(); i++) {
             screenstudio.targets.Source source = mSources.get(i);
             addNewSourceToTable(source);
         }
         mRemote.setCurrentView(index);
-
+        tableSources.setEnabled(true);
     }
 
     private void loadLayout(File file) {
@@ -415,7 +416,11 @@ public class ScreenStudio extends javax.swing.JFrame implements TableModelListen
                         break;
                 }
                 mSources.add(s);
-                addNewSourceToTable(s);
+
+            }
+            mSources.sort((b, a) -> Integer.compare(b.Views.get(cboSourceViews.getSelectedIndex()).Order, a.Views.get(cboSourceViews.getSelectedIndex()).Order));
+            for (int i = 0; i < mSources.size(); i++) {
+                addNewSourceToTable(mSources.get(i));
             }
         } catch (IOException | ParserConfigurationException | SAXException | InterruptedException ex) {
             Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
@@ -443,7 +448,9 @@ public class ScreenStudio extends javax.swing.JFrame implements TableModelListen
         mCurrentLayout.setOutputWith((Integer) spinWidth.getValue());
         mCurrentLayout.setVideoBitrate((Integer) numVideoBitrate.getValue());
         mCurrentLayout.setBackgroundMusic(mBackgroundMusic);
-        for (screenstudio.targets.Source s : mSources) {
+        mSources.sort((b, a) -> Integer.compare(b.Views.get(0).Order, a.Views.get(0).Order));
+        for (int i = 0; i < mSources.size(); i++) {
+            screenstudio.targets.Source s = mSources.get(i);
             if (s.SourceObject instanceof File) {
                 s.ID = ((File) s.SourceObject).getAbsolutePath();
             } else if (s.SourceObject instanceof Screen) {
@@ -510,7 +517,7 @@ public class ScreenStudio extends javax.swing.JFrame implements TableModelListen
                 }
             }
         }
-        mSources.sort((a, b) -> Integer.compare(b.Views.get(cboSourceViews.getSelectedIndex()).Order, a.Views.get(cboSourceViews.getSelectedIndex()).Order));
+        mSources.sort((b, a) -> Integer.compare(b.Views.get(cboSourceViews.getSelectedIndex()).Order, a.Views.get(cboSourceViews.getSelectedIndex()).Order));
     }
 
     private void updateMenuWebcams() {
@@ -526,7 +533,6 @@ public class ScreenStudio extends javax.swing.JFrame implements TableModelListen
                         for (Webcam webcam : Webcam.getSources()) {
                             if (webcam.getDevice().equals(e.getActionCommand())) {
                                 screenstudio.targets.Source source = new screenstudio.targets.Source(cboSourceViews.getItemCount());
-                                source.Views.add(new screenstudio.targets.Source.View());
                                 source.CurrentViewIndex = cboSourceViews.getSelectedIndex();;
                                 source.Views.get(source.CurrentViewIndex).remoteDisplay = true;
                                 source.Type = SourceType.Webcam;
@@ -543,6 +549,7 @@ public class ScreenStudio extends javax.swing.JFrame implements TableModelListen
                                 source.transitionStop = Transition.NAMES.None.name();
                                 source.effect = Effect.eEffects.None.name();
                                 mSources.add(source);
+
                                 source.initOtherViews();
                                 addNewSourceToTable(source);
                                 break;
@@ -587,59 +594,63 @@ public class ScreenStudio extends javax.swing.JFrame implements TableModelListen
 
     @Override
     public void tableChanged(TableModelEvent e) {
-        if (e.getType() == TableModelEvent.UPDATE && tableSources.isEnabled()) {
-            screenstudio.targets.Source source = mSources.get(e.getFirstRow());
-            switch (e.getColumn()) {
-                case 0: // display...
-                    boolean b = (Boolean) tableSources.getValueAt(e.getFirstRow(), e.getColumn());
-                    source.Views.get(source.CurrentViewIndex).remoteDisplay = b;
-                    break;
-                case 2:
-                    if (source.SourceObject instanceof LabelText) {
-                        String text = tableSources.getValueAt(e.getFirstRow(), e.getColumn()).toString();
-                        ((LabelText) source.SourceObject).setText(text);
-                    }
-                    break;
-                case 3: //X
-                    int x = (int) tableSources.getValueAt(e.getFirstRow(), e.getColumn());
-                    source.Views.get(source.CurrentViewIndex).X = x;
-                    break;
-                case 4: //Y
-                    int y = (int) tableSources.getValueAt(e.getFirstRow(), e.getColumn());
-                    source.Views.get(source.CurrentViewIndex).Y = y;
-                    break;
-                case 5: //Width
-                    int w = (int) tableSources.getValueAt(e.getFirstRow(), e.getColumn());
-                    source.Views.get(source.CurrentViewIndex).Width = w;
-                    break;
-                case 6: //Height
-                    int h = (int) tableSources.getValueAt(e.getFirstRow(), e.getColumn());
-                    source.Views.get(source.CurrentViewIndex).Height = h;
-                    break;
-                case 7: //Alpha
-                    float f = (float) tableSources.getValueAt(e.getFirstRow(), e.getColumn());
-                    source.Views.get(source.CurrentViewIndex).Alpha = f;
-                    break;
-                case 8: // start time
-                    long start = (Long) tableSources.getValueAt(e.getFirstRow(), e.getColumn());
-                    source.startTime = start;
-                    break;
-                case 9: // end time
-                    long end = (Long) tableSources.getValueAt(e.getFirstRow(), e.getColumn());
-                    source.endTime = end;
-                    break;
-                case 10: // trans in
-                    String ti = tableSources.getValueAt(e.getFirstRow(), e.getColumn()).toString();
-                    source.transitionStart = ti;
-                    break;
-                case 11: // trans out
-                    String to = tableSources.getValueAt(e.getFirstRow(), e.getColumn()).toString();
-                    source.transitionStop = to;
-                    break;
-                case 12: // effect
-                    String ef = tableSources.getValueAt(e.getFirstRow(), e.getColumn()).toString();
-                    source.effect = ef;
-                    break;
+        int rowIndex = tableSources.getSelectedRow();
+        if (rowIndex > -1) {
+            if (e.getType() == TableModelEvent.UPDATE && tableSources.isEnabled()) {
+
+                screenstudio.targets.Source source = mSources.get(rowIndex);
+                switch (e.getColumn()) {
+                    case 0: // display...
+                        boolean b = (Boolean) tableSources.getValueAt(rowIndex, e.getColumn());
+                        source.Views.get(source.CurrentViewIndex).remoteDisplay = b;
+                        break;
+                    case 2:
+                        if (source.SourceObject instanceof LabelText) {
+                            String text = tableSources.getValueAt(rowIndex, e.getColumn()).toString();
+                            ((LabelText) source.SourceObject).setText(text);
+                        }
+                        break;
+                    case 3: //X
+                        int x = (int) tableSources.getValueAt(rowIndex, e.getColumn());
+                        source.Views.get(source.CurrentViewIndex).X = x;
+                        break;
+                    case 4: //Y
+                        int y = (int) tableSources.getValueAt(rowIndex, e.getColumn());
+                        source.Views.get(source.CurrentViewIndex).Y = y;
+                        break;
+                    case 5: //Width
+                        int w = (int) tableSources.getValueAt(rowIndex, e.getColumn());
+                        source.Views.get(source.CurrentViewIndex).Width = w;
+                        break;
+                    case 6: //Height
+                        int h = (int) tableSources.getValueAt(rowIndex, e.getColumn());
+                        source.Views.get(source.CurrentViewIndex).Height = h;
+                        break;
+                    case 7: //Alpha
+                        float f = (float) tableSources.getValueAt(rowIndex, e.getColumn());
+                        source.Views.get(source.CurrentViewIndex).Alpha = f;
+                        break;
+                    case 8: // start time
+                        long start = (Long) tableSources.getValueAt(rowIndex, e.getColumn());
+                        source.startTime = start;
+                        break;
+                    case 9: // end time
+                        long end = (Long) tableSources.getValueAt(rowIndex, e.getColumn());
+                        source.endTime = end;
+                        break;
+                    case 10: // trans in
+                        String ti = tableSources.getValueAt(rowIndex, e.getColumn()).toString();
+                        source.transitionStart = ti;
+                        break;
+                    case 11: // trans out
+                        String to = tableSources.getValueAt(rowIndex, e.getColumn()).toString();
+                        source.transitionStop = to;
+                        break;
+                    case 12: // effect
+                        String ef = tableSources.getValueAt(rowIndex, e.getColumn()).toString();
+                        source.effect = ef;
+                        break;
+                }
             }
         }
     }
@@ -667,7 +678,6 @@ public class ScreenStudio extends javax.swing.JFrame implements TableModelListen
                         for (Screen screen : Screen.getSources()) {
                             if (screen.getLabel().equals(e.getActionCommand())) {
                                 screenstudio.targets.Source source = new screenstudio.targets.Source(cboSourceViews.getItemCount());
-                                source.Views.add(new screenstudio.targets.Source.View());
                                 source.CurrentViewIndex = cboSourceViews.getSelectedIndex();;
                                 source.Views.get(source.CurrentViewIndex).remoteDisplay = true;
                                 source.Type = SourceType.Desktop;
@@ -1453,10 +1463,15 @@ public class ScreenStudio extends javax.swing.JFrame implements TableModelListen
         if (evt.getClickCount() == 2) {
             int rowIndex = tableSources.getSelectedRow();
             if (tableSources.getValueAt(rowIndex, 1) == SourceType.LabelText) {
-                Editor ed = new Editor(((LabelText) tableSources.getValueAt(rowIndex, 2)), this);
+                LabelText t = ((LabelText) tableSources.getValueAt(rowIndex, 2));
+                Editor ed = new Editor(t, this);
                 ed.setModal(true);
                 ed.setVisible(true);
                 tableSources.setValueAt(ed.getLabelText(), rowIndex, 2);
+                screenstudio.targets.Source source = mSources.get(rowIndex);
+                source.fontName = t.getFontName();
+                source.foregroundColor = t.getForegroundColor();
+                source.backgroundColor = t.getBackgroundColor();
                 tableSources.repaint();
             } else if (tableSources.getValueAt(rowIndex, 1) == SourceType.Desktop) {
                 Screen s = (Screen) tableSources.getValueAt(rowIndex, 2);
@@ -1839,8 +1854,8 @@ public class ScreenStudio extends javax.swing.JFrame implements TableModelListen
             mLayoutPreview.repaint();
             tabs.setSelectedComponent(panSources);
             updateRemoteSources();
-            tableSources.setEnabled(true);
             updateSourcesOrder();
+            tableSources.setEnabled(true);
         }
     }//GEN-LAST:event_mnuMainMoveUpActionPerformed
 
@@ -1858,8 +1873,8 @@ public class ScreenStudio extends javax.swing.JFrame implements TableModelListen
             mLayoutPreview.repaint();
             tabs.setSelectedComponent(panSources);
             updateRemoteSources();
-            tableSources.setEnabled(true);
             updateSourcesOrder();
+            tableSources.setEnabled(true);
         }
     }//GEN-LAST:event_mnuMainMoveDownActionPerformed
 
@@ -1882,6 +1897,7 @@ public class ScreenStudio extends javax.swing.JFrame implements TableModelListen
     }//GEN-LAST:event_formWindowStateChanged
 
     private void mnuMainRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuMainRemoveActionPerformed
+        tableSources.setEnabled(false);
         if (tableSources.getSelectedRow() != -1) {
             int index = tableSources.getSelectedRow();
             DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
@@ -1891,6 +1907,8 @@ public class ScreenStudio extends javax.swing.JFrame implements TableModelListen
             mLayoutPreview.repaint();
             updateSourcesOrder();
         }
+        tableSources.setEnabled(true);
+
     }//GEN-LAST:event_mnuMainRemoveActionPerformed
 
     private void spinAudioDelayStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spinAudioDelayStateChanged
