@@ -244,7 +244,7 @@ public class Layout {
 
     public void addSource(Source source) {
         String nodeName = "";
-        switch (source.Type) {
+        switch (source.getType()) {
             case Desktop:
                 nodeName = "desktop";
                 break;
@@ -267,7 +267,7 @@ public class Layout {
 
         //This is for the layouts
         
-        for (Source.View v : source.Views) {
+        for (Source.View v : source.getViews()) {
             Node nodeView = document.createElement("view");
             
             Node viewName = document.createAttribute("name");
@@ -310,19 +310,19 @@ public class Layout {
         Node transitionStop = document.createAttribute("transstop");
         Node effectFilter = document.createAttribute("effect");
 
-        capx.setNodeValue("" + source.CaptureX);
-        capy.setNodeValue("" + source.CaptureY);
+        capx.setNodeValue("" + source.getCaptureX());
+        capy.setNodeValue("" + source.getCaptureY());
 
-        id.setNodeValue("" + source.ID);
-        foreg.setNodeValue("" + source.foregroundColor);
-        backg.setNodeValue("" + source.backgroundColor);
-        fontg.setNodeValue(source.fontName);
-        timeStart.setNodeValue(source.startTime + "");
-        timeEnd.setNodeValue(source.endTime + "");
-        transitionStart.setNodeValue(source.transitionStart);
-        transitionStop.setNodeValue(source.transitionStop);
-        effectFilter.setNodeValue(source.effect);
-        switch (source.Type) {
+        id.setNodeValue("" + source.getID());
+        foreg.setNodeValue("" + source.getForegroundColor());
+        backg.setNodeValue("" + source.getBackgroundColor());
+        fontg.setNodeValue(source.getFontName());
+        timeStart.setNodeValue(source.getStartTime() + "");
+        timeEnd.setNodeValue(source.getEndTime() + "");
+        transitionStart.setNodeValue(source.getTransitionStart());
+        transitionStop.setNodeValue(source.getTransitionStop());
+        effectFilter.setNodeValue(source.getEffect());
+        switch (source.getType()) {
             case LabelText:
                 type.setNodeValue("text");
                 break;
@@ -352,7 +352,7 @@ public class Layout {
         for (int i = 0; i < sources.length; i++) {
             Source s = new Source(0);
             Node n = nodes.item(i);
-            s.Type = SourceType.Desktop;
+            s.setType(SourceType.Desktop);
 
             if (n.getAttributes().getNamedItem("x") != null) {
                 loadView(s, n);
@@ -366,26 +366,26 @@ public class Layout {
                 }
             }
 
-            s.ID = n.getAttributes().getNamedItem("id").getNodeValue();
+            s.setID(n.getAttributes().getNamedItem("id").getNodeValue());
             if (n.getAttributes().getNamedItem("capturex") != null) {
-                s.CaptureX = new Integer(n.getAttributes().getNamedItem("capturex").getNodeValue());
-                s.CaptureY = new Integer(n.getAttributes().getNamedItem("capturey").getNodeValue());
+                s.setCaptureX((int) new Integer(n.getAttributes().getNamedItem("capturex").getNodeValue()));
+                s.setCaptureY((int) new Integer(n.getAttributes().getNamedItem("capturey").getNodeValue()));
             } else {
-                s.CaptureX = 0;
-                s.CaptureY = 0;
+                s.setCaptureX(0);
+                s.setCaptureY(0);
             }
             if (n.getAttributes().getNamedItem("start") != null) {
-                s.startTime = Long.parseLong(n.getAttributes().getNamedItem("start").getNodeValue());
-                s.endTime = Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue());
+                s.setStartTime(Long.parseLong(n.getAttributes().getNamedItem("start").getNodeValue()));
+                s.setEndTime(Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue()));
             }
             if (n.getAttributes().getNamedItem("transstart") != null) {
-                s.transitionStart = n.getAttributes().getNamedItem("transstart").getNodeValue();
-                s.transitionStop = n.getAttributes().getNamedItem("transstop").getNodeValue();
+                s.setTransitionStart(n.getAttributes().getNamedItem("transstart").getNodeValue());
+                s.setTransitionStop(n.getAttributes().getNamedItem("transstop").getNodeValue());
             }
             if (n.getAttributes().getNamedItem("effect") != null) {
-                s.effect = n.getAttributes().getNamedItem("effect").getNodeValue();
+                s.setEffect(n.getAttributes().getNamedItem("effect").getNodeValue());
             } else {
-                s.effect = "None";
+                s.setEffect("None");
             }
             sources[i] = s;
         }
@@ -397,9 +397,9 @@ public class Layout {
         Source[] sources = new Source[nodes.getLength()];
         for (int i = 0; i < sources.length; i++) {
             Source s = new Source(0);
-            s.Type = SourceType.Webcam;
+            s.setType(SourceType.Webcam);
             Node n = nodes.item(i);
-            s.ID = n.getAttributes().getNamedItem("id").getNodeValue();
+            s.setID(n.getAttributes().getNamedItem("id").getNodeValue());
 
             if (n.getAttributes().getNamedItem("x") != null) {
                 loadView(s, n);
@@ -414,17 +414,17 @@ public class Layout {
             }
 
             if (n.getAttributes().getNamedItem("start") != null) {
-                s.startTime = Long.parseLong(n.getAttributes().getNamedItem("start").getNodeValue());
-                s.endTime = Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue());
+                s.setStartTime(Long.parseLong(n.getAttributes().getNamedItem("start").getNodeValue()));
+                s.setEndTime(Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue()));
             }
             if (n.getAttributes().getNamedItem("transstart") != null) {
-                s.transitionStart = n.getAttributes().getNamedItem("transstart").getNodeValue();
-                s.transitionStop = n.getAttributes().getNamedItem("transstop").getNodeValue();
+                s.setTransitionStart(n.getAttributes().getNamedItem("transstart").getNodeValue());
+                s.setTransitionStop(n.getAttributes().getNamedItem("transstop").getNodeValue());
             }
             if (n.getAttributes().getNamedItem("effect") != null) {
-                s.effect = n.getAttributes().getNamedItem("effect").getNodeValue();
+                s.setEffect(n.getAttributes().getNamedItem("effect").getNodeValue());
             } else {
-                s.effect = "None";
+                s.setEffect("None");
             }
             sources[i] = s;
         }
@@ -438,14 +438,14 @@ public class Layout {
         list.addAll(Arrays.asList(getDesktops()));
         list.addAll(Arrays.asList(getLabels()));
         list.addAll(Arrays.asList(getFrames()));
-        list.sort((Source o1, Source o2) -> o1.Views.get(o1.CurrentViewIndex).Order - o2.Views.get(o2.CurrentViewIndex).Order);
+        list.sort((Source o1, Source o2) -> o1.getViews().get(o1.getCurrentViewIndex()).Order - o2.getViews().get(o2.getCurrentViewIndex()).Order);
         return list;
     }
 
     private void loadView(Source s, Node n) {
         Source.View view = new Source.View();
-        s.Views.add(view);
-        s.CurrentViewIndex = 0;
+        s.getViews().add(view);
+        s.setCurrentViewIndex(0);
         view.X = new Integer(n.getAttributes().getNamedItem("x").getNodeValue());
         view.Y = new Integer(n.getAttributes().getNamedItem("y").getNodeValue());
         view.Width = new Integer(n.getAttributes().getNamedItem("w").getNodeValue());
@@ -464,9 +464,9 @@ public class Layout {
         Source[] sources = new Source[nodes.getLength()];
         for (int i = 0; i < sources.length; i++) {
             Source s = new Source(0);
-            s.Type = SourceType.Image;
+            s.setType(SourceType.Image);
             Node n = nodes.item(i);
-            s.ID = n.getAttributes().getNamedItem("id").getNodeValue();
+            s.setID(n.getAttributes().getNamedItem("id").getNodeValue());
 
             if (n.getAttributes().getNamedItem("x") != null) {
                 loadView(s, n);
@@ -481,17 +481,17 @@ public class Layout {
             }
 
             if (n.getAttributes().getNamedItem("start") != null) {
-                s.startTime = Long.parseLong(n.getAttributes().getNamedItem("start").getNodeValue());
-                s.endTime = Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue());
+                s.setStartTime(Long.parseLong(n.getAttributes().getNamedItem("start").getNodeValue()));
+                s.setEndTime(Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue()));
             }
             if (n.getAttributes().getNamedItem("transstart") != null) {
-                s.transitionStart = n.getAttributes().getNamedItem("transstart").getNodeValue();
-                s.transitionStop = n.getAttributes().getNamedItem("transstop").getNodeValue();
+                s.setTransitionStart(n.getAttributes().getNamedItem("transstart").getNodeValue());
+                s.setTransitionStop(n.getAttributes().getNamedItem("transstop").getNodeValue());
             }
             if (n.getAttributes().getNamedItem("effect") != null) {
-                s.effect = n.getAttributes().getNamedItem("effect").getNodeValue();
+                s.setEffect(n.getAttributes().getNamedItem("effect").getNodeValue());
             } else {
-                s.effect = "None";
+                s.setEffect("None");
             }
             sources[i] = s;
         }
@@ -503,9 +503,9 @@ public class Layout {
         Source[] sources = new Source[nodes.getLength()];
         for (int i = 0; i < sources.length; i++) {
             Source s = new Source(0);
-            s.Type = SourceType.Frame;
+            s.setType(SourceType.Frame);
             Node n = nodes.item(i);
-            s.ID = n.getAttributes().getNamedItem("id").getNodeValue();
+            s.setID(n.getAttributes().getNamedItem("id").getNodeValue());
 
             if (n.getAttributes().getNamedItem("x") != null) {
                 loadView(s, n);
@@ -520,17 +520,17 @@ public class Layout {
             }
 
             if (n.getAttributes().getNamedItem("start") != null) {
-                s.startTime = Long.parseLong(n.getAttributes().getNamedItem("start").getNodeValue());
-                s.endTime = Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue());
+                s.setStartTime(Long.parseLong(n.getAttributes().getNamedItem("start").getNodeValue()));
+                s.setEndTime(Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue()));
             }
             if (n.getAttributes().getNamedItem("transstart") != null) {
-                s.transitionStart = n.getAttributes().getNamedItem("transstart").getNodeValue();
-                s.transitionStop = n.getAttributes().getNamedItem("transstop").getNodeValue();
+                s.setTransitionStart(n.getAttributes().getNamedItem("transstart").getNodeValue());
+                s.setTransitionStop(n.getAttributes().getNamedItem("transstop").getNodeValue());
             }
             if (n.getAttributes().getNamedItem("effect") != null) {
-                s.effect = n.getAttributes().getNamedItem("effect").getNodeValue();
+                s.setEffect(n.getAttributes().getNamedItem("effect").getNodeValue());
             } else {
-                s.effect = "None";
+                s.setEffect("None");
             }
             sources[i] = s;
         }
@@ -542,9 +542,9 @@ public class Layout {
         Source[] sources = new Source[nodes.getLength()];
         for (int i = 0; i < sources.length; i++) {
             Source s = new Source(0);
-            s.Type = SourceType.LabelText;
+            s.setType(SourceType.LabelText);
             Node n = nodes.item(i);
-            s.ID = n.getAttributes().getNamedItem("id").getNodeValue();
+            s.setID(n.getAttributes().getNamedItem("id").getNodeValue());
 
             if (n.getAttributes().getNamedItem("x") != null) {
                 loadView(s, n);
@@ -560,24 +560,24 @@ public class Layout {
 
             // IF is required since not available in version 3.0.0
             if (n.getAttributes().getNamedItem("fg") != null) {
-                s.foregroundColor = new Integer(n.getAttributes().getNamedItem("fg").getNodeValue());
-                s.backgroundColor = new Integer(n.getAttributes().getNamedItem("bg").getNodeValue());
+                s.setForegroundColor((int) new Integer(n.getAttributes().getNamedItem("fg").getNodeValue()));
+                s.setBackgroundColor((int) new Integer(n.getAttributes().getNamedItem("bg").getNodeValue()));
             }
             if (n.getAttributes().getNamedItem("font") != null) {
-                s.fontName = n.getAttributes().getNamedItem("font").getNodeValue();
+                s.setFontName(n.getAttributes().getNamedItem("font").getNodeValue());
             }
             if (n.getAttributes().getNamedItem("start") != null) {
-                s.startTime = Long.parseLong(n.getAttributes().getNamedItem("start").getNodeValue());
-                s.endTime = Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue());
+                s.setStartTime(Long.parseLong(n.getAttributes().getNamedItem("start").getNodeValue()));
+                s.setEndTime(Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue()));
             }
             if (n.getAttributes().getNamedItem("transstart") != null) {
-                s.transitionStart = n.getAttributes().getNamedItem("transstart").getNodeValue();
-                s.transitionStop = n.getAttributes().getNamedItem("transstop").getNodeValue();
+                s.setTransitionStart(n.getAttributes().getNamedItem("transstart").getNodeValue());
+                s.setTransitionStop(n.getAttributes().getNamedItem("transstop").getNodeValue());
             }
             if (n.getAttributes().getNamedItem("effect") != null) {
-                s.effect = n.getAttributes().getNamedItem("effect").getNodeValue();
+                s.setEffect(n.getAttributes().getNamedItem("effect").getNodeValue());
             } else {
-                s.effect = "None";
+                s.setEffect("None");
             }
             sources[i] = s;
         }

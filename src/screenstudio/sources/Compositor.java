@@ -170,16 +170,16 @@ public class Compositor {
     public static List<Source> getSources(ArrayList<screenstudio.targets.Source> sources, int fps) {
         java.util.ArrayList<screenstudio.sources.Source> list = new java.util.ArrayList();
         for (int i = sources.size()- 1; i >= 0; i--) {
-            long timestart = sources.get(i).startTime;
-            long timeend = sources.get(i).endTime;
-            String transIn = sources.get(i).transitionStart;
-            String transOut =sources.get(i).transitionStop;
-            String effect = sources.get(i).effect;
-            Object source = sources.get(i).SourceObject;
+            long timestart = sources.get(i).getStartTime();
+            long timeend = sources.get(i).getEndTime();
+            String transIn = sources.get(i).getTransitionStart();
+            String transOut =sources.get(i).getTransitionStop();
+            String effect = sources.get(i).getEffect();
+            Object source = sources.get(i).getSourceObject();
             // Detect type of source...
             if (source instanceof Screen) {
                 Screen screen = (Screen) source;
-                SourceFFMpeg s = SourceFFMpeg.getDesktopInstance(screen, sources.get(i).Views, fps);
+                SourceFFMpeg s = SourceFFMpeg.getDesktopInstance(screen, sources.get(i).getViews(), fps);
                 s.setFPS(fps);
                 s.setDisplayTime(timestart, timeend);
                 s.setTransitionStart(Transition.NAMES.valueOf(transIn));
@@ -188,9 +188,9 @@ public class Compositor {
                 list.add(s);
             } else if (source instanceof Webcam) {
                 Webcam webcam = (Webcam) source;
-                webcam.setWidth(sources.get(i).Views.get(0).Width);
-                webcam.setHeight(sources.get(i).Views.get(0).Height);
-                SourceFFMpeg s = SourceFFMpeg.getWebcamInstance(webcam,sources.get(i).Views, fps);
+                webcam.setWidth(sources.get(i).getViews().get(0).Width);
+                webcam.setHeight(sources.get(i).getViews().get(0).Height);
+                SourceFFMpeg s = SourceFFMpeg.getWebcamInstance(webcam, sources.get(i).getViews(), fps);
                 s.setFPS(fps);
                 s.setDisplayTime(timestart, timeend);
                 s.setTransitionStart(Transition.NAMES.valueOf(transIn));
@@ -198,9 +198,9 @@ public class Compositor {
                 s.setEffect(Effect.eEffects.valueOf(effect));
                 list.add(s);
             } else if (source instanceof File) {
-                switch (sources.get(i).Type) {
+                switch (sources.get(i).getType()) {
                     case Image:
-                        SourceImage s = new SourceImage(sources.get(i).Views, (File) source);
+                        SourceImage s = new SourceImage(sources.get(i).getViews(), (File) source);
                         s.setDisplayTime(timestart, timeend);
                         s.setTransitionStart(Transition.NAMES.valueOf(transIn));
                         s.setTransitionStop(Transition.NAMES.valueOf(transOut));
@@ -209,7 +209,7 @@ public class Compositor {
                         break;
                 }
             } else if (source instanceof LabelText) {
-                SourceLabel s = new SourceLabel(sources.get(i).Views, ((LabelText) source));
+                SourceLabel s = new SourceLabel(sources.get(i).getViews(), ((LabelText) source));
                 s.setDisplayTime(timestart, timeend);
                 s.setTransitionStart(Transition.NAMES.valueOf(transIn));
                 s.setTransitionStop(Transition.NAMES.valueOf(transOut));
@@ -217,7 +217,7 @@ public class Compositor {
                 list.add(s);
             } else if (source instanceof Frames.eList) {
                 try {
-                    SourceImage s = new SourceImage(sources.get(i).Views, (BufferedImage) Frames.getImage((Frames.eList) source), ((Frames.eList) source).name());
+                    SourceImage s = new SourceImage(sources.get(i).getViews(), (BufferedImage) Frames.getImage((Frames.eList) source), ((Frames.eList) source).name());
                     s.setDisplayTime(timestart, timeend);
                     s.setTransitionStart(Transition.NAMES.valueOf(transIn));
                     s.setTransitionStop(Transition.NAMES.valueOf(transOut));
