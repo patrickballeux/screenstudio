@@ -45,6 +45,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import screenstudio.encoder.FFMpeg;
+import screenstudio.sources.effects.Effect;
+import screenstudio.sources.transitions.Transition;
 
 /**
  * @author patrick
@@ -319,9 +321,9 @@ public class Layout {
         fontg.setNodeValue(source.getFontName());
         timeStart.setNodeValue(source.getStartTime() + "");
         timeEnd.setNodeValue(source.getEndTime() + "");
-        transitionStart.setNodeValue(source.getTransitionStart());
-        transitionStop.setNodeValue(source.getTransitionStop());
-        effectFilter.setNodeValue(source.getEffect());
+        transitionStart.setNodeValue(source.getTransitionStart().name());
+        transitionStop.setNodeValue(source.getTransitionStop().name());
+        effectFilter.setNodeValue(source.getEffect().name());
         switch (source.getType()) {
             case LabelText:
                 type.setNodeValue("text");
@@ -379,13 +381,13 @@ public class Layout {
                 s.setEndTime(Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue()));
             }
             if (n.getAttributes().getNamedItem("transstart") != null) {
-                s.setTransitionStart(n.getAttributes().getNamedItem("transstart").getNodeValue());
-                s.setTransitionStop(n.getAttributes().getNamedItem("transstop").getNodeValue());
+                s.setTransitionStart(Transition.NAMES.valueOf(n.getAttributes().getNamedItem("transstart").getNodeValue()));
+                s.setTransitionStop(Transition.NAMES.valueOf(n.getAttributes().getNamedItem("transstop").getNodeValue()));
             }
             if (n.getAttributes().getNamedItem("effect") != null) {
-                s.setEffect(n.getAttributes().getNamedItem("effect").getNodeValue());
+                s.setEffect(Effect.eEffects.valueOf(n.getAttributes().getNamedItem("effect").getNodeValue()));
             } else {
-                s.setEffect("None");
+                s.setEffect(Effect.eEffects.None);
             }
             sources[i] = s;
         }
@@ -418,13 +420,13 @@ public class Layout {
                 s.setEndTime(Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue()));
             }
             if (n.getAttributes().getNamedItem("transstart") != null) {
-                s.setTransitionStart(n.getAttributes().getNamedItem("transstart").getNodeValue());
-                s.setTransitionStop(n.getAttributes().getNamedItem("transstop").getNodeValue());
+                s.setTransitionStart(Transition.NAMES.valueOf(n.getAttributes().getNamedItem("transstart").getNodeValue()));
+                s.setTransitionStop(Transition.NAMES.valueOf(n.getAttributes().getNamedItem("transstop").getNodeValue()));
             }
             if (n.getAttributes().getNamedItem("effect") != null) {
-                s.setEffect(n.getAttributes().getNamedItem("effect").getNodeValue());
+                s.setEffect(Effect.eEffects.valueOf(n.getAttributes().getNamedItem("effect").getNodeValue()));
             } else {
-                s.setEffect("None");
+                s.setEffect(Effect.eEffects.None);
             }
             sources[i] = s;
         }
@@ -485,13 +487,13 @@ public class Layout {
                 s.setEndTime(Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue()));
             }
             if (n.getAttributes().getNamedItem("transstart") != null) {
-                s.setTransitionStart(n.getAttributes().getNamedItem("transstart").getNodeValue());
-                s.setTransitionStop(n.getAttributes().getNamedItem("transstop").getNodeValue());
+                s.setTransitionStart(Transition.NAMES.valueOf(n.getAttributes().getNamedItem("transstart").getNodeValue()));
+                s.setTransitionStop(Transition.NAMES.valueOf(n.getAttributes().getNamedItem("transstop").getNodeValue()));
             }
             if (n.getAttributes().getNamedItem("effect") != null) {
-                s.setEffect(n.getAttributes().getNamedItem("effect").getNodeValue());
+                s.setEffect(Effect.eEffects.valueOf(n.getAttributes().getNamedItem("effect").getNodeValue()));
             } else {
-                s.setEffect("None");
+                s.setEffect(Effect.eEffects.None);
             }
             sources[i] = s;
         }
@@ -524,13 +526,13 @@ public class Layout {
                 s.setEndTime(Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue()));
             }
             if (n.getAttributes().getNamedItem("transstart") != null) {
-                s.setTransitionStart(n.getAttributes().getNamedItem("transstart").getNodeValue());
-                s.setTransitionStop(n.getAttributes().getNamedItem("transstop").getNodeValue());
+                s.setTransitionStart(Transition.NAMES.valueOf(n.getAttributes().getNamedItem("transstart").getNodeValue()));
+                s.setTransitionStop(Transition.NAMES.valueOf(n.getAttributes().getNamedItem("transstop").getNodeValue()));
             }
             if (n.getAttributes().getNamedItem("effect") != null) {
-                s.setEffect(n.getAttributes().getNamedItem("effect").getNodeValue());
+                s.setEffect(Effect.eEffects.valueOf(n.getAttributes().getNamedItem("effect").getNodeValue()));
             } else {
-                s.setEffect("None");
+                s.setEffect(Effect.eEffects.None);
             }
             sources[i] = s;
         }
@@ -571,13 +573,13 @@ public class Layout {
                 s.setEndTime(Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue()));
             }
             if (n.getAttributes().getNamedItem("transstart") != null) {
-                s.setTransitionStart(n.getAttributes().getNamedItem("transstart").getNodeValue());
-                s.setTransitionStop(n.getAttributes().getNamedItem("transstop").getNodeValue());
+                s.setTransitionStart(Transition.NAMES.valueOf(n.getAttributes().getNamedItem("transstart").getNodeValue()));
+                s.setTransitionStop(Transition.NAMES.valueOf(n.getAttributes().getNamedItem("transstop").getNodeValue()));
             }
             if (n.getAttributes().getNamedItem("effect") != null) {
-                s.setEffect(n.getAttributes().getNamedItem("effect").getNodeValue());
+                s.setEffect(Effect.eEffects.valueOf(n.getAttributes().getNamedItem("effect").getNodeValue()));
             } else {
-                s.setEffect("None");
+                s.setEffect(Effect.eEffects.None);
             }
             sources[i] = s;
         }

@@ -17,6 +17,8 @@
 package screenstudio.targets;
 
 import java.util.ArrayList;
+import screenstudio.sources.effects.Effect;
+import screenstudio.sources.transitions.Transition;
 
 public class Source {
 
@@ -30,9 +32,9 @@ public class Source {
     public String fontName;
     public long startTime;
     public long endTime;
-    public String transitionStart = "None";
-    public String transitionStop = "None";
-    public String effect = "None";
+    public Transition.NAMES transitionStart = Transition.NAMES.None;
+    public Transition.NAMES transitionStop = Transition.NAMES.None;
+    public Effect.eEffects effect = Effect.eEffects.None;
     public ArrayList<View> Views = new ArrayList<>();
     public int CurrentViewIndex = -1;
 
@@ -200,43 +202,38 @@ public class Source {
     /**
      * @return the transitionStart
      */
-    public String getTransitionStart() {
+    public Transition.NAMES getTransitionStart() {
         return transitionStart;
     }
 
-    /**
-     * @param transitionStart the transitionStart to set
-     */
-    public void setTransitionStart(String transitionStart) {
+ 
+
+    public void setTransitionStart(Transition.NAMES transitionStart) {
         this.transitionStart = transitionStart;
     }
 
     /**
      * @return the transitionStop
      */
-    public String getTransitionStop() {
+    public Transition.NAMES getTransitionStop() {
         return transitionStop;
     }
 
-    /**
-     * @param transitionStop the transitionStop to set
-     */
-    public void setTransitionStop(String transitionStop) {
+   
+
+    public void setTransitionStop(Transition.NAMES transitionStop) {
         this.transitionStop = transitionStop;
     }
 
     /**
      * @return the effect
      */
-    public String getEffect() {
+    public Effect.eEffects getEffect() {
         return effect;
     }
 
-    /**
-     * @param effect the effect to set
-     */
-    public void setEffect(String effect) {
-        this.effect = effect;
+    public void setEffect(Effect.eEffects e) {
+        this.effect = e;
     }
 
     /**

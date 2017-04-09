@@ -172,9 +172,9 @@ public class Compositor {
         for (int i = sources.size()- 1; i >= 0; i--) {
             long timestart = sources.get(i).getStartTime();
             long timeend = sources.get(i).getEndTime();
-            String transIn = sources.get(i).getTransitionStart();
-            String transOut =sources.get(i).getTransitionStop();
-            String effect = sources.get(i).getEffect();
+            Transition.NAMES transIn = sources.get(i).getTransitionStart();
+            Transition.NAMES transOut =sources.get(i).getTransitionStop();
+            Effect.eEffects effect = sources.get(i).getEffect();
             Object source = sources.get(i).getSourceObject();
             // Detect type of source...
             if (source instanceof Screen) {
@@ -182,9 +182,9 @@ public class Compositor {
                 SourceFFMpeg s = SourceFFMpeg.getDesktopInstance(screen, sources.get(i).getViews(), fps);
                 s.setFPS(fps);
                 s.setDisplayTime(timestart, timeend);
-                s.setTransitionStart(Transition.NAMES.valueOf(transIn));
-                s.setTransitionStop(Transition.NAMES.valueOf(transOut));
-                s.setEffect(Effect.eEffects.valueOf(effect));
+                s.setTransitionStart(transIn);
+                s.setTransitionStop(transOut);
+                s.setEffect(effect);
                 list.add(s);
             } else if (source instanceof Webcam) {
                 Webcam webcam = (Webcam) source;
@@ -193,35 +193,35 @@ public class Compositor {
                 SourceFFMpeg s = SourceFFMpeg.getWebcamInstance(webcam, sources.get(i).getViews(), fps);
                 s.setFPS(fps);
                 s.setDisplayTime(timestart, timeend);
-                s.setTransitionStart(Transition.NAMES.valueOf(transIn));
-                s.setTransitionStop(Transition.NAMES.valueOf(transOut));
-                s.setEffect(Effect.eEffects.valueOf(effect));
+                s.setTransitionStart(transIn);
+                s.setTransitionStop(transOut);
+                s.setEffect(effect);
                 list.add(s);
             } else if (source instanceof File) {
                 switch (sources.get(i).getType()) {
                     case Image:
                         SourceImage s = new SourceImage(sources.get(i).getViews(), (File) source);
                         s.setDisplayTime(timestart, timeend);
-                        s.setTransitionStart(Transition.NAMES.valueOf(transIn));
-                        s.setTransitionStop(Transition.NAMES.valueOf(transOut));
-                        s.setEffect(Effect.eEffects.valueOf(effect));
+                        s.setTransitionStart(transIn);
+                        s.setTransitionStop(transOut);
+                        s.setEffect(effect);
                         list.add(s);
                         break;
                 }
             } else if (source instanceof LabelText) {
                 SourceLabel s = new SourceLabel(sources.get(i).getViews(), ((LabelText) source));
                 s.setDisplayTime(timestart, timeend);
-                s.setTransitionStart(Transition.NAMES.valueOf(transIn));
-                s.setTransitionStop(Transition.NAMES.valueOf(transOut));
-                s.setEffect(Effect.eEffects.valueOf(effect));
+                s.setTransitionStart(transIn);
+                s.setTransitionStop(transOut);
+                s.setEffect(effect);
                 list.add(s);
             } else if (source instanceof Frames.eList) {
                 try {
                     SourceImage s = new SourceImage(sources.get(i).getViews(), (BufferedImage) Frames.getImage((Frames.eList) source), ((Frames.eList) source).name());
                     s.setDisplayTime(timestart, timeend);
-                    s.setTransitionStart(Transition.NAMES.valueOf(transIn));
-                    s.setTransitionStop(Transition.NAMES.valueOf(transOut));
-                    s.setEffect(Effect.eEffects.valueOf(effect));
+                    s.setTransitionStart(transIn);
+                    s.setTransitionStop(transOut);
+                    s.setEffect(effect);
                     list.add(s);
                 } catch (IOException ex) {
                 }
