@@ -267,46 +267,59 @@ public class Source {
         this.CurrentViewIndex = CurrentViewIndex;
     }
 
-    public int getX(){
+    public int getX() {
         return Views.get(CurrentViewIndex).X;
     }
-    public void setX(int x){
+
+    public void setX(int x) {
         Views.get(CurrentViewIndex).X = x;
     }
-    public int getY(){
+
+    public int getY() {
         return Views.get(CurrentViewIndex).Y;
     }
-    public void setY(int y){
-        Views.get(CurrentViewIndex).X = y;
+
+    public void setY(int y) {
+        Views.get(CurrentViewIndex).Y = y;
     }
-        public int getWidth(){
+
+    public int getWidth() {
         return Views.get(CurrentViewIndex).Width;
     }
-    public void setWidth(int w){
+
+    public void setWidth(int w) {
         Views.get(CurrentViewIndex).Width = w;
     }
-    public int getHeight(){
+
+    public int getHeight() {
         return Views.get(CurrentViewIndex).Height;
     }
-    public void setHeight(int h){
+
+    public void setHeight(int h) {
         Views.get(CurrentViewIndex).Height = h;
     }
-    public float getAlpha(){
+
+    public float getAlpha() {
         return Views.get(CurrentViewIndex).Alpha;
     }
-    public void setAlpha(float a){
+
+    public void setAlpha(float a) {
         Views.get(CurrentViewIndex).Alpha = a;
     }
-    public boolean getDisplay(){
+
+    public boolean getDisplay() {
         return Views.get(CurrentViewIndex).remoteDisplay;
     }
-    public void setDisplay(boolean b){
+
+    public void setDisplay(boolean b) {
         Views.get(CurrentViewIndex).remoteDisplay = b;
     }
-    public int getOrder(){
+
+    public int getOrder() {
         return Views.get(CurrentViewIndex).Order;
     }
-    public void setOrder(int o){
+
+    public void setOrder(int o) {
         Views.get(CurrentViewIndex).Order = o;
     }
 

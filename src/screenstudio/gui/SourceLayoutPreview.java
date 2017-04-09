@@ -30,14 +30,13 @@ import java.awt.Robot;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import screenstudio.gui.images.frames.Frames;
-import screenstudio.sources.Compositor;
 import screenstudio.sources.Screen;
-import screenstudio.targets.Layout.SourceType;
 
 /**
  *
@@ -45,19 +44,21 @@ import screenstudio.targets.Layout.SourceType;
  */
 public class SourceLayoutPreview extends javax.swing.JPanel {
 
-    private final JTable mSources;
+    private final JTable mJTable;
+    private final ArrayList<screenstudio.targets.Source> mSources;
     private final Rectangle outputSize = new Rectangle(0, 0, 720, 480);
-    private Compositor compositer = null;
     private Robot mRobot = null;
 
     /**
      * Creates new form SourceLayoutPreview
      *
+     * @param table
      * @param sources
      */
-    public SourceLayoutPreview(JTable sources) {
+    public SourceLayoutPreview(JTable table,ArrayList<screenstudio.targets.Source> sources) {
         initComponents();
         this.setDoubleBuffered(true);
+        mJTable = table;
         mSources = sources;
         try {
             mRobot = new Robot();
@@ -76,115 +77,120 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
 
     @Override
     public void paint(Graphics g) {
-//        // Draw Output borders...
-//        int x = 0;
-//        int y = 0;
-//        int w = getWidth();
-//        int h = getHeight();
-//        g.setColor(this.getBackground());
-//        g.fillRect(0, 0, w, h);
-//        if (outputSize != null) {
-//            w = outputSize.width;
-//            h = outputSize.height;
-//            double ratio = outputSize.getWidth() / outputSize.getHeight();
-//            if (h > getHeight() - 1) {
-//                h = getHeight() - 1;
-//                w = (int) (h * ratio);
-//            }
-//            if (w > getWidth()) {
-//                w = getWidth();
-//                h = (int) (w / ratio) - 1;
-//            }
-//            x = (getWidth() - w) / 2;
-//            g.setClip(x, y, w, h);
-//
-//            int fontSize = h / 25;
-//            Font font = new Font(getFont().getFontName(), getFont().getStyle(), fontSize);
-//            g.setFont(font);
-//            g.setColor(Color.BLACK);
-//            g.fillRect(x, y, w, h);
-//            if (mSources != null) {
-//                for (int i = mSources.getRowCount() - 1; i >= 0; i--) {
-//                    if ((Boolean) mSources.getValueAt(i, 0)) {
-//                        //Draw Preview...
-//                        g.setFont(font);
-//                        int sx = (int) mSources.getValueAt(i, 3);
-//                        int sy = (int) mSources.getValueAt(i, 4);
-//                        int sw = (int) mSources.getValueAt(i, 5);
-//                        int sh = (int) mSources.getValueAt(i, 6);
-//                        float salpha = (float) mSources.getValueAt(i, 7);
-//                        if (salpha < 0f) salpha = 0f;
-//                        if (salpha > 1f) salpha = 1f;
-//                        sx = (int) (x + (sx * w / outputSize.getWidth()));
-//                        sy = (int) (y + (sy * h / outputSize.getHeight()));
-//                        sw = (int) ((sw * w / outputSize.getWidth()));
-//                        sh = (int) ((sh * h / outputSize.getHeight()));
-//                        
-//                        BufferedImage img = null;
-//                        ((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1).derive(salpha));
-//
-//                        switch ((SourceType) mSources.getValueAt(i, 1)) {
-//                            case Desktop:
-//                                Screen s = (Screen) mSources.getValueAt(i, 2);
-//                                img = mRobot.createScreenCapture(s.getSize());
-//                                g.drawImage(img.getScaledInstance(sw,sh, Image.SCALE_FAST), sx, sy, null);
-//                                break;
-//                            case Webcam:
-//                                g.setColor(Color.blue);
-//                                g.fillRect(sx, sy, sw, sh);
-//                                break;
-//                            case Image:
-//                                File sourceImg = (File) mSources.getValueAt(i, 2);
-//                                 {
-//                                    try {
-//                                        img = javax.imageio.ImageIO.read(sourceImg);
-//                                        g.drawImage(img.getScaledInstance(sw,sh, Image.SCALE_FAST), sx, sy, null);
-//                                    } catch (IOException ex) {
-//                                        Logger.getLogger(SourceLayoutPreview.class.getName()).log(Level.SEVERE, null, ex);
-//                                    }
-//                                }
-//                                break;
-//                            case LabelText:
-//                                img = new BufferedImage(sw, sh, BufferedImage.TYPE_INT_ARGB);
-//                                LabelText text = (LabelText) mSources.getValueAt(i, 2);
-//                                JLabel label = new JLabel(text.getText());
-//                                label.setFont(new Font(text.getFontName(), Font.PLAIN, sh));
-//                                label.setSize( sw, sh);
-//                                label.setLocation(0, 0);
-//                                label.setOpaque(true);
-//                                label.setForeground(new Color(text.getForegroundColor()));
-//                                label.setBackground(new Color(text.getBackgroundColor()));
-//                                label.paint(img.createGraphics());
-//                                g.drawImage(img, sx, sy, null);
-//                                break;
-//                            case Frame:
-//                                Frames.eList frameName = (Frames.eList) mSources.getValueAt(i, 2);
-//                                 {
-//                                    try {
-//                                        img = Frames.getImage(frameName);
-//                                        g.drawImage(img.getScaledInstance(sw,sh,Image.SCALE_FAST), sx, sy, null);
-//                                    } catch (IOException ex) {
-//                                        Logger.getLogger(SourceLayoutPreview.class.getName()).log(Level.SEVERE, null, ex);
-//                                    }
-//                                }
-//                                break;
-//                            default:
-//                                g.setColor(Color.gray);
-//                                g.fillRect(sx, sy, sw, sh);
-//                                break;
-//                        }
-//                        if (i == mSources.getSelectedRow()) {
-//                            g.setColor(Color.green);
-//                            g.drawRect(sx, sy, sw, sh);
-//                        }
-//                    }
-//                }
-//            }
-//            g.setFont(font);
-//            //draw output format that will be used...
-//            g.setColor(Color.WHITE);
-//            g.drawString("Output : " + outputSize.width + "X" + outputSize.height, x + 5, y + 20);
-//        }
+        // Draw Output borders...
+        int x = 0;
+        int y = 0;
+        int w = getWidth();
+        int h = getHeight();
+        g.setColor(this.getBackground());
+        g.fillRect(0, 0, w, h);
+        if (outputSize != null) {
+            w = outputSize.width;
+            h = outputSize.height;
+            double ratio = outputSize.getWidth() / outputSize.getHeight();
+            if (h > getHeight() - 1) {
+                h = getHeight() - 1;
+                w = (int) (h * ratio);
+            }
+            if (w > getWidth()) {
+                w = getWidth();
+                h = (int) (w / ratio) - 1;
+            }
+            x = (getWidth() - w) / 2;
+            g.setClip(x, y, w, h);
+
+            int fontSize = h / 25;
+            Font font = new Font(getFont().getFontName(), getFont().getStyle(), fontSize);
+            g.setFont(font);
+            g.setColor(Color.BLACK);
+            g.fillRect(x, y, w, h);
+            if (mJTable != null) {
+                for (int i = mJTable.getRowCount() - 1; i >= 0; i--) {
+                    screenstudio.targets.Source source = mSources.get(i);
+                    if (source.getDisplay()) {
+                        //Draw Preview...
+                        g.setFont(font);
+                        int sx = (int) source.getX();
+                        int sy = (int) source.getY();
+                        int sw = (int) source.getWidth();
+                        int sh = (int) source.getHeight();
+                        float salpha = (float) source.getAlpha();
+                        if (salpha < 0f) {
+                            salpha = 0f;
+                        }
+                        if (salpha > 1f) {
+                            salpha = 1f;
+                        }
+                        sx = (int) (x + (sx * w / outputSize.getWidth()));
+                        sy = (int) (y + (sy * h / outputSize.getHeight()));
+                        sw = (int) ((sw * w / outputSize.getWidth()));
+                        sh = (int) ((sh * h / outputSize.getHeight()));
+
+                        BufferedImage img = null;
+                        ((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1).derive(salpha));
+
+                        switch (source.Type) {
+                            case Desktop:
+                                Screen s = (Screen) source.SourceObject;
+                                img = mRobot.createScreenCapture(s.getSize());
+                                g.drawImage(img.getScaledInstance(sw, sh, Image.SCALE_FAST), sx, sy, null);
+                                break;
+                            case Webcam:
+                                g.setColor(Color.blue);
+                                g.fillRect(sx, sy, sw, sh);
+                                break;
+                            case Image:
+                                File sourceImg = (File) source.SourceObject;
+                                 {
+                                    try {
+                                        img = javax.imageio.ImageIO.read(sourceImg);
+                                        g.drawImage(img.getScaledInstance(sw, sh, Image.SCALE_FAST), sx, sy, null);
+                                    } catch (IOException ex) {
+                                        Logger.getLogger(SourceLayoutPreview.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+                                }
+                                break;
+                            case LabelText:
+                                img = new BufferedImage(sw, sh, BufferedImage.TYPE_INT_ARGB);
+                                LabelText text = (LabelText) source.SourceObject;
+                                JLabel label = new JLabel(text.getText());
+                                label.setFont(new Font(text.getFontName(), Font.PLAIN, sh));
+                                label.setSize(sw, sh);
+                                label.setLocation(0, 0);
+                                label.setOpaque(true);
+                                label.setForeground(new Color(text.getForegroundColor()));
+                                label.setBackground(new Color(text.getBackgroundColor()));
+                                label.paint(img.createGraphics());
+                                g.drawImage(img, sx, sy, null);
+                                break;
+                            case Frame:
+                                Frames.eList frameName = (Frames.eList) source.SourceObject;
+                                 {
+                                    try {
+                                        img = Frames.getImage(frameName);
+                                        g.drawImage(img.getScaledInstance(sw, sh, Image.SCALE_FAST), sx, sy, null);
+                                    } catch (IOException ex) {
+                                        Logger.getLogger(SourceLayoutPreview.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+                                }
+                                break;
+                            default:
+                                g.setColor(Color.gray);
+                                g.fillRect(sx, sy, sw, sh);
+                                break;
+                        }
+                        if (i == mJTable.getSelectedRow()) {
+                            g.setColor(Color.green);
+                            g.drawRect(sx, sy, sw, sh);
+                        }
+                    }
+                }
+            }
+            g.setFont(font);
+            //draw output format that will be used...
+            g.setColor(Color.WHITE);
+            g.drawString("Output : " + outputSize.width + "X" + outputSize.height, x + 5, y + 20);
+        }
 
     }
 
@@ -226,15 +232,11 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void formMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseDragged
-        if (mSources.getSelectedRow() != -1) {
-            int rowIndex = mSources.getSelectedRow();
-            //int currentX = (Integer) mSources.getValueAt(rowIndex, 3);
-            //int currentY = (Integer) mSources.getValueAt(rowIndex, 4);
+        if (mJTable.getSelectedRow() != -1) {
             Point pos = getTranslatedPosition(evt.getX(), evt.getY());
-            mSources.setValueAt(pos.x, rowIndex, 3);
-            mSources.setValueAt(pos.y, rowIndex, 4);
-            //System.out.println("Dragging " + mSources.getValueAt(rowIndex, 2).toString());
-            mSources.repaint();
+            mJTable.setValueAt(pos.x, mJTable.getSelectedRow(), 3);
+            mJTable.setValueAt(pos.y, mJTable.getSelectedRow(), 4);
+            mJTable.repaint();
             repaint();
         }
     }//GEN-LAST:event_formMouseDragged

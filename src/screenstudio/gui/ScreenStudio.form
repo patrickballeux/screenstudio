@@ -666,7 +666,7 @@
                               <Editor/>
                               <Renderer/>
                             </Column>
-                            <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                            <Column maxWidth="-1" minWidth="150" prefWidth="200" resizable="true">
                               <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                                 <ResourceString bundle="screenstudio/Languages.properties" key="SOURCE" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                               </Title>
@@ -716,14 +716,18 @@
                               <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                                 <ResourceString bundle="screenstudio/Languages.properties" key="TRANSITION_IN" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                               </Title>
-                              <Editor/>
+                              <Editor editor="org.netbeans.modules.form.ComponentChooserEditor">
+                                <ComponentRef name="null"/>
+                              </Editor>
                               <Renderer/>
                             </Column>
                             <Column maxWidth="-1" minWidth="-1" prefWidth="100" resizable="false">
                               <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                                 <ResourceString bundle="screenstudio/Languages.properties" key="TRANSITION_OUT" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                               </Title>
-                              <Editor/>
+                              <Editor editor="org.netbeans.modules.form.ComponentChooserEditor">
+                                <ComponentRef name="null"/>
+                              </Editor>
                               <Renderer/>
                             </Column>
                             <Column maxWidth="-1" minWidth="-1" prefWidth="100" resizable="false">
@@ -788,12 +792,15 @@
                           </Subbinding>
                           <Subbinding sourcePath="${transitionStart}">
                             <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
+                            <BindingParameter name="javax.swing.binding.ParameterKeys.EDITABLE" value="false"/>
                           </Subbinding>
                           <Subbinding sourcePath="${transitionStop}">
                             <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
+                            <BindingParameter name="javax.swing.binding.ParameterKeys.EDITABLE" value="false"/>
                           </Subbinding>
                           <Subbinding sourcePath="${effect}">
                             <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
+                            <BindingParameter name="javax.swing.binding.ParameterKeys.EDITABLE" value="false"/>
                           </Subbinding>
                         </BindingProperty>
                       </BindingProperties>

@@ -45,13 +45,9 @@ import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 import javax.swing.ToolTipManager;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 import javax.xml.parsers.ParserConfigurationException;
-import org.jdesktop.swingbinding.JTableBinding;
 import org.xml.sax.SAXException;
 import screenstudio.Version;
 import screenstudio.encoder.FFMpeg;
@@ -145,12 +141,7 @@ public class ScreenStudio extends javax.swing.JFrame {
     }
 
     private void initControls() {
-//        DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
-//        while (model.getRowCount() > 0) {
-//            model.removeRow(0);
-//        }
         updateRemoteSources();
-
         cboTarget.setModel(new DefaultComboBoxModel<>(FFMpeg.FORMATS.values()));
         cboTarget.setSelectedIndex(0);
         cboVideoPresets.setModel(new DefaultComboBoxModel<>(FFMpeg.Presets.values()));
@@ -322,6 +313,48 @@ public class ScreenStudio extends javax.swing.JFrame {
         mRemote.setCurrentView(index);
     }
 
+    public void updateColumnsLayout(){
+        tableSources.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        if (tableSources.getColumnModel().getColumnCount() > 0) {
+            tableSources.getColumnModel().getColumn(0).setResizable(false);
+            tableSources.getColumnModel().getColumn(0).setPreferredWidth(60);
+            tableSources.getColumnModel().getColumn(0).setHeaderValue(LANGUAGES.getString("SHOW_SOURCE")); // NOI18N
+            tableSources.getColumnModel().getColumn(1).setResizable(false);
+            tableSources.getColumnModel().getColumn(1).setPreferredWidth(100);
+            tableSources.getColumnModel().getColumn(1).setHeaderValue(LANGUAGES.getString("SOURCE_TYPE")); // NOI18N
+            tableSources.getColumnModel().getColumn(2).setMinWidth(150);
+            tableSources.getColumnModel().getColumn(2).setPreferredWidth(200);
+            tableSources.getColumnModel().getColumn(2).setHeaderValue(LANGUAGES.getString("SOURCE")); // NOI18N
+            tableSources.getColumnModel().getColumn(3).setResizable(false);
+            tableSources.getColumnModel().getColumn(3).setPreferredWidth(100);
+            tableSources.getColumnModel().getColumn(4).setResizable(false);
+            tableSources.getColumnModel().getColumn(4).setPreferredWidth(100);
+            tableSources.getColumnModel().getColumn(5).setResizable(false);
+            tableSources.getColumnModel().getColumn(5).setPreferredWidth(100);
+            tableSources.getColumnModel().getColumn(6).setResizable(false);
+            tableSources.getColumnModel().getColumn(6).setPreferredWidth(100);
+            tableSources.getColumnModel().getColumn(7).setResizable(false);
+            tableSources.getColumnModel().getColumn(7).setPreferredWidth(100);
+            tableSources.getColumnModel().getColumn(8).setResizable(false);
+            tableSources.getColumnModel().getColumn(8).setPreferredWidth(100);
+            tableSources.getColumnModel().getColumn(8).setHeaderValue(LANGUAGES.getString("START_TIME")); // NOI18N
+            tableSources.getColumnModel().getColumn(9).setResizable(false);
+            tableSources.getColumnModel().getColumn(9).setPreferredWidth(100);
+            tableSources.getColumnModel().getColumn(9).setHeaderValue(LANGUAGES.getString("END_TIME")); // NOI18N
+            tableSources.getColumnModel().getColumn(10).setResizable(false);
+            tableSources.getColumnModel().getColumn(10).setPreferredWidth(100);
+            tableSources.getColumnModel().getColumn(10).setHeaderValue(LANGUAGES.getString("TRANSITION_IN")); // NOI18N
+            tableSources.getColumnModel().getColumn(10).setCellEditor(null);
+            tableSources.getColumnModel().getColumn(11).setResizable(false);
+            tableSources.getColumnModel().getColumn(11).setPreferredWidth(100);
+            tableSources.getColumnModel().getColumn(11).setHeaderValue(LANGUAGES.getString("TRANSITION_OUT")); // NOI18N
+            tableSources.getColumnModel().getColumn(11).setCellEditor(null);
+            tableSources.getColumnModel().getColumn(12).setResizable(false);
+            tableSources.getColumnModel().getColumn(12).setPreferredWidth(100);
+            tableSources.getColumnModel().getColumn(12).setHeaderValue(LANGUAGES.getString("EFFECT")); // NOI18N
+        }
+        
+    }
     private void loadLayout(File file) {
         mCurrentLayout = new Layout();
         bindingGroup.getBinding("MySource").unbind();
@@ -423,6 +456,7 @@ public class ScreenStudio extends javax.swing.JFrame {
             Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
         }
         bindingGroup.getBinding("MySource").bind();
+        updateColumnsLayout();
         updateRemoteSources();
         panPreviewLayout.repaint();
     }
@@ -537,6 +571,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                                 bindingGroup.getBinding("MySource").unbind();
                                 mSources.add(source);
                                 bindingGroup.getBinding("MySource").bind();
+                                updateColumnsLayout();
                                 updateRemoteSources();
                                 break;
                             }
@@ -551,31 +586,6 @@ public class ScreenStudio extends javax.swing.JFrame {
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    private void addNewSourceToTable(screenstudio.targets.Source source) {
-//        DefaultTableModel model = (DefaultTableModel) tableSources.getModel();
-//        tableSources.setEnabled(false);
-//        Object[] row = new Object[model.getColumnCount()];
-//        row[0] = source.Views.get(source.CurrentViewIndex).remoteDisplay;
-//        row[1] = source.Type;
-//        row[2] = source.SourceObject;
-//        row[3] = source.Views.get(source.CurrentViewIndex).X;
-//        row[4] = source.Views.get(source.CurrentViewIndex).Y;
-//        row[5] = source.Views.get(source.CurrentViewIndex).Width;
-//        row[6] = source.Views.get(source.CurrentViewIndex).Height;
-//        row[7] = source.Views.get(source.CurrentViewIndex).Alpha;
-//        row[8] = source.startTime;
-//        row[9] = source.endTime;
-//        row[10] = source.transitionStart;
-//        row[11] = source.transitionStop;
-//        row[12] = source.effect;
-//
-//        model.addRow(row);
-        updateRemoteSources();
-        mLayoutPreview.repaint();
-        tabs.setSelectedComponent(panSources);
-        tableSources.setEnabled(true);
     }
 
     private void updateRemoteSources() {
@@ -620,6 +630,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                                 bindingGroup.getBinding("MySource").unbind();
                                 mSources.add(source);
                                 bindingGroup.getBinding("MySource").bind();
+                                updateColumnsLayout();
                                 updateRemoteSources();
                                 break;
                             }
@@ -990,12 +1001,15 @@ public class ScreenStudio extends javax.swing.JFrame {
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${transitionStart}"));
         columnBinding.setColumnName("Transition Start");
         columnBinding.setColumnClass(String.class);
+        columnBinding.setEditable(false);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${transitionStop}"));
         columnBinding.setColumnName("Transition Stop");
         columnBinding.setColumnClass(String.class);
+        columnBinding.setEditable(false);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${effect}"));
         columnBinding.setColumnName("Effect");
         columnBinding.setColumnClass(String.class);
+        columnBinding.setEditable(false);
         bindingGroup.addBinding(jTableBinding);
         jTableBinding.bind();
         tableSources.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -1017,6 +1031,8 @@ public class ScreenStudio extends javax.swing.JFrame {
             tableSources.getColumnModel().getColumn(1).setResizable(false);
             tableSources.getColumnModel().getColumn(1).setPreferredWidth(100);
             tableSources.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("SOURCE_TYPE")); // NOI18N
+            tableSources.getColumnModel().getColumn(2).setMinWidth(150);
+            tableSources.getColumnModel().getColumn(2).setPreferredWidth(200);
             tableSources.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("SOURCE")); // NOI18N
             tableSources.getColumnModel().getColumn(3).setResizable(false);
             tableSources.getColumnModel().getColumn(3).setPreferredWidth(100);
@@ -1037,9 +1053,11 @@ public class ScreenStudio extends javax.swing.JFrame {
             tableSources.getColumnModel().getColumn(10).setResizable(false);
             tableSources.getColumnModel().getColumn(10).setPreferredWidth(100);
             tableSources.getColumnModel().getColumn(10).setHeaderValue(bundle.getString("TRANSITION_IN")); // NOI18N
+            tableSources.getColumnModel().getColumn(10).setCellEditor(null);
             tableSources.getColumnModel().getColumn(11).setResizable(false);
             tableSources.getColumnModel().getColumn(11).setPreferredWidth(100);
             tableSources.getColumnModel().getColumn(11).setHeaderValue(bundle.getString("TRANSITION_OUT")); // NOI18N
+            tableSources.getColumnModel().getColumn(11).setCellEditor(null);
             tableSources.getColumnModel().getColumn(12).setResizable(false);
             tableSources.getColumnModel().getColumn(12).setPreferredWidth(100);
             tableSources.getColumnModel().getColumn(12).setHeaderValue(bundle.getString("EFFECT")); // NOI18N
@@ -1742,6 +1760,7 @@ public class ScreenStudio extends javax.swing.JFrame {
             bindingGroup.getBinding("MySource").unbind();
             mSources.add(source);
             bindingGroup.getBinding("MySource").bind();
+            updateColumnsLayout();
             updateRemoteSources();
         }
     }//GEN-LAST:event_mnuMainAddImageActionPerformed
@@ -1768,6 +1787,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         bindingGroup.getBinding("MySource").unbind();
         mSources.add(source);
         bindingGroup.getBinding("MySource").bind();
+        updateColumnsLayout();
         updateRemoteSources();
 
     }//GEN-LAST:event_mnuMainAddLabelActionPerformed
@@ -1775,6 +1795,7 @@ public class ScreenStudio extends javax.swing.JFrame {
     private void mnuMainMoveUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuMainMoveUpActionPerformed
         if (tableSources.getSelectedRow() != -1 && tableSources.getSelectedRow() > 0) {
             int index = tableSources.getSelectedRow();
+            int indexCol = tableSources.getSelectedColumn();
             screenstudio.targets.Source source1 = mSources.get(index);
             screenstudio.targets.Source source2 = mSources.get(index - 1);
             source1.Views.get(source1.CurrentViewIndex).Order = index - 1;
@@ -1782,7 +1803,10 @@ public class ScreenStudio extends javax.swing.JFrame {
             bindingGroup.getBinding("MySource").unbind();
             mSources.sort((b, a) -> Integer.compare(b.getViews().get(cboSourceViews.getSelectedIndex()).Order, a.getViews().get(cboSourceViews.getSelectedIndex()).Order));
             bindingGroup.getBinding("MySource").bind();
+            updateColumnsLayout();
             tableSources.setRowSelectionInterval(index - 1, index - 1);
+            tableSources.setColumnSelectionInterval(indexCol, indexCol);
+            tableSources.requestFocus();
             mLayoutPreview.repaint();
             updateRemoteSources();
         }
@@ -1791,6 +1815,7 @@ public class ScreenStudio extends javax.swing.JFrame {
     private void mnuMainMoveDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuMainMoveDownActionPerformed
         if (tableSources.getSelectedRow() != -1 && tableSources.getSelectedRow() < tableSources.getRowCount() - 1) {
             int index = tableSources.getSelectedRow();
+            int indexCol = tableSources.getSelectedColumn();
             screenstudio.targets.Source source1 = mSources.get(index);
             screenstudio.targets.Source source2 = mSources.get(index + 1);
             source1.Views.get(source1.CurrentViewIndex).Order = index + 1;
@@ -1798,7 +1823,9 @@ public class ScreenStudio extends javax.swing.JFrame {
             bindingGroup.getBinding("MySource").unbind();
             mSources.sort((b, a) -> Integer.compare(b.getViews().get(cboSourceViews.getSelectedIndex()).Order, a.getViews().get(cboSourceViews.getSelectedIndex()).Order));
             bindingGroup.getBinding("MySource").bind();
+            updateColumnsLayout();
             tableSources.setRowSelectionInterval(index + 1, index + 1);
+            tableSources.setColumnSelectionInterval(indexCol, indexCol);
             mLayoutPreview.repaint();
             updateRemoteSources();
         }
@@ -1834,6 +1861,7 @@ public class ScreenStudio extends javax.swing.JFrame {
             }
             mSources.sort((b, a) -> Integer.compare(b.getViews().get(cboSourceViews.getSelectedIndex()).Order, a.getViews().get(cboSourceViews.getSelectedIndex()).Order));
             bindingGroup.getBinding("MySource").bind();
+            updateColumnsLayout();
             updateRemoteSources();
         }
 
