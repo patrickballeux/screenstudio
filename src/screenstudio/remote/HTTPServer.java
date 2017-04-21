@@ -227,22 +227,15 @@ public class HTTPServer implements Runnable {
             html = html.replace(">Capture<", ">Stop<");
         }
         String sources = "";
-        if (mSourcesIDs != null) {
-            int index = mSourcesIDs.size() - 1;
-            for (int i = 0; i < mSourcesIDs.size(); i++) {
-                String s = mSourcesIDs.get(index);
-                boolean checkboxValue = true;
-                if (mCompositor != null) {
-                    Source source = mCompositor.getSources().get(index);
-                    checkboxValue = source.isRemoteDisplay();
-                }
-                if (checkboxValue) {
-                    sources += "\r\n<form class=source name='source" + index + "'><input type=hidden value='off' name='source" + index + "'><input type=checkbox checked onchange='document.forms.source" + index + ".submit();'>" + s + "</form>";
+        if (mCompositor != null){
+           for (int i = mCompositor.getSources().size()-1; i >= 0 ; i--) {
+                Source s = mCompositor.getSources().get(i);
+                if (s.isRemoteDisplay()) {
+                    sources += "\r\n<form class=source name='source" + i + "'><input type=hidden value='off' name='source" + i + "'><input type=checkbox checked onchange='document.forms.source" + i + ".submit();'>" + s.getID() + "</form>";
                 } else {
-                    sources += "\r\n<form class=source name='source" + index + "'><input type=hidden value='on' name='source" + index + "'><input type=checkbox onchange='document.forms.source" + index + ".submit();'>" + s + "</form>";
+                    sources += "\r\n<form class=source name='source" + i + "'><input type=hidden value='on' name='source" + i + "'><input type=checkbox onchange='document.forms.source" + i + ".submit();'>" + s.getID() + "</form>";
                 }
-                index--;
-            }
+            } 
         }
         html = html.replace("@SOURCES", sources);
         html = html.replaceAll("@VIEWSELECTED" + mSelectedViewIndex, "selected");
