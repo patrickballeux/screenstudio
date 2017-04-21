@@ -148,6 +148,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         cboTarget.setSelectedIndex(0);
         cboVideoPresets.setModel(new DefaultComboBoxModel<>(FFMpeg.Presets.values()));
         cboAudioBitrate.setModel(new DefaultComboBoxModel<>(FFMpeg.AudioRate.values()));
+        cboAudioBitrate.setSelectedItem(FFMpeg.AudioRate.Audio44K);
         cboRTMPServers.setModel(new DefaultComboBoxModel<>());
         txtRTMPKey.setText((""));
         try {
