@@ -203,44 +203,6 @@ public class ScreenStudio extends javax.swing.JFrame {
             cboAudioSystems.setEnabled(false);
         }
 
-        for (Transition.NAMES t : Transition.NAMES.values()) {
-            popMnuSourceTransitionIn.add(t.name());
-            popMnuSourceTransitionOut.add(t.name());
-        }
-        for (int i = 0; i < popMnuSourceTransitionIn.getItemCount(); i++) {
-            JMenuItem m = popMnuSourceTransitionIn.getItem(i);
-            m.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (tableSources.getSelectedRow() != -1) {
-                        tableSources.setValueAt(e.getActionCommand(), tableSources.getSelectedRow(), 10);
-                    }
-                }
-            });
-            m = popMnuSourceTransitionOut.getItem(i);
-            m.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (tableSources.getSelectedRow() != -1) {
-                        tableSources.setValueAt(e.getActionCommand(), tableSources.getSelectedRow(), 11);
-                    }
-                }
-            });
-        }
-        for (Effect.eEffects e : Effect.eEffects.values()) {
-            popMnuSourceEffect.add(e.name());
-        }
-        for (int i = 0; i < popMnuSourceEffect.getItemCount(); i++) {
-            JMenuItem m = popMnuSourceEffect.getItem(i);
-            m.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (tableSources.getSelectedRow() != -1) {
-                        tableSources.setValueAt(e.getActionCommand(), tableSources.getSelectedRow(), 12);
-                    }
-                }
-            });
-        }
         for (Frames.eList f : Frames.eList.values()) {
             JMenuItem menu = new JMenuItem(f.toString());
             menu.setActionCommand(f.name());
@@ -685,10 +647,6 @@ public class ScreenStudio extends javax.swing.JFrame {
     private void initComponents() {
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
-        popSources = new javax.swing.JPopupMenu();
-        popMnuSourceTransitionIn = new javax.swing.JMenu();
-        popMnuSourceTransitionOut = new javax.swing.JMenu();
-        popMnuSourceEffect = new javax.swing.JMenu();
         tabs = new javax.swing.JTabbedPane();
         panOutput = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -760,15 +718,6 @@ public class ScreenStudio extends javax.swing.JFrame {
         mnuMainMoveDown = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         mnuMainRemove = new javax.swing.JMenuItem();
-
-        popMnuSourceTransitionIn.setText("Transition In");
-        popSources.add(popMnuSourceTransitionIn);
-
-        popMnuSourceTransitionOut.setText("Transition Out");
-        popSources.add(popMnuSourceTransitionOut);
-
-        popMnuSourceEffect.setLabel("Effects");
-        popSources.add(popMnuSourceEffect);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("ScreenStudio");
@@ -960,7 +909,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                 .addComponent(lblSourceViewsCount)
                 .addGap(18, 18, 18)
                 .addComponent(cboSourceViews, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(370, Short.MAX_VALUE))
+                .addContainerGap(388, Short.MAX_VALUE))
         );
         panSourcesViewsLayout.setVerticalGroup(
             panSourcesViewsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -978,7 +927,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         splitterSources.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
         panPreviewLayout.setBackground(new java.awt.Color(51, 51, 51));
-        panPreviewLayout.setBorder(javax.swing.BorderFactory.createTitledBorder(null, bundle.getString("LAYOUT"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 12), new java.awt.Color(255, 255, 255))); // NOI18N
+        panPreviewLayout.setBorder(javax.swing.BorderFactory.createTitledBorder(null, bundle.getString("LAYOUT"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 12), new java.awt.Color(255, 255, 255))); // NOI18N
         panPreviewLayout.setLayout(new java.awt.BorderLayout());
         splitterSources.setRightComponent(panPreviewLayout);
 
@@ -987,7 +936,6 @@ public class ScreenStudio extends javax.swing.JFrame {
         tableSources.setToolTipText("Double-click for more options...");
         tableSources.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         tableSources.setColumnSelectionAllowed(true);
-        tableSources.setComponentPopupMenu(popSources);
         tableSources.setFillsViewportHeight(true);
         tableSources.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tableSources.setSurrendersFocusOnKeystroke(true);
@@ -1077,11 +1025,9 @@ public class ScreenStudio extends javax.swing.JFrame {
             tableSources.getColumnModel().getColumn(10).setResizable(false);
             tableSources.getColumnModel().getColumn(10).setPreferredWidth(100);
             tableSources.getColumnModel().getColumn(10).setHeaderValue(bundle.getString("TRANSITION_IN")); // NOI18N
-            tableSources.getColumnModel().getColumn(10).setCellEditor(null);
             tableSources.getColumnModel().getColumn(11).setResizable(false);
             tableSources.getColumnModel().getColumn(11).setPreferredWidth(100);
             tableSources.getColumnModel().getColumn(11).setHeaderValue(bundle.getString("TRANSITION_OUT")); // NOI18N
-            tableSources.getColumnModel().getColumn(11).setCellEditor(null);
             tableSources.getColumnModel().getColumn(12).setResizable(false);
             tableSources.getColumnModel().getColumn(12).setPreferredWidth(100);
             tableSources.getColumnModel().getColumn(12).setHeaderValue(bundle.getString("EFFECT")); // NOI18N
@@ -1270,7 +1216,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                 .addGroup(panSettingsMiscLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
                     .addComponent(chkDoNotUseTrayIcon))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 6, Short.MAX_VALUE)
                 .addGroup(panSettingsMiscLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel14)
                     .addComponent(lblBGMusic)
@@ -2115,10 +2061,6 @@ public class ScreenStudio extends javax.swing.JFrame {
     private javax.swing.JPanel panStatus;
     private javax.swing.JPanel panTargetSettings;
     private javax.swing.JProgressBar pgAudioLevels;
-    private javax.swing.JMenu popMnuSourceEffect;
-    private javax.swing.JMenu popMnuSourceTransitionIn;
-    private javax.swing.JMenu popMnuSourceTransitionOut;
-    private javax.swing.JPopupMenu popSources;
     private javax.swing.JScrollPane scrollSources;
     private javax.swing.JSpinner spinAudioDelay;
     private javax.swing.JSpinner spinFPS;
