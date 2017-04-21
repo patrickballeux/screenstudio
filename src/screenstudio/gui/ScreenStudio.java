@@ -317,7 +317,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         mRemote.setCurrentView(index);
     }
 
-    public void updateColumnsLayout(){
+    public void updateColumnsLayout() {
         tableSources.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         if (tableSources.getColumnModel().getColumnCount() > 0) {
             //Show
@@ -334,7 +334,7 @@ public class ScreenStudio extends javax.swing.JFrame {
             tableSources.getColumnModel().getColumn(2).setMinWidth(150);
             tableSources.getColumnModel().getColumn(2).setPreferredWidth(200);
             tableSources.getColumnModel().getColumn(2).setHeaderValue(LANGUAGES.getString("SOURCE")); // NOI18N
-            
+
             //X
             tableSources.getColumnModel().getColumn(3).setResizable(false);
             tableSources.getColumnModel().getColumn(3).setPreferredWidth(75);
@@ -376,10 +376,11 @@ public class ScreenStudio extends javax.swing.JFrame {
             tableSources.getColumnModel().getColumn(12).setHeaderValue(LANGUAGES.getString("EFFECT")); // NOI18N
             ComboBoxCellEditor edef = new ComboBoxCellEditor(new JComboBox(Effect.eEffects.values()));
             tableSources.getColumnModel().getColumn(12).setCellEditor(edef);
-         
+
         }
-        
+
     }
+
     private void loadLayout(File file) {
         mCurrentLayout = new Layout();
         bindingGroup.getBinding("MySource").unbind();
@@ -616,7 +617,7 @@ public class ScreenStudio extends javax.swing.JFrame {
     private void updateRemoteSources() {
         ArrayList<String> sources = new ArrayList<>();
         for (int i = 0; i < mSources.size(); i++) {
-            sources.add(mSources.get(i).toString());
+            sources.add(mSources.get(i).getID());
         }
         if (mRemote != null) {
             mRemote.setSourceIDs(sources);
@@ -1559,6 +1560,11 @@ public class ScreenStudio extends javax.swing.JFrame {
             }).start();
 
         } else {
+            if (mCurrentAudioMonitor != null) {
+                mCurrentAudioMonitor.stopMonitoring();
+                mCurrentAudioMonitor = null;
+            }
+
             if (trayIcon != null) {
                 trayIcon.setImage(new ImageIcon(ScreenStudio.class.getResource("/screenstudio/gui/images/iconStarting.png")).getImage());
             }
@@ -1567,7 +1573,6 @@ public class ScreenStudio extends javax.swing.JFrame {
             }
             boolean abort = false;
             if (tableSources.getRowCount() == 0) {
-
                 lblMessages.setText(LANGUAGES.getString("WARNING_NO_VIDEO_SOURCE"));
                 abort = true;
             }

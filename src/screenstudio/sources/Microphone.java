@@ -70,11 +70,11 @@ public class Microphone implements Runnable {
         FFMpeg ffmpeg = new FFMpeg(null);
         String bin = ffmpeg.getBin();
         try {
-            Process p = Runtime.getRuntime().exec(bin + " -f " + ffmpeg.getAudioFormat() + " -i " + this.device + " -ar 11050 -ac 1 -f s8 -");
+            Process p = Runtime.getRuntime().exec(bin + " -use_wallclock_as_timestamps 1 -f " + ffmpeg.getAudioFormat() + " -i " + this.device + " -ar 22100 -ac 1 -f s8 -");
             java.io.DataInputStream input = new java.io.DataInputStream(p.getInputStream());
             ProcessReader reader = new ProcessReader(p.getErrorStream());
             OutputStream output = p.getOutputStream();
-            byte[] buffer = new byte[11050 / 10];
+            byte[] buffer = new byte[11050];
             while (!mStopMe) {
                 try {
                     input.readFully(buffer);
