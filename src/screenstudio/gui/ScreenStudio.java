@@ -58,6 +58,7 @@ import screenstudio.remote.HTTPServer;
 import screenstudio.sources.Compositor;
 import screenstudio.sources.Microphone;
 import screenstudio.sources.Screen;
+import screenstudio.sources.SlideShow;
 import screenstudio.sources.Source;
 import screenstudio.sources.SystemCheck;
 import screenstudio.sources.Webcam;
@@ -417,7 +418,11 @@ public class ScreenStudio extends javax.swing.JFrame {
                         }
                         break;
                     case Image:
-                        s.setSourceObject(new File(s.getID()));
+                        if (!s.getID().contains(";")) {
+                            s.setSourceObject(new File(s.getID()));
+                        } else {
+                            s.setSourceObject(new SlideShow(s.getID()));
+                        }
                         break;
                     case LabelText:
                         LabelText t = new LabelText(s.getID());
@@ -1710,15 +1715,26 @@ public class ScreenStudio extends javax.swing.JFrame {
             }
         });
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setMultiSelectionEnabled(true);
         chooser.showOpenDialog(this);
         if (chooser.getSelectedFile() != null) {
-            File image = chooser.getSelectedFile();
             //add new source...
             screenstudio.targets.Source source = new screenstudio.targets.Source(cboSourceViews.getItemCount());
             source.setCurrentViewIndex(cboSourceViews.getSelectedIndex());
             source.Views.get(source.CurrentViewIndex).remoteDisplay = true;
             source.setType(SourceType.Image);
-            source.setSourceObject(image);
+
+            if (chooser.getSelectedFiles().length <= 1) {
+                File image = chooser.getSelectedFile();
+                source.setSourceObject(image);
+            } else {
+                try {
+                    SlideShow images = new SlideShow(chooser.getSelectedFiles());
+                    source.setSourceObject(images);
+                } catch (IOException ex) {
+                    Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
             source.Views.get(source.CurrentViewIndex).X = 0;
             source.Views.get(source.CurrentViewIndex).Y = 0;
             source.Views.get(source.CurrentViewIndex).Width = 200;

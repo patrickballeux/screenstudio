@@ -222,6 +222,14 @@ public class Compositor {
                         list.add(s);
                         break;
                 }
+            } else if (source instanceof SlideShow) {
+                SourceImage s = new SourceImage(sources.get(i).getViews(), (SlideShow) source);
+                s.setDisplayTime(timestart, timeend);
+                s.setTransitionStart(transIn);
+                s.setTransitionStop(transOut);
+                s.setEffect(effect);
+                s.setViewIndex(sources.get(i).getCurrentViewIndex());
+                list.add(s);
             } else if (source instanceof LabelText) {
                 SourceLabel s = new SourceLabel(sources.get(i).getViews(), ((LabelText) source));
                 s.setDisplayTime(timestart, timeend);

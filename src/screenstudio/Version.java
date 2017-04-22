@@ -28,7 +28,7 @@ public class Version {
 //Using this to set the main version of ScreenStudio
 
     
-    public final static String MAIN = "3.3.1";
+    public final static String MAIN = "3.3.2";
 
     public static boolean hasNewVersion() {
         boolean retValue = false;

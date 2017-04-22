@@ -37,6 +37,7 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import screenstudio.gui.images.frames.Frames;
 import screenstudio.sources.Screen;
+import screenstudio.sources.SlideShow;
 
 /**
  *
@@ -55,7 +56,7 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
      * @param table
      * @param sources
      */
-    public SourceLayoutPreview(JTable table,ArrayList<screenstudio.targets.Source> sources) {
+    public SourceLayoutPreview(JTable table, ArrayList<screenstudio.targets.Source> sources) {
         initComponents();
         this.setDoubleBuffered(true);
         mJTable = table;
@@ -140,14 +141,19 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                                 g.fillRect(sx, sy, sw, sh);
                                 break;
                             case Image:
-                                File sourceImg = (File) source.SourceObject;
-                                 {
-                                    try {
-                                        img = javax.imageio.ImageIO.read(sourceImg);
-                                        g.drawImage(img.getScaledInstance(sw, sh, Image.SCALE_FAST), sx, sy, null);
-                                    } catch (IOException ex) {
-                                        Logger.getLogger(SourceLayoutPreview.class.getName()).log(Level.SEVERE, null, ex);
+                                if (source.SourceObject instanceof File) {
+                                    File sourceImg = (File) source.SourceObject;
+                                    {
+                                        try {
+                                            img = javax.imageio.ImageIO.read(sourceImg);
+                                            g.drawImage(img.getScaledInstance(sw, sh, Image.SCALE_FAST), sx, sy, null);
+                                        } catch (IOException ex) {
+                                            Logger.getLogger(SourceLayoutPreview.class.getName()).log(Level.SEVERE, null, ex);
+                                        }
                                     }
+                                } else if (source.SourceObject instanceof SlideShow) {
+                                    SlideShow ss = (SlideShow) source.SourceObject;
+                                    g.drawImage(ss.getImage(0).getScaledInstance(sw, sh, Image.SCALE_FAST), sx, sy, null);
                                 }
                                 break;
                             case LabelText:

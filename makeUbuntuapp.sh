@@ -18,7 +18,7 @@ echo "Copying logo file..."
 cp apps/Ubuntu/logo.png ScreenStudio.Ubuntu/logo.png
 cp apps/Ubuntu/ScreenStudio.sh ScreenStudio.Ubuntu/ScreenStudio.sh
 cp apps/README.txt ScreenStudio.Ubuntu/README.txt
-cp libs/* ScreenStudio.Ubuntu/lib
+cp dist/lib/* ScreenStudio.Ubuntu/lib
 sed "s/@VERSION/$VERSION/g" apps/Ubuntu/createDesktopIcon.sh>ScreenStudio.Ubuntu/createDesktopIcon.sh
 chmod +x ScreenStudio.Ubuntu/createDesktopIcon.sh
 tar -zcvf "../ScreenStudio-Ubuntu-$VERSION-bin.tar.gz" ScreenStudio.Ubuntu

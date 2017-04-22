@@ -37,24 +37,44 @@ public class SourceImage extends Source {
     private byte[] data = null;
     private BufferedImage[] images;
     private int currentIndex = 0;
-
+    private long mNextPicture = 0;
+    private long mTimeDelay = 1000;
+    
     public SourceImage(List<screenstudio.targets.Source.View> views,  File image) {
-        super(views, 1000, image.getAbsolutePath(), BufferedImage.TYPE_4BYTE_ABGR);
+        super(views, 0, image.getAbsolutePath(), BufferedImage.TYPE_4BYTE_ABGR);
         mFile = image;
+        mType = Layout.SourceType.Image;
+        mNextPicture = System.currentTimeMillis() + mTimeDelay;
+    }
+    public SourceImage(List<screenstudio.targets.Source.View> views,  SlideShow imgs) {
+        super(views, 0, imgs.getID(), BufferedImage.TYPE_4BYTE_ABGR);
+        mFile = null;
+        images = new BufferedImage[imgs.getImages().size()];
+        for (int i = 0; i < images.length; i++){
+            images[i] = new BufferedImage(mBounds.width, mBounds.height, mImageType);
+            images[i].createGraphics().drawImage(imgs.getImage(i).getScaledInstance(mBounds.width, mBounds.height, Image.SCALE_SMOOTH), 0, 0, null);
+            data = ((DataBufferByte) images[i].getRaster().getDataBuffer()).getData();
+        }
+        mTimeDelay = 10000;
+        mNextPicture = System.currentTimeMillis() + mTimeDelay;
         mType = Layout.SourceType.Image;
     }
 
     public SourceImage(List<screenstudio.targets.Source.View> views ,BufferedImage image, String id) {
-        super(views, 1000, id, image.getType());
+        super(views, 0, id, image.getType());
         mFile = null;
         images = new BufferedImage[1];
         images[0] = image;
+        mNextPicture = System.currentTimeMillis() + mTimeDelay;
         mType = Layout.SourceType.Frame;
     }
 
     @Override
     protected void getData(byte[] buffer) throws IOException {
-        currentIndex++;
+        if (mNextPicture <= System.currentTimeMillis()){
+            currentIndex++;
+            mNextPicture = System.currentTimeMillis() +mTimeDelay;
+        }
         if (currentIndex >= images.length) {
             currentIndex = 0;
         }
@@ -80,7 +100,7 @@ public class SourceImage extends Source {
             images[0] = new BufferedImage(mBounds.width, mBounds.height, mImageType);
             images[0].createGraphics().drawImage(buffer.getScaledInstance(mBounds.width, mBounds.height, Image.SCALE_SMOOTH), 0, 0, null);
             data = ((DataBufferByte) images[0].getRaster().getDataBuffer()).getData();
-        }
+        } 
     }
 
     @Override
@@ -102,6 +122,7 @@ public class SourceImage extends Source {
                 images[index].createGraphics().drawImage(frame.getScaledInstance(mBounds.width, mBounds.height, Image.SCALE_SMOOTH), 0, 0, null);
                 data = ((DataBufferByte) images[index].getRaster().getDataBuffer()).getData();
             }
+            mTimeDelay = 100;
 
         } catch (IOException ex) {
 
