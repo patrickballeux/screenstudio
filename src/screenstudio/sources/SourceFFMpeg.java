@@ -140,7 +140,11 @@ public class SourceFFMpeg extends Source implements Runnable {
     }
 
     public static SourceFFMpeg getWebcamInstance(Webcam webcam,List<screenstudio.targets.Source.View> views , int fps) {
-        String input = " -f " + new FFMpeg(null).getWebcamFormat() + " -s " + webcam.getWidth() + "x" + webcam.getHeight() + " -r " + fps + " -i " + webcam.getDevice();
+        String inputFormat = " -s " + webcam.getWidth() + "x" + webcam.getHeight() + " -r " + fps;
+        if (Screen.isWindows()){
+            inputFormat = "";
+        }
+        String input = " -f " + new FFMpeg(null).getWebcamFormat() + inputFormat  + " -i " + webcam.getDevice();
         System.out.println(input);
         return new SourceFFMpeg(views, new Rectangle(webcam.getSize()), fps, input, SourceType.Webcam, webcam.getDevice());
     }
