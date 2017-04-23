@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 import screenstudio.sources.Compositor;
 import screenstudio.sources.Source;
+import screenstudio.sources.SourceImage;
 import screenstudio.sources.transitions.Transition;
 
 /**
@@ -173,6 +174,18 @@ public class HTTPServer implements Runnable {
                                 s.setTransitionStop(Transition.NAMES.FadeOut);
                                 s.setDisplayTime(1, mCompositor.getTimeDelta() + 1);
                                 break;
+                            case "prev":
+                                SourceImage sp = (SourceImage)s;
+                                sp.setCurrentImageIndex(sp.getCurrentImageIndex()-1);
+                                break;
+                            case "next":
+                                SourceImage sn = (SourceImage)s;
+                                sn.setCurrentImageIndex(sn.getCurrentImageIndex()+1);
+                                break;
+                            case "loop":
+                                SourceImage sl = (SourceImage)s;
+                                sl.setNextImageDelay(10000);
+                                break;
                         }
                     }
                 }
@@ -231,9 +244,20 @@ public class HTTPServer implements Runnable {
            for (int i = mCompositor.getSources().size()-1; i >= 0 ; i--) {
                 Source s = mCompositor.getSources().get(i);
                 if (s.isRemoteDisplay()) {
-                    sources += "\r\n<form class=source name='source" + i + "'><input type=hidden value='off' name='source" + i + "'><input type=checkbox checked onchange='document.forms.source" + i + ".submit();'>" + s.getID() + "</form>";
+                    sources += "\r\n<form class=source name='source" + i + "'><input type=hidden value='off' name='source" + i + "'><input type=checkbox checked onchange='document.forms.source" + i + ".submit();' />" + s.getID() + "</form>";
                 } else {
-                    sources += "\r\n<form class=source name='source" + i + "'><input type=hidden value='on' name='source" + i + "'><input type=checkbox onchange='document.forms.source" + i + ".submit();'>" + s.getID() + "</form>";
+                    sources += "\r\n<form class=source name='source" + i + "'><input type=hidden value='on' name='source" + i + "'><input type=checkbox onchange='document.forms.source" + i + ".submit();' />" + s.getID() + "</form>";
+                }
+                if (s instanceof SourceImage){
+                    SourceImage si = (SourceImage)s;
+                    sources += "\r\n<form name='slideshowprev" + i + "'><input type=hidden value='prev' name='source" + i + "'></form>";
+                    sources += "\r\n<form name='slideshownext" + i + "'><input type=hidden value='next' name='source" + i + "'></form>";
+                    sources += "\r\n<form name='slideshowloop" + i + "'><input type=hidden value='loop' name='source" + i + "'></form>";
+                    
+                    sources += "\r\n<center><input type=button onclick='document.forms.slideshowprev" + i + ".submit();' value='Previous' />";
+                    sources += " - " + (si.getCurrentImageIndex() +1) + " - ";
+                    sources += "<input type=button onclick='document.forms.slideshownext" + i + ".submit();' value='Next' />";
+                    sources += "<input type=button onclick='document.forms.slideshowloop" + i + ".submit();' value='Loop' /></center>";
                 }
             } 
         }
