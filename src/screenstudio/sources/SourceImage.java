@@ -39,6 +39,7 @@ public class SourceImage extends Source {
     private int currentIndex = 0;
     private long mNextPicture = 0;
     private long mTimeDelay = 1000;
+    private boolean mIsSlideshow = false;
 
     public SourceImage(List<screenstudio.targets.Source.View> views, File image) {
         super(views, 0, image.getAbsolutePath(), BufferedImage.TYPE_4BYTE_ABGR);
@@ -59,8 +60,12 @@ public class SourceImage extends Source {
         mTimeDelay = 0;
         mNextPicture = System.currentTimeMillis() + mTimeDelay;
         mType = Layout.SourceType.Image;
+        mIsSlideshow = true;
     }
 
+    public boolean isSlideShow(){
+        return mIsSlideshow;
+    }
     public void setNextImageDelay(long delay) {
         mTimeDelay = delay;
     }
