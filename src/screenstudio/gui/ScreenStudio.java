@@ -487,6 +487,8 @@ public class ScreenStudio extends javax.swing.JFrame {
                 s.setID(((Webcam) s.getSourceObject()).getDevice());
             } else if (s.getSourceObject() instanceof LabelText) {
                 s.setID(((LabelText) s.getSourceObject()).getText());
+            } else if (s.getSourceObject() instanceof SlideShow){
+                s.setID(((SlideShow)s.getSourceObject()).getID());
             }
             mCurrentLayout.addSource(s);
         }
