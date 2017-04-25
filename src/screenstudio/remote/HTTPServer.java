@@ -72,6 +72,9 @@ public class HTTPServer implements Runnable {
         mCompositor = c;
     }
 
+    public Compositor getCompositor(){
+        return mCompositor;
+    }
     public void setCurrentView(int index) {
         if (mCompositor != null) {
             mCompositor.setCurrentView(index);

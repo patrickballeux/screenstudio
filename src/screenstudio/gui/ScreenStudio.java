@@ -22,6 +22,8 @@ import com.tulskiy.keymaster.common.Provider;
 import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.SystemTray;
@@ -29,10 +31,13 @@ import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -487,8 +492,8 @@ public class ScreenStudio extends javax.swing.JFrame {
                 s.setID(((Webcam) s.getSourceObject()).getDevice());
             } else if (s.getSourceObject() instanceof LabelText) {
                 s.setID(((LabelText) s.getSourceObject()).getText());
-            } else if (s.getSourceObject() instanceof SlideShow){
-                s.setID(((SlideShow)s.getSourceObject()).getID());
+            } else if (s.getSourceObject() instanceof SlideShow) {
+                s.setID(((SlideShow) s.getSourceObject()).getID());
             }
             mCurrentLayout.addSource(s);
         }
@@ -680,6 +685,8 @@ public class ScreenStudio extends javax.swing.JFrame {
         panSourcesViews = new javax.swing.JPanel();
         lblSourceViewsCount = new javax.swing.JLabel();
         cboSourceViews = new javax.swing.JComboBox<>();
+        lblThumbTitle = new javax.swing.JLabel();
+        txtThumbnailTitle = new javax.swing.JTextField();
         splitterSources = new javax.swing.JSplitPane();
         panPreviewLayout = new javax.swing.JPanel();
         scrollSources = new javax.swing.JScrollPane();
@@ -907,6 +914,10 @@ public class ScreenStudio extends javax.swing.JFrame {
             }
         });
 
+        lblThumbTitle.setText("Thumbnail Title");
+
+        txtThumbnailTitle.setText("ScreenStudio is amazing!");
+
         javax.swing.GroupLayout panSourcesViewsLayout = new javax.swing.GroupLayout(panSourcesViews);
         panSourcesViews.setLayout(panSourcesViewsLayout);
         panSourcesViewsLayout.setHorizontalGroup(
@@ -916,7 +927,11 @@ public class ScreenStudio extends javax.swing.JFrame {
                 .addComponent(lblSourceViewsCount)
                 .addGap(18, 18, 18)
                 .addComponent(cboSourceViews, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(388, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblThumbTitle)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtThumbnailTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 346, Short.MAX_VALUE)
+                .addContainerGap())
         );
         panSourcesViewsLayout.setVerticalGroup(
             panSourcesViewsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -924,8 +939,10 @@ public class ScreenStudio extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(panSourcesViewsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblSourceViewsCount)
-                    .addComponent(cboSourceViews, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(17, Short.MAX_VALUE))
+                    .addComponent(cboSourceViews, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblThumbTitle)
+                    .addComponent(txtThumbnailTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         panSources.add(panSourcesViews, java.awt.BorderLayout.NORTH);
@@ -1589,6 +1606,10 @@ public class ScreenStudio extends javax.swing.JFrame {
 
                 mRecordingTimestamp = System.currentTimeMillis();
                 new Thread(() -> {
+                    File thumbnail = new File(mVideoOutputFolder, "thumbnail.png");
+                    if (thumbnail.exists()) {
+                        thumbnail.delete();
+                    }
                     FFMpeg f = mFFMpeg;
                     FFMpeg.RunningState initState = FFMpeg.RunningState.Starting;
                     while (f != null) {
@@ -1603,6 +1624,43 @@ public class ScreenStudio extends javax.swing.JFrame {
                             setTitle(LANGUAGES.getString("RECORDING") + "! (" + seconds + " sec)");
                         } else {
                             setTitle(LANGUAGES.getString("RECORDING") + "! (" + (seconds / 60) + " min " + (seconds % 60) + " sec)");
+                        }
+                        if (seconds == 20 && !thumbnail.exists()) {
+                            BufferedImage img = new BufferedImage(mRemote.getCompositor().getWidth(), mRemote.getCompositor().getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+                            byte[] buffer = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
+                            System.arraycopy(mRemote.getCompositor().getImage(), 0, buffer, 0, buffer.length);
+                            try {
+                                // draw text...
+                                String title = txtThumbnailTitle.getText();
+                                if (title.trim().length() > 0) {
+                                    Graphics2D g = img.createGraphics();
+                                    String[] words = title.split(" ");
+                                    int fontSize = img.getHeight() / (words.length + 2);
+                                    g.setFont(new Font("Monospaced", Font.BOLD, fontSize));
+                                    int y = g.getFontMetrics().getHeight()+5;
+                                    for (String w : words) {
+                                        g.setColor(Color.WHITE);
+                                        int strWidth = g.getFontMetrics().stringWidth(w);
+                                        int smallerFontSize = fontSize;
+                                        while (strWidth > img.getWidth()){
+                                            g.setFont(new Font("Monospaced", Font.BOLD, smallerFontSize-=5));
+                                            strWidth = g.getFontMetrics().stringWidth(w);
+                                        }
+                                        int x = img.getWidth() - strWidth;
+                                        if (x < 0) {
+                                            x = 0;
+                                        }
+                                        x = x / 2;
+                                        g.drawString(w, x, y);
+                                        g.setColor(Color.RED);
+                                        g.drawString(w, x + 3, y - 3);
+                                        y += g.getFontMetrics().getHeight();
+                                    }
+                                    javax.imageio.ImageIO.write(img, "png", thumbnail);
+                                }
+                            } catch (IOException ex) {
+                                Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
+                            }
                         }
                         if (f.getState() == FFMpeg.RunningState.Error) {
                             System.err.println("Encoder error detected...");
@@ -2053,6 +2111,7 @@ public class ScreenStudio extends javax.swing.JFrame {
     private javax.swing.JLabel lblRTMPServer;
     private javax.swing.JLabel lblRemoteMessage;
     private javax.swing.JLabel lblSourceViewsCount;
+    private javax.swing.JLabel lblThumbTitle;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem mnuCapture;
     private javax.swing.JMenu mnuEdit;
@@ -2088,6 +2147,7 @@ public class ScreenStudio extends javax.swing.JFrame {
     private javax.swing.JTable tableSources;
     private javax.swing.JTabbedPane tabs;
     private javax.swing.JTextField txtRTMPKey;
+    private javax.swing.JTextField txtThumbnailTitle;
     private javax.swing.JTextField txtVideoFolder;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
