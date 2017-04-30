@@ -60,7 +60,7 @@ public class Layout {
     private Node settings = null;
 
     public enum SourceType {
-        Desktop, Webcam, Image, LabelText, Video, Stream, Frame
+        Desktop, Webcam, Image, LabelText, Video, Stream, Frame, Custom
     }
 
     public Layout() {
@@ -262,6 +262,9 @@ public class Layout {
             case Frame:
                 nodeName = "frame";
                 break;
+            case Custom:
+                nodeName = "custom";
+                break;
         }
         Node node = document.createElement(nodeName);
         Node capx = document.createAttribute("capturex");
@@ -355,6 +358,51 @@ public class Layout {
             Source s = new Source(0);
             Node n = nodes.item(i);
             s.setType(SourceType.Desktop);
+
+            if (n.getAttributes().getNamedItem("x") != null) {
+                loadView(s, n);
+            } else {
+                // Load multiple views...
+                for (int j = 0;j < n.getChildNodes().getLength();j++){
+                    Node view = n.getChildNodes().item(j);
+                    if (view.getNodeName().equals("view")){
+                        loadView(s, view);
+                    }
+                }
+            }
+
+            s.setID(n.getAttributes().getNamedItem("id").getNodeValue());
+            if (n.getAttributes().getNamedItem("capturex") != null) {
+                s.setCaptureX((int) new Integer(n.getAttributes().getNamedItem("capturex").getNodeValue()));
+                s.setCaptureY((int) new Integer(n.getAttributes().getNamedItem("capturey").getNodeValue()));
+            } else {
+                s.setCaptureX(0);
+                s.setCaptureY(0);
+            }
+            if (n.getAttributes().getNamedItem("start") != null) {
+                s.setStartTime(Long.parseLong(n.getAttributes().getNamedItem("start").getNodeValue()));
+                s.setEndTime(Long.parseLong(n.getAttributes().getNamedItem("end").getNodeValue()));
+            }
+            if (n.getAttributes().getNamedItem("transstart") != null) {
+                s.setTransitionStart(Transition.NAMES.valueOf(n.getAttributes().getNamedItem("transstart").getNodeValue()));
+                s.setTransitionStop(Transition.NAMES.valueOf(n.getAttributes().getNamedItem("transstop").getNodeValue()));
+            }
+            if (n.getAttributes().getNamedItem("effect") != null) {
+                s.setEffect(Effect.eEffects.valueOf(n.getAttributes().getNamedItem("effect").getNodeValue()));
+            } else {
+                s.setEffect(Effect.eEffects.None);
+            }
+            sources[i] = s;
+        }
+        return sources;
+    }
+    private Source[] getCustoms() {
+        NodeList nodes = document.getElementsByTagName("custom");
+        Source[] sources = new Source[nodes.getLength()];
+        for (int i = 0; i < sources.length; i++) {
+            Source s = new Source(0);
+            Node n = nodes.item(i);
+            s.setType(SourceType.Custom);
 
             if (n.getAttributes().getNamedItem("x") != null) {
                 loadView(s, n);

@@ -100,6 +100,16 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnuMainAddLabelActionPerformed"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="mnuMainAddCustom">
+              <Properties>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="screenstudio/Languages.properties" key="ADD_CUSTOM_SOURCE" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnuMainAddCustomActionPerformed"/>
+              </Events>
+            </MenuItem>
             <Menu class="javax.swing.JMenu" name="mnuMainFrames">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
@@ -1157,27 +1167,24 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="103" alignment="0" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="panThumbnailPreview" alignment="0" min="-2" pref="360" max="-2" attributes="0"/>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="lblThumbTitle2" max="-2" attributes="0"/>
-                                      <Component id="lblThumbTitle3" max="-2" attributes="0"/>
-                                      <Component id="lblThumbTitle" alignment="0" min="-2" pref="144" max="-2" attributes="0"/>
-                                  </Group>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                      <Component id="cboThumbnailBackground" max="32767" attributes="0"/>
-                                      <Component id="cboThumbnailFont" max="32767" attributes="0"/>
-                                      <Component id="cboThumbnailColor" alignment="0" max="32767" attributes="0"/>
-                                      <Component id="txtThumbnailTitle" alignment="0" pref="260" max="32767" attributes="0"/>
-                                  </Group>
-                                  <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                          <Component id="panThumbnailPreview" alignment="0" min="-2" pref="360" max="-2" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="lblThumbTitle2" max="-2" attributes="0"/>
+                                  <Component id="lblThumbTitle3" max="-2" attributes="0"/>
+                                  <Component id="lblThumbTitle" alignment="0" min="-2" pref="144" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="cboThumbnailBackground" max="32767" attributes="0"/>
+                                  <Component id="cboThumbnailFont" max="32767" attributes="0"/>
+                                  <Component id="cboThumbnailColor" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="txtThumbnailTitle" alignment="0" pref="260" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <Component id="lblThumbTitle1" alignment="0" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="328" max="32767" attributes="0"/>
+                      <EmptySpace pref="334" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>

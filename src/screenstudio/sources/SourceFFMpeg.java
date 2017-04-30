@@ -113,26 +113,6 @@ public class SourceFFMpeg extends Source implements Runnable {
         mInputData = null;
     }
 
-    protected String getInput(String source, DEVICES type) {
-        String input = "";
-
-        switch (type) {
-            case Desktop:
-                input = " -f " + mFFMpeg.getDesktopFormat() + " -video_size " + mCaptureSize.width + "x" + mCaptureSize.height + " -i " + source;
-                break;
-            case File:
-                input = " -i " + source;
-                break;
-            case Stream:
-                input = " -i " + source;
-                break;
-            case Webcam:
-                input = " -f " + mFFMpeg.getWebcamFormat() + " -i " + source;
-                break;
-        }
-        return input;
-    }
-
     public static SourceFFMpeg getDesktopInstance(Screen display,List<screenstudio.targets.Source.View> views , int fps) {
         String input = " -f " + new FFMpeg(null).getDesktopFormat() + " -video_size " + display.getWidth() + "x" + display.getHeight() + " -i " + display.getId();
         if (Screen.isWindows()) {
@@ -144,6 +124,11 @@ public class SourceFFMpeg extends Source implements Runnable {
         return f;
     }
 
+    public static SourceFFMpeg getCustomInstance(screenstudio.targets.Source source,List<screenstudio.targets.Source.View> views , int fps) {
+        String input = source.getSourceObject().toString();
+        SourceFFMpeg f = new SourceFFMpeg(views,new Rectangle(source.getWidth(),source.getHeight()), fps, input, SourceType.Custom, source.getID());
+        return f;
+    }
     public static SourceFFMpeg getWebcamInstance(Webcam webcam,List<screenstudio.targets.Source.View> views , int fps) {
         String inputFormat = " -s " + webcam.getWidth() + "x" + webcam.getHeight() + " -r " + fps;
         if (Screen.isWindows()){

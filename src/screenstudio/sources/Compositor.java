@@ -248,6 +248,19 @@ public class Compositor {
                     list.add(s);
                 } catch (IOException ex) {
                 }
+            } else if (source instanceof String) {
+                switch (sources.get(i).getType()) {
+                    case Custom:
+                        SourceFFMpeg s = SourceFFMpeg.getCustomInstance(sources.get(i), sources.get(i).getViews(), fps);
+                        s.setFPS(fps);
+                        s.setDisplayTime(timestart, timeend);
+                        s.setTransitionStart(transIn);
+                        s.setTransitionStop(transOut);
+                        s.setEffect(effect);
+                        s.setViewIndex(sources.get(i).getCurrentViewIndex());
+                        list.add(s);
+                        break;
+                }
             }
         }
         return list;
