@@ -21,6 +21,8 @@ import java.awt.image.BufferedImage;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import screenstudio.encoder.FFMpeg;
 import screenstudio.encoder.ProcessReader;
 import screenstudio.targets.Layout.SourceType;
@@ -47,9 +49,12 @@ public class SourceFFMpeg extends Source implements Runnable {
                 byte[] buffer = new byte[dataBuffer.length];
                 mInputData.readFully(buffer);
                 dataBuffer = buffer;
+                Thread.sleep(10);
             } catch (IOException ex) {
                 //Logger.getLogger(SourceFFMpeg.class.getName()).log(Level.SEVERE, null, ex);
                 mStopMe = true;
+            } catch (InterruptedException ex) {
+                Logger.getLogger(SourceFFMpeg.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

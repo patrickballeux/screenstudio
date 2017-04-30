@@ -125,7 +125,6 @@ public class Compositor {
         mTimeDelta = (System.currentTimeMillis() - mStartTime) / 1000;
         for (int i = 0; i < mSources.size(); i++) {
             Source s = mSources.get(i);
-            BufferedImage img = mEffects.apply(s.getEffect(), s.getImage());
             if (s.isRemoteDisplay()) {
                 if ((s.getEndDisplayTime() == 0 || s.getEndDisplayTime() >= mTimeDelta)
                         && (s.getStartDisplayTime() <= mTimeDelta)) {
@@ -143,9 +142,9 @@ public class Compositor {
                         }
                         g.setComposite(s.getAlpha());
                         Rectangle r = s.getBounds();
-
+                        BufferedImage img = mEffects.apply(s.getEffect(), s.getImage());
                         if (img.getWidth() != r.width || img.getHeight() != r.height) {
-                            g.drawImage(img.getScaledInstance(r.width, r.height, Image.SCALE_DEFAULT), r.x, r.y, null);
+                            g.drawImage(img.getScaledInstance(r.width, r.height, Image.SCALE_FAST), r.x, r.y, null);
                         } else {
                             g.drawImage(img, r.x, r.y, null);
                         }
