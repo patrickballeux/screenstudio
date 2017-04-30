@@ -49,13 +49,11 @@ public class SourceFFMpeg extends Source implements Runnable {
                 byte[] buffer = new byte[dataBuffer.length];
                 mInputData.readFully(buffer);
                 dataBuffer = buffer;
-                Thread.sleep(10);
+                //Thread.sleep(10);
             } catch (IOException ex) {
                 //Logger.getLogger(SourceFFMpeg.class.getName()).log(Level.SEVERE, null, ex);
                 mStopMe = true;
-            } catch (InterruptedException ex) {
-                Logger.getLogger(SourceFFMpeg.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            } 
         }
     }
 
@@ -130,7 +128,7 @@ public class SourceFFMpeg extends Source implements Runnable {
         return f;
     }
     public static SourceFFMpeg getWebcamInstance(Webcam webcam,List<screenstudio.targets.Source.View> views , int fps) {
-        String inputFormat = " -s " + webcam.getWidth() + "x" + webcam.getHeight() + " -r " + fps;
+        String inputFormat = " -video_size " + webcam.getWidth() + "x" + webcam.getHeight() + " -framerate " + fps;
         if (Screen.isWindows()){
             inputFormat = "";
         }
