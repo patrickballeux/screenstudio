@@ -63,9 +63,10 @@ public class SourceImage extends Source {
         mIsSlideshow = true;
     }
 
-    public boolean isSlideShow(){
+    public boolean isSlideShow() {
         return mIsSlideshow;
     }
+
     public void setNextImageDelay(long delay) {
         mTimeDelay = delay;
     }
@@ -73,11 +74,12 @@ public class SourceImage extends Source {
     public int getCurrentImageIndex() {
         return currentIndex;
     }
+
     public void setCurrentImageIndex(int index) {
         mTimeDelay = 0;
         if (index >= images.length) {
             currentIndex = 0;
-        } else if (index < 0){
+        } else if (index < 0) {
             currentIndex = 0;
         } else {
             currentIndex = index;

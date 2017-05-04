@@ -20,7 +20,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
@@ -56,9 +55,10 @@ public class SourceLabel extends Source {
     private long mReloadTime = 1000;
     private long mLastReloadTime = System.currentTimeMillis();
     private String mLastRenderedText = "";
+    private Graphics2D g;
 
-    public SourceLabel(List<screenstudio.targets.Source.View> views , LabelText text) {
-        super(views, 100, text.getText(),BufferedImage.TYPE_4BYTE_ABGR);
+    public SourceLabel(List<screenstudio.targets.Source.View> views, LabelText text) {
+        super(views, 100, text.getText(), BufferedImage.TYPE_4BYTE_ABGR);
         mOriginalAlpha = views.get(0).Alpha;
         mText = updateWithTextTags(text.getText());
         mLastRenderedText = replaceTags(mText);
@@ -76,8 +76,8 @@ public class SourceLabel extends Source {
         this.mType = Layout.SourceType.LabelText;
         mImage = new BufferedImage(views.get(0).Width, views.get(0).Height, mImageType);
         mData = ((DataBufferByte) mImage.getRaster().getDataBuffer()).getData();
-        mLabel.setSize(new Dimension(views.get(0).Width,views.get(0).Height));
-        Graphics2D g = mImage.createGraphics();
+        mLabel.setSize(new Dimension(views.get(0).Width, views.get(0).Height));
+        g = mImage.createGraphics();
         mLabel.paint(g);
         mLastReloadTime = System.currentTimeMillis();
     }
@@ -123,59 +123,49 @@ public class SourceLabel extends Source {
 
     @Override
     protected void getData(byte[] buffer) throws IOException {
-        String text = mLastRenderedText;
         if (System.currentTimeMillis() - mLastReloadTime > mReloadTime) {
             mLastRenderedText = replaceTags(mText);
-            text = mLastRenderedText;
+            if (!mOneLiner) {
+                mLabel.setText(mLastRenderedText);
+                java.util.Arrays.fill(mData, (byte) 0);
+                mLabel.paint(g);
+            }
             mLastReloadTime = System.currentTimeMillis();
         }
         if (mOneLiner) {
-            String lines[] = text.split("\n");
-            if (lines.length > 0) {
-                if (mOneLinerLastLine >= lines.length) {
-                    mOneLinerLastLine = 0;
-                }
-                text = lines[mOneLinerLastLine];
-                if (System.currentTimeMillis() - mOneLinerLastUpdate >= 5000) {
-                    mOneLinerLastLine++;
-                    if (mOneLinerLastLine >= lines.length) {
-                        mOneLinerLastLine = 0;
-                    }
-                    mOneLinerLastUpdate = System.currentTimeMillis();
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            int r, g, b;
-                            r = mLabel.getForeground().getRed();
-                            g = mLabel.getForeground().getGreen();
-                            b = mLabel.getForeground().getBlue();
-                            mLabel.setForeground(new Color(r, g, b, 0));
-                            for (int alpha = 0; alpha < 255; alpha += 5) {
-                                mLabel.setForeground(new Color(r, g, b, alpha));
-                                try {
-                                    Thread.sleep(50);
-                                } catch (InterruptedException ex) {
-                                    Logger.getLogger(SourceLabel.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            }
-                            mLabel.setForeground(new Color(r, g, b, 255));
+            if (System.currentTimeMillis() - mOneLinerLastUpdate >= 5000) {
+                mOneLinerLastLine++;
+                mOneLinerLastUpdate = System.currentTimeMillis();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        int r, gr, b;
+                        r = mLabel.getForeground().getRed();
+                        gr = mLabel.getForeground().getGreen();
+                        b = mLabel.getForeground().getBlue();
+                        mLabel.setForeground(new Color(r, gr, b, 0));
+                        String lines[] = mLastRenderedText.split("\n");
+                        if (mOneLinerLastLine >= lines.length) {
+                            mOneLinerLastLine = 0;
                         }
-                    }).start();
-                }
+                        mLabel.setText(lines[mOneLinerLastLine]);
+                        java.util.Arrays.fill(mData, (byte) 0);
+                        mLabel.paint(g);
+                        for (int alpha = 0; alpha < 255; alpha += 5) {
+                            mLabel.setForeground(new Color(r, gr, b, alpha));
+                            try {
+                                Thread.sleep(50);
+                            } catch (InterruptedException ex) {
+                                Logger.getLogger(SourceLabel.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                        mLabel.setForeground(new Color(r, gr, b, 255));
+                    }
+                }).start();
             }
         }
-
-        mLabel.setText(text);
-        Graphics2D g = mImage.createGraphics();
-
-        java.util.Arrays.fill(mData,
-                (byte) 0);
-        mLabel.paint(g);
-
-        System.arraycopy(mData,
-                0, buffer, 0, buffer.length);
-        if (mOnChangeOnly
-                && !mLastContent.equals(mLabel.getText()) && getAlpha().getAlpha() == 0.0F) {
+        System.arraycopy(mData, 0, buffer, 0, buffer.length);
+        if (mOnChangeOnly && !mLastContent.equals(mLabel.getText()) && getAlpha().getAlpha() == 0.0F) {
             setAlpha(mOriginalAlpha);
             new Thread(() -> {
                 try {
@@ -201,13 +191,13 @@ public class SourceLabel extends Source {
     protected void initStream() throws IOException {
         mStartTimeStamp = System.currentTimeMillis();
         mLastReloadTime = System.currentTimeMillis();
-        Graphics2D g = mImage.createGraphics();
+        g = mImage.createGraphics();
         mLabel.paint(g);
     }
 
     @Override
     protected void disposeStream() throws IOException {
-
+        g.dispose();
     }
     private final DateFormat formatDate = DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault());
     private final DateFormat formatTime = DateFormat.getTimeInstance(DateFormat.LONG, Locale.getDefault());
@@ -253,8 +243,7 @@ public class SourceLabel extends Source {
                 text = new String(data).trim();
 
             } catch (IOException ex) {
-                Logger.getLogger(SourceLabel.class
-                        .getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(SourceLabel.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return text;

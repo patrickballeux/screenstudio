@@ -235,7 +235,7 @@ public class Compositor implements Runnable {
         Graphics2D g = img.createGraphics();
         byte[] buffer = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
         while (!mRequestStop) {
-            java.util.Arrays.fill(buffer, (byte)0);
+            java.util.Arrays.fill(buffer, (byte) 0);
             mTimeDelta = (System.currentTimeMillis() - mStartTime) / 1000;
             long nextPTS = System.currentTimeMillis() + (1000 / mFPS);
             for (int i = 0; i < mSources.size(); i++) {
@@ -257,12 +257,13 @@ public class Compositor implements Runnable {
                             }
                             g.setComposite(s.getAlpha());
                             Rectangle r = s.getBounds();
-                            BufferedImage source = mEffects.apply(s.getEffect(), s.getImage());
-                            if (source.getWidth() != r.width || source.getHeight() != r.height) {
-                                g.drawImage(source.getScaledInstance(r.width, r.height, Image.SCALE_FAST), r.x, r.y, null);
+                            BufferedImage source;
+                            if (s.getEffect() == Effect.eEffects.None) {
+                                source = s.getImage();
                             } else {
-                                g.drawImage(source, r.x, r.y, null);
+                                source = mEffects.apply(s.getEffect(), s.getImage());
                             }
+                            g.drawImage(source, r.x, r.y, r.x+r.width, r.y+r.height, 0, 0, source.getWidth(), source.getHeight(), null);
                         }
                     }
                 }
