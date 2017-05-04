@@ -16,6 +16,7 @@
  */
 package screenstudio.sources;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -234,10 +235,11 @@ public class Compositor implements Runnable {
         BufferedImage img = new BufferedImage(mOutputSize.width, mOutputSize.height, BufferedImage.TYPE_3BYTE_BGR);
         Graphics2D g = img.createGraphics();
         byte[] buffer = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
+        long frameDelay = 1000 / mFPS;
+        long nextPTS = System.currentTimeMillis() + frameDelay;
         while (!mRequestStop) {
             java.util.Arrays.fill(buffer, (byte) 0);
             mTimeDelta = (System.currentTimeMillis() - mStartTime) / 1000;
-            long nextPTS = System.currentTimeMillis() + (1000 / mFPS);
             for (int i = 0; i < mSources.size(); i++) {
                 Source s = mSources.get(i);
                 if (s.isRemoteDisplay()) {
@@ -263,7 +265,7 @@ public class Compositor implements Runnable {
                             } else {
                                 source = mEffects.apply(s.getEffect(), s.getImage());
                             }
-                            g.drawImage(source, r.x, r.y, r.x+r.width, r.y+r.height, 0, 0, source.getWidth(), source.getHeight(), null);
+                            g.drawImage(source, r.x, r.y, r.x + r.width, r.y + r.height, 0, 0, source.getWidth(), source.getHeight(), null);
                         }
                     }
                 }
@@ -280,6 +282,7 @@ public class Compositor implements Runnable {
                     Logger.getLogger(Compositor.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            nextPTS += frameDelay;
         }
         mRequestStop = false;
     }
