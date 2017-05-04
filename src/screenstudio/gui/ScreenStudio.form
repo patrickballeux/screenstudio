@@ -243,7 +243,11 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="spinHeight" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="spinFPS" min="-2" max="-2" attributes="0"/>
+                                  <Group type="102" attributes="0">
+                                      <Component id="spinFPS" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                      <Component id="btnTestFPS" max="32767" attributes="0"/>
+                                  </Group>
                                   <Component id="cboTarget" alignment="0" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -270,6 +274,7 @@
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="spinFPS" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnTestFPS" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -422,7 +427,7 @@
                               <Component id="lblRTMPKey" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="txtRTMPKey" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="130" max="32767" attributes="0"/>
+                          <EmptySpace pref="125" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -495,6 +500,14 @@
                   <ResourceString bundle="screenstudio/Languages.properties" key="KEEP_SCREEN_RATIO" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="btnTestFPS">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Guess FPS"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnTestFPSActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

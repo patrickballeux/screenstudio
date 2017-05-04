@@ -22,11 +22,13 @@ import com.tulskiy.keymaster.common.Provider;
 import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
+import java.awt.Robot;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
@@ -782,6 +784,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         cboRTMPServers = new javax.swing.JComboBox<>();
         txtRTMPKey = new javax.swing.JTextField();
         chkKeepScreenRatio = new javax.swing.JCheckBox();
+        btnTestFPS = new javax.swing.JButton();
         panSources = new javax.swing.JPanel();
         panSourcesViews = new javax.swing.JPanel();
         lblSourceViewsCount = new javax.swing.JLabel();
@@ -959,10 +962,17 @@ public class ScreenStudio extends javax.swing.JFrame {
                 .addGroup(panTargetSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblRTMPKey)
                     .addComponent(txtRTMPKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(130, Short.MAX_VALUE))
+                .addContainerGap(125, Short.MAX_VALUE))
         );
 
         chkKeepScreenRatio.setText(bundle.getString("KEEP_SCREEN_RATIO")); // NOI18N
+
+        btnTestFPS.setText("Guess FPS");
+        btnTestFPS.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTestFPSActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panOutputLayout = new javax.swing.GroupLayout(panOutput);
         panOutput.setLayout(panOutputLayout);
@@ -985,7 +995,10 @@ public class ScreenStudio extends javax.swing.JFrame {
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(spinHeight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(spinFPS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(panOutputLayout.createSequentialGroup()
+                                .addComponent(spinFPS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnTestFPS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addComponent(cboTarget, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(chkKeepScreenRatio)
@@ -1005,7 +1018,8 @@ public class ScreenStudio extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panOutputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(spinFPS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(spinFPS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnTestFPS))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panOutputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
@@ -1057,7 +1071,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         splitterSources.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
         panPreviewLayout.setBackground(new java.awt.Color(51, 51, 51));
-        panPreviewLayout.setBorder(javax.swing.BorderFactory.createTitledBorder(null, bundle.getString("LAYOUT"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), new java.awt.Color(255, 255, 255))); // NOI18N
+        panPreviewLayout.setBorder(javax.swing.BorderFactory.createTitledBorder(null, bundle.getString("LAYOUT"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 12), new java.awt.Color(255, 255, 255))); // NOI18N
         panPreviewLayout.setLayout(new java.awt.BorderLayout());
         splitterSources.setRightComponent(panPreviewLayout);
 
@@ -1643,9 +1657,9 @@ public class ScreenStudio extends javax.swing.JFrame {
                         break;
                 }
                 tableSources.repaint();
-            } else if (source.Type == SourceType.Custom){
+            } else if (source.Type == SourceType.Custom) {
                 String s = (String) tableSources.getValueAt(rowIndex, 2);
-                DlgCustomSource d = new DlgCustomSource(s,this, true);
+                DlgCustomSource d = new DlgCustomSource(s, this, true);
                 d.setLocationRelativeTo(this);
                 d.setVisible(true);
                 switch (d.getReturnStatus()) {
@@ -2293,12 +2307,48 @@ public class ScreenStudio extends javax.swing.JFrame {
 
     }//GEN-LAST:event_mnuMainAddCustomActionPerformed
 
+    private void btnTestFPSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTestFPSActionPerformed
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    btnTestFPS.setEnabled(false);
+                    setCursor(new Cursor(Cursor.WAIT_CURSOR));
+                    //Try to guess the best FPS to use...
+                    BufferedImage img = new BufferedImage((Integer) spinWidth.getValue(), (Integer) spinHeight.getValue(), BufferedImage.TYPE_3BYTE_BGR);
+                    Graphics2D g = img.createGraphics();
+                    Robot robot = new Robot();
+                    BufferedImage imgDraw;
+                    Rectangle bounds = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().getBounds();
+                    long start = System.currentTimeMillis();
+                    long end = start + 5000;
+                    int frames = 0; // trying for 15 fps for 5 seconds
+                    while (end > System.currentTimeMillis()) {
+                        frames += 1;
+                        imgDraw = robot.createScreenCapture(bounds);
+                        g.drawImage(imgDraw, 0, 0, img.getWidth(), img.getHeight(), 0, 0, imgDraw.getWidth(), imgDraw.getHeight(), null);
+                    }
+                    double delta = (end - start) / 1000D;
+                    String msg = "Time for " + frames + " frames: " + delta + " s";
+                    System.out.println(msg);
+                    int fps = (int) (frames / delta);
+                    spinFPS.setValue(fps);
+                } catch (AWTException ex) {
+                    Logger.getLogger(ScreenStudio.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                btnTestFPS.setEnabled(true);
+                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            }
+        }).start();
+
+    }//GEN-LAST:event_btnTestFPSActionPerformed
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
         System.out.println("Running on " + System.getProperty("os.name"));
-        
+
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -2324,8 +2374,8 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {                
-                System.setProperty("sun.java2d.opengl","True");
+            public void run() {
+                System.setProperty("sun.java2d.opengl", "True");
                 new ScreenStudio().setVisible(true);
             }
         });
@@ -2334,6 +2384,7 @@ public class ScreenStudio extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBGMusicBrowse;
     private javax.swing.JButton btnSetVideoFolder;
+    private javax.swing.JButton btnTestFPS;
     private javax.swing.JComboBox<FFMpeg.AudioRate> cboAudioBitrate;
     private javax.swing.JComboBox<Microphone> cboAudioMicrophones;
     private javax.swing.JComboBox<Microphone> cboAudioSystems;
