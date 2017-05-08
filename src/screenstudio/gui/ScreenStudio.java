@@ -371,6 +371,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         txtVideoFolder.setEnabled(enabled);
         txtVideoFolder.setVisible(enabled);
         btnBGMusicBrowse.setEnabled(enabled);
+        btnTestFPS.setEnabled((enabled));
     }
 
     private void selectCurrentView(int index) {
