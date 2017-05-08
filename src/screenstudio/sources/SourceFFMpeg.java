@@ -16,13 +16,10 @@
  */
 package screenstudio.sources;
 
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import screenstudio.encoder.FFMpeg;
 import screenstudio.encoder.ProcessReader;
 import screenstudio.targets.Layout.SourceType;
@@ -89,6 +86,7 @@ public class SourceFFMpeg extends Source implements Runnable {
         System.out.println(command);
         mInputData = new DataInputStream(mProcess.getInputStream());
         dataBuffer = new byte[mBounds.width * mBounds.height * 3];
+        mInputData.readFully(dataBuffer);
         new Thread(this).start();
     }
 

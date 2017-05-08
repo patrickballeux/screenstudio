@@ -16,6 +16,7 @@
  */
 package screenstudio.sources;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -230,13 +231,12 @@ public class Compositor implements Runnable {
 
     @Override
     public void run() {
-        BufferedImage img = new BufferedImage(mOutputSize.width, mOutputSize.height, BufferedImage.TYPE_3BYTE_BGR);
-        Graphics2D g = img.createGraphics();
-        byte[] buffer = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
+
         long frameDelay = 1000 / mFPS;
         long nextPTS = System.currentTimeMillis() + frameDelay;
         while (!mRequestStop) {
-            java.util.Arrays.fill(buffer, (byte) 0);
+            BufferedImage img = new BufferedImage(mOutputSize.width, mOutputSize.height, BufferedImage.TYPE_3BYTE_BGR);
+            Graphics2D g = img.createGraphics();
             mTimeDelta = (System.currentTimeMillis() - mStartTime) / 1000;
             for (int i = 0; i < mSources.size(); i++) {
                 Source s = mSources.get(i);
@@ -268,10 +268,9 @@ public class Compositor implements Runnable {
                     }
                 }
             }
-            byte[] returnData = new byte[buffer.length];
-            System.arraycopy(buffer, 0, returnData, 0, buffer.length);
-            mData = returnData;
-            mPreviewBuffer = returnData;
+            mData = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
+            mPreviewBuffer = mData;
+            g.dispose();
             long wait = nextPTS - System.currentTimeMillis();
             if (wait > 0) {
                 try {
