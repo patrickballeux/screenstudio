@@ -27,6 +27,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.SystemTray;
@@ -54,7 +55,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.ToolTipManager;
+import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.table.DefaultTableModel;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
@@ -109,7 +112,8 @@ public class ScreenStudio extends javax.swing.JFrame {
         mLayoutPreview.setOutputHeight((Integer) spinHeight.getValue());
         panPreviewLayout.add(mLayoutPreview, BorderLayout.CENTER);
         this.setTitle("ScreenStudio " + screenstudio.Version.MAIN);
-        this.setSize(700, 500);
+        //this.setSize(700, 500);
+        this.pack();
         ToolTipManager.sharedInstance().setDismissDelay(8000);
         ToolTipManager.sharedInstance().setInitialDelay(2000);
         new Thread(() -> {
@@ -786,6 +790,14 @@ public class ScreenStudio extends javax.swing.JFrame {
         txtRTMPKey = new javax.swing.JTextField();
         chkKeepScreenRatio = new javax.swing.JCheckBox();
         btnTestFPS = new javax.swing.JButton();
+        panSettingsAudios = new javax.swing.JPanel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        cboAudioMicrophones = new javax.swing.JComboBox<>();
+        cboAudioSystems = new javax.swing.JComboBox<>();
+        jLabel10 = new javax.swing.JLabel();
+        spinAudioDelay = new javax.swing.JSpinner();
+        pgAudioLevels = new javax.swing.JProgressBar();
         panSources = new javax.swing.JPanel();
         panSourcesViews = new javax.swing.JPanel();
         lblSourceViewsCount = new javax.swing.JLabel();
@@ -795,14 +807,6 @@ public class ScreenStudio extends javax.swing.JFrame {
         scrollSources = new javax.swing.JScrollPane();
         tableSources = new javax.swing.JTable();
         panOptions = new javax.swing.JPanel();
-        panSettingsAudios = new javax.swing.JPanel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        cboAudioMicrophones = new javax.swing.JComboBox<>();
-        cboAudioSystems = new javax.swing.JComboBox<>();
-        jLabel10 = new javax.swing.JLabel();
-        spinAudioDelay = new javax.swing.JSpinner();
-        pgAudioLevels = new javax.swing.JProgressBar();
         panSettingsVideos = new javax.swing.JPanel();
         btnSetVideoFolder = new javax.swing.JButton();
         txtVideoFolder = new javax.swing.JTextField();
@@ -855,6 +859,7 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("ScreenStudio");
+        setBackground(new java.awt.Color(0, 0, 0));
         addWindowStateListener(new java.awt.event.WindowStateListener() {
             public void windowStateChanged(java.awt.event.WindowEvent evt) {
                 formWindowStateChanged(evt);
@@ -866,9 +871,19 @@ public class ScreenStudio extends javax.swing.JFrame {
             }
         });
 
+        tabs.setBackground(new java.awt.Color(255, 51, 0));
+        tabs.setForeground(new java.awt.Color(0, 0, 0));
+        tabs.setOpaque(true);
+
+        panOutput.setBackground(new java.awt.Color(0, 0, 0));
+        panOutput.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+
+        jLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(238, 238, 238));
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("screenstudio/Languages"); // NOI18N
         jLabel1.setText(bundle.getString("OUTPUT_FORMAT")); // NOI18N
 
+        spinWidth.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         spinWidth.setModel(new javax.swing.SpinnerNumberModel(720, 640, 1920, 1));
         spinWidth.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -876,6 +891,7 @@ public class ScreenStudio extends javax.swing.JFrame {
             }
         });
 
+        spinHeight.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         spinHeight.setModel(new javax.swing.SpinnerNumberModel(480, 240, 1080, 1));
         spinHeight.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -885,31 +901,55 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         jLabel2.setText("X");
 
+        jLabel3.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(238, 238, 238));
         jLabel3.setText(bundle.getString("FRAME_RATE")); // NOI18N
 
+        spinFPS.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         spinFPS.setModel(new javax.swing.SpinnerNumberModel(10, 1, 60, 1));
 
+        jLabel4.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(238, 238, 238));
         jLabel4.setText(bundle.getString("TARGET")); // NOI18N
 
+        cboTarget.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         cboTarget.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cboTargetActionPerformed(evt);
             }
         });
 
-        panTargetSettings.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("SETTINGS"))); // NOI18N
+        panTargetSettings.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(238, 238, 238), 3, true), bundle.getString("SETTINGS"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 12), new java.awt.Color(238, 238, 238))); // NOI18N
+        panTargetSettings.setOpaque(false);
 
+        jLabel5.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(238, 238, 238));
         jLabel5.setText(bundle.getString("VIDEO_BITRATE")); // NOI18N
 
+        jLabel6.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(238, 238, 238));
         jLabel6.setText(bundle.getString("VIDEO_PRESET")); // NOI18N
 
+        jLabel7.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(238, 238, 238));
         jLabel7.setText(bundle.getString("AUDIO_BITRATE")); // NOI18N
 
+        lblRTMPServer.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        lblRTMPServer.setForeground(new java.awt.Color(238, 238, 238));
         lblRTMPServer.setText(bundle.getString("RTMP_SERVER")); // NOI18N
 
+        lblRTMPKey.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        lblRTMPKey.setForeground(new java.awt.Color(238, 238, 238));
         lblRTMPKey.setText(bundle.getString("RTMP_SECRET_KEY")); // NOI18N
 
+        numVideoBitrate.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         numVideoBitrate.setModel(new javax.swing.SpinnerNumberModel(1000, 1, 9000, 50));
+
+        cboVideoPresets.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+
+        cboAudioBitrate.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+
+        cboRTMPServers.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
 
         javax.swing.GroupLayout panTargetSettingsLayout = new javax.swing.GroupLayout(panTargetSettings);
         panTargetSettings.setLayout(panTargetSettingsLayout);
@@ -938,7 +978,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                         .addGroup(panTargetSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(numVideoBitrate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(cboVideoPresets, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(141, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panTargetSettingsLayout.setVerticalGroup(
             panTargetSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -963,17 +1003,100 @@ public class ScreenStudio extends javax.swing.JFrame {
                 .addGroup(panTargetSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblRTMPKey)
                     .addComponent(txtRTMPKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(125, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        chkKeepScreenRatio.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        chkKeepScreenRatio.setForeground(new java.awt.Color(238, 238, 238));
         chkKeepScreenRatio.setText(bundle.getString("KEEP_SCREEN_RATIO")); // NOI18N
+        chkKeepScreenRatio.setOpaque(false);
 
+        btnTestFPS.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        btnTestFPS.setForeground(new java.awt.Color(0, 0, 0));
         btnTestFPS.setText("Guess FPS");
         btnTestFPS.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnTestFPSActionPerformed(evt);
             }
         });
+
+        panSettingsAudios.setBackground(new java.awt.Color(0, 0, 0));
+        panSettingsAudios.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(238, 238, 238), 3, true), bundle.getString("AUDIO"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 12), new java.awt.Color(238, 238, 238))); // NOI18N
+
+        jLabel8.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(238, 238, 238));
+        jLabel8.setText(bundle.getString("MICROPHONE_INPUT")); // NOI18N
+
+        jLabel9.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(238, 238, 238));
+        jLabel9.setText(bundle.getString("AUDIO_SYSTEM_INPUT")); // NOI18N
+
+        cboAudioMicrophones.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        cboAudioMicrophones.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cboAudioMicrophonesActionPerformed(evt);
+            }
+        });
+
+        cboAudioSystems.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+
+        jLabel10.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(238, 238, 238));
+        jLabel10.setText(bundle.getString("AUDIO_DELAY")); // NOI18N
+
+        spinAudioDelay.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        spinAudioDelay.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(-5.0f), Float.valueOf(5.0f), Float.valueOf(0.1f)));
+        spinAudioDelay.setToolTipText("<HTML><BODY>\nApply a delay (in seconds) to the audio.\n<BR><I>If video is late, apply a positive value...</I>\n</BODY></HTML>");
+        spinAudioDelay.setEditor(new javax.swing.JSpinner.NumberEditor(spinAudioDelay, "#.#"));
+        spinAudioDelay.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                spinAudioDelayStateChanged(evt);
+            }
+        });
+
+        pgAudioLevels.setBackground(new java.awt.Color(0, 0, 0));
+        pgAudioLevels.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        pgAudioLevels.setForeground(new java.awt.Color(255, 102, 0));
+        pgAudioLevels.setMaximum(255);
+
+        javax.swing.GroupLayout panSettingsAudiosLayout = new javax.swing.GroupLayout(panSettingsAudios);
+        panSettingsAudios.setLayout(panSettingsAudiosLayout);
+        panSettingsAudiosLayout.setHorizontalGroup(
+            panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panSettingsAudiosLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel8)
+                    .addComponent(jLabel9)
+                    .addComponent(jLabel10))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cboAudioMicrophones, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(cboAudioSystems, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(panSettingsAudiosLayout.createSequentialGroup()
+                        .addComponent(spinAudioDelay, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pgAudioLevels, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        panSettingsAudiosLayout.setVerticalGroup(
+            panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panSettingsAudiosLayout.createSequentialGroup()
+                .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(cboAudioMicrophones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(cboAudioSystems, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel10)
+                        .addComponent(spinAudioDelay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(pgAudioLevels, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout panOutputLayout = new javax.swing.GroupLayout(panOutput);
         panOutput.setLayout(panOutputLayout);
@@ -1003,7 +1126,8 @@ public class ScreenStudio extends javax.swing.JFrame {
                             .addComponent(cboTarget, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(chkKeepScreenRatio)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(panSettingsAudios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         panOutputLayout.setVerticalGroup(
@@ -1026,18 +1150,24 @@ public class ScreenStudio extends javax.swing.JFrame {
                     .addComponent(jLabel4)
                     .addComponent(cboTarget, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panTargetSettings, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(panTargetSettings, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(panSettingsAudios, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         tabs.addTab(bundle.getString("OUTPUT"), panOutput); // NOI18N
 
-        panSources.setLayout(new java.awt.BorderLayout());
+        panSources.setBackground(new java.awt.Color(0, 0, 0));
 
+        panSourcesViews.setBackground(new java.awt.Color(0, 0, 0));
         panSourcesViews.setMaximumSize(new java.awt.Dimension(212, 52));
 
+        lblSourceViewsCount.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        lblSourceViewsCount.setForeground(new java.awt.Color(238, 238, 238));
         lblSourceViewsCount.setText(bundle.getString("SELECTED_VIEW")); // NOI18N
 
+        cboSourceViews.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         cboSourceViews.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Default", "View 1", "View 2", "View 3", "View 4" }));
         cboSourceViews.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1054,7 +1184,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                 .addComponent(lblSourceViewsCount)
                 .addGap(18, 18, 18)
                 .addComponent(cboSourceViews, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(496, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panSourcesViewsLayout.setVerticalGroup(
             panSourcesViewsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1066,22 +1196,30 @@ public class ScreenStudio extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        panSources.add(panSourcesViews, java.awt.BorderLayout.NORTH);
-
+        splitterSources.setBackground(new java.awt.Color(255, 255, 255));
+        splitterSources.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         splitterSources.setDividerLocation(150);
+        splitterSources.setDividerSize(5);
         splitterSources.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        splitterSources.setOpaque(false);
 
-        panPreviewLayout.setBackground(new java.awt.Color(51, 51, 51));
-        panPreviewLayout.setBorder(javax.swing.BorderFactory.createTitledBorder(null, bundle.getString("LAYOUT"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 12), new java.awt.Color(255, 255, 255))); // NOI18N
+        panPreviewLayout.setBackground(new java.awt.Color(0, 0, 0));
+        panPreviewLayout.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(238, 238, 238), 3, true), bundle.getString("LAYOUT"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 12), new java.awt.Color(255, 255, 255))); // NOI18N
         panPreviewLayout.setLayout(new java.awt.BorderLayout());
         splitterSources.setRightComponent(panPreviewLayout);
 
-        scrollSources.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("VIDEO_SOURCES"))); // NOI18N
+        scrollSources.setBackground(new java.awt.Color(0, 0, 0));
+        scrollSources.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(238, 238, 238), 3, true), bundle.getString("VIDEO_SOURCES"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 12), new java.awt.Color(238, 238, 238))); // NOI18N
+        scrollSources.setForeground(new java.awt.Color(238, 238, 238));
 
+        tableSources.setBackground(new java.awt.Color(238, 238, 238));
+        tableSources.setForeground(new java.awt.Color(0, 0, 0));
         tableSources.setToolTipText("Double-click for more options...");
         tableSources.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         tableSources.setColumnSelectionAllowed(true);
         tableSources.setFillsViewportHeight(true);
+        tableSources.setGridColor(new java.awt.Color(0, 0, 0));
+        tableSources.setSelectionBackground(new java.awt.Color(255, 51, 0));
         tableSources.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tableSources.setSurrendersFocusOnKeystroke(true);
         tableSources.getTableHeader().setReorderingAllowed(false);
@@ -1180,76 +1318,37 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         splitterSources.setLeftComponent(scrollSources);
 
-        panSources.add(splitterSources, java.awt.BorderLayout.CENTER);
+        javax.swing.GroupLayout panSourcesLayout = new javax.swing.GroupLayout(panSources);
+        panSources.setLayout(panSourcesLayout);
+        panSourcesLayout.setHorizontalGroup(
+            panSourcesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panSourcesLayout.createSequentialGroup()
+                .addGroup(panSourcesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panSourcesLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(splitterSources, javax.swing.GroupLayout.DEFAULT_SIZE, 615, Short.MAX_VALUE))
+                    .addComponent(panSourcesViews, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        panSourcesLayout.setVerticalGroup(
+            panSourcesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panSourcesLayout.createSequentialGroup()
+                .addComponent(panSourcesViews, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(splitterSources, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE)
+                .addContainerGap())
+        );
 
         tabs.addTab(bundle.getString("SOURCES"), panSources); // NOI18N
 
-        panSettingsAudios.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("AUDIO"))); // NOI18N
+        panOptions.setBackground(new java.awt.Color(0, 0, 0));
+        panOptions.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
-        jLabel8.setText(bundle.getString("MICROPHONE_INPUT")); // NOI18N
+        panSettingsVideos.setBackground(new java.awt.Color(0, 0, 0));
+        panSettingsVideos.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(238, 238, 238), 3, true), bundle.getString("VIDEO_FOLDER"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 12), new java.awt.Color(238, 238, 238))); // NOI18N
 
-        jLabel9.setText(bundle.getString("AUDIO_SYSTEM_INPUT")); // NOI18N
-
-        cboAudioMicrophones.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cboAudioMicrophonesActionPerformed(evt);
-            }
-        });
-
-        jLabel10.setText(bundle.getString("AUDIO_DELAY")); // NOI18N
-
-        spinAudioDelay.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(-5.0f), Float.valueOf(5.0f), Float.valueOf(0.1f)));
-        spinAudioDelay.setToolTipText("<HTML><BODY>\nApply a delay (in seconds) to the audio.\n<BR><I>If video is late, apply a positive value...</I>\n</BODY></HTML>");
-        spinAudioDelay.setEditor(new javax.swing.JSpinner.NumberEditor(spinAudioDelay, "#.#"));
-        spinAudioDelay.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                spinAudioDelayStateChanged(evt);
-            }
-        });
-
-        pgAudioLevels.setMaximum(255);
-
-        javax.swing.GroupLayout panSettingsAudiosLayout = new javax.swing.GroupLayout(panSettingsAudios);
-        panSettingsAudios.setLayout(panSettingsAudiosLayout);
-        panSettingsAudiosLayout.setHorizontalGroup(
-            panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panSettingsAudiosLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel8)
-                    .addComponent(jLabel9)
-                    .addComponent(jLabel10))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cboAudioMicrophones, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(cboAudioSystems, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(panSettingsAudiosLayout.createSequentialGroup()
-                        .addComponent(spinAudioDelay, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pgAudioLevels, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        panSettingsAudiosLayout.setVerticalGroup(
-            panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panSettingsAudiosLayout.createSequentialGroup()
-                .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(cboAudioMicrophones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel9)
-                    .addComponent(cboAudioSystems, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(panSettingsAudiosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel10)
-                        .addComponent(spinAudioDelay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(pgAudioLevels, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        panSettingsVideos.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("VIDEO_FOLDER"))); // NOI18N
-
+        btnSetVideoFolder.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        btnSetVideoFolder.setForeground(new java.awt.Color(0, 0, 0));
         btnSetVideoFolder.setText(bundle.getString("BROWSE")); // NOI18N
         btnSetVideoFolder.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1274,8 +1373,8 @@ public class ScreenStudio extends javax.swing.JFrame {
             panSettingsVideosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panSettingsVideosLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(txtVideoFolder, javax.swing.GroupLayout.PREFERRED_SIZE, 497, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(txtVideoFolder)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSetVideoFolder)
                 .addContainerGap())
         );
@@ -1288,10 +1387,14 @@ public class ScreenStudio extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        panSettingsMisc.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MISCELANEOUS"))); // NOI18N
+        panSettingsMisc.setBackground(new java.awt.Color(0, 0, 0));
+        panSettingsMisc.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(238, 238, 238), 3, true), bundle.getString("MISCELANEOUS"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 12), new java.awt.Color(238, 238, 238))); // NOI18N
 
+        jLabel11.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(238, 238, 238));
         jLabel11.setText(bundle.getString("ACTION_WHEN_RECORDING")); // NOI18N
 
+        cboDefaultRecordingAction.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         cboDefaultRecordingAction.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Hide", "Minimize", "Stay Visible" }));
         cboDefaultRecordingAction.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1300,23 +1403,33 @@ public class ScreenStudio extends javax.swing.JFrame {
         });
 
         jLabel12.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
-        jLabel12.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel12.setForeground(new java.awt.Color(238, 238, 238));
         jLabel12.setText(bundle.getString("TIP_KEYBOARD_SHORTCUT_GLOBAL")); // NOI18N
 
+        chkDoNotUseTrayIcon.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        chkDoNotUseTrayIcon.setForeground(new java.awt.Color(238, 238, 238));
         chkDoNotUseTrayIcon.setText(bundle.getString("ACTION_DO_NOT_USE_TRAY_ICON")); // NOI18N
+        chkDoNotUseTrayIcon.setOpaque(false);
         chkDoNotUseTrayIcon.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 chkDoNotUseTrayIconActionPerformed(evt);
             }
         });
 
+        jLabel13.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(238, 238, 238));
         jLabel13.setText(bundle.getString("ACTION_WHEN_STARTING")); // NOI18N
 
+        jLabel14.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel14.setForeground(new java.awt.Color(238, 238, 238));
         jLabel14.setText(bundle.getString("BACKGROUND_MUSIC")); // NOI18N
 
+        lblBGMusic.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         lblBGMusic.setText(" ");
         lblBGMusic.setToolTipText("<html>\n<body>\nSelect an audio file to play in the background<br>\nSet the proper audio volume and duration using a software like <b>Audacity</b><br>\n<i>Tip: Make the duration last a bit longer than your recording to have a background music for all the lenght of your video</i>\n</body>\n</html>");
+        lblBGMusic.setOpaque(true);
 
+        btnBGMusicBrowse.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         btnBGMusicBrowse.setText(bundle.getString("BROWSE")); // NOI18N
         btnBGMusicBrowse.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1347,7 +1460,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                                 .addComponent(cboDefaultRecordingAction, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jLabel12)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 62, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panSettingsMiscLayout.setVerticalGroup(
@@ -1376,7 +1489,6 @@ public class ScreenStudio extends javax.swing.JFrame {
             .addGroup(panOptionsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panSettingsAudios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(panSettingsVideos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(panSettingsMisc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -1385,16 +1497,19 @@ public class ScreenStudio extends javax.swing.JFrame {
             panOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panOptionsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panSettingsAudios, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panSettingsVideos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panSettingsMisc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(94, Short.MAX_VALUE))
+                .addContainerGap(221, Short.MAX_VALUE))
         );
 
         tabs.addTab(bundle.getString("OPTIONS"), panOptions); // NOI18N
 
+        panThumbnail.setBackground(new java.awt.Color(0, 0, 0));
+        panThumbnail.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+
+        lblThumbTitle.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        lblThumbTitle.setForeground(new java.awt.Color(238, 238, 238));
         lblThumbTitle.setText("Thumbnail Title");
 
         txtThumbnailTitle.setText("ScreenStudio is amazing!");
@@ -1405,13 +1520,20 @@ public class ScreenStudio extends javax.swing.JFrame {
             }
         });
 
+        lblThumbTitle1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        lblThumbTitle1.setForeground(new java.awt.Color(238, 238, 238));
         lblThumbTitle1.setText("Color");
 
+        lblThumbTitle2.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        lblThumbTitle2.setForeground(new java.awt.Color(238, 238, 238));
         lblThumbTitle2.setText("Background color");
 
+        lblThumbTitle3.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        lblThumbTitle3.setForeground(new java.awt.Color(238, 238, 238));
         lblThumbTitle3.setText("Font");
 
-        panThumbnailPreview.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("PREVIEW"))); // NOI18N
+        panThumbnailPreview.setBackground(new java.awt.Color(0, 0, 0));
+        panThumbnailPreview.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(238, 238, 238), 3, true), bundle.getString("PREVIEW"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 12), new java.awt.Color(238, 238, 238))); // NOI18N
         panThumbnailPreview.setLayout(new java.awt.BorderLayout());
 
         panThumbnailCanvas.setBackground(new java.awt.Color(0, 0, 0));
@@ -1420,27 +1542,30 @@ public class ScreenStudio extends javax.swing.JFrame {
         panThumbnailCanvas.setLayout(panThumbnailCanvasLayout);
         panThumbnailCanvasLayout.setHorizontalGroup(
             panThumbnailCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 350, Short.MAX_VALUE)
+            .addGap(0, 599, Short.MAX_VALUE)
         );
         panThumbnailCanvasLayout.setVerticalGroup(
             panThumbnailCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 218, Short.MAX_VALUE)
+            .addGap(0, 253, Short.MAX_VALUE)
         );
 
         panThumbnailPreview.add(panThumbnailCanvas, java.awt.BorderLayout.CENTER);
 
+        cboThumbnailColor.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         cboThumbnailColor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cboThumbnailColorActionPerformed(evt);
             }
         });
 
+        cboThumbnailBackground.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         cboThumbnailBackground.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cboThumbnailBackgroundActionPerformed(evt);
             }
         });
 
+        cboThumbnailFont.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         cboThumbnailFont.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cboThumbnailFontActionPerformed(evt);
@@ -1454,20 +1579,23 @@ public class ScreenStudio extends javax.swing.JFrame {
             .addGroup(panThumbnailLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panThumbnailPreview, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(panThumbnailPreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(panThumbnailLayout.createSequentialGroup()
                         .addGroup(panThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblThumbTitle2)
-                            .addComponent(lblThumbTitle3)
-                            .addComponent(lblThumbTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(cboThumbnailBackground, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(cboThumbnailFont, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(cboThumbnailColor, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txtThumbnailTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)))
-                    .addComponent(lblThumbTitle1))
-                .addContainerGap(334, Short.MAX_VALUE))
+                            .addGroup(panThumbnailLayout.createSequentialGroup()
+                                .addGroup(panThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lblThumbTitle2)
+                                    .addComponent(lblThumbTitle3)
+                                    .addComponent(lblThumbTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(panThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(cboThumbnailBackground, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(cboThumbnailFont, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(cboThumbnailColor, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(txtThumbnailTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)))
+                            .addComponent(lblThumbTitle1))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         panThumbnailLayout.setVerticalGroup(
             panThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1489,7 +1617,7 @@ public class ScreenStudio extends javax.swing.JFrame {
                     .addComponent(lblThumbTitle3)
                     .addComponent(cboThumbnailFont, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panThumbnailPreview, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(panThumbnailPreview, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1498,13 +1626,16 @@ public class ScreenStudio extends javax.swing.JFrame {
         getContentPane().add(tabs, java.awt.BorderLayout.CENTER);
         tabs.getAccessibleContext().setAccessibleName(bundle.getString("OUTPUT")); // NOI18N
 
-        panStatus.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        panStatus.setBackground(new java.awt.Color(0, 0, 0));
         panStatus.setPreferredSize(new java.awt.Dimension(767, 20));
         panStatus.setLayout(new java.awt.GridLayout(1, 0));
 
+        lblMessages.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        lblMessages.setForeground(new java.awt.Color(255, 255, 255));
         lblMessages.setText(bundle.getString("WELCOME_SCREENSTUDIO")); // NOI18N
         panStatus.add(lblMessages);
 
+        lblRemoteMessage.setForeground(new java.awt.Color(255, 255, 255));
         lblRemoteMessage.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         lblRemoteMessage.setText("...");
         panStatus.add(lblRemoteMessage);
@@ -1513,9 +1644,19 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         getContentPane().add(panStatus, java.awt.BorderLayout.SOUTH);
 
+        menuBar.setBackground(new java.awt.Color(0, 0, 0));
+        menuBar.setBorder(null);
+        menuBar.setForeground(new java.awt.Color(238, 238, 238));
+
+        mnuFile.setBackground(new java.awt.Color(0, 0, 0));
+        mnuFile.setForeground(new java.awt.Color(255, 255, 255));
         mnuFile.setText(bundle.getString("MAIN_MENU_LAYOUT")); // NOI18N
+        mnuFile.setOpaque(true);
 
         mnuCapture.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
+        mnuCapture.setBackground(new java.awt.Color(0, 0, 0));
+        mnuCapture.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        mnuCapture.setForeground(new java.awt.Color(238, 238, 238));
         mnuCapture.setText(bundle.getString("ACTION_RECORD")); // NOI18N
         mnuCapture.setToolTipText("<html><body>\nStart recording/streaming using CTRL-R.  \n<BR><B>ScreenStudio</B> will automatically hide in the taskbar of your system.  \n<BR>To stop the recording, simply restore the <B>ScreenStudio</B> window.\n</body></html>");
         mnuCapture.addActionListener(new java.awt.event.ActionListener() {
@@ -1524,9 +1665,16 @@ public class ScreenStudio extends javax.swing.JFrame {
             }
         });
         mnuFile.add(mnuCapture);
+
+        jSeparator1.setBackground(new java.awt.Color(0, 0, 0));
+        jSeparator1.setForeground(new java.awt.Color(255, 51, 0));
+        jSeparator1.setOpaque(true);
         mnuFile.add(jSeparator1);
 
         mnuFileLoad.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+        mnuFileLoad.setBackground(new java.awt.Color(0, 0, 0));
+        mnuFileLoad.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        mnuFileLoad.setForeground(new java.awt.Color(238, 238, 238));
         mnuFileLoad.setText(bundle.getString("ACTION_OPEN")); // NOI18N
         mnuFileLoad.setToolTipText("<HTML><BODY>\nOpen a <B>ScreenStudio</B> XML layout file\n</BODY></HTML>");
         mnuFileLoad.addActionListener(new java.awt.event.ActionListener() {
@@ -1537,6 +1685,9 @@ public class ScreenStudio extends javax.swing.JFrame {
         mnuFile.add(mnuFileLoad);
 
         mnuFileSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+        mnuFileSave.setBackground(new java.awt.Color(0, 0, 0));
+        mnuFileSave.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        mnuFileSave.setForeground(new java.awt.Color(238, 238, 238));
         mnuFileSave.setText(bundle.getString("ACTION_SAVE")); // NOI18N
         mnuFileSave.setToolTipText("<HTML><BODY>\nSave the current layour to a <B>ScreenStudio</B> XML layout file\n</BODY></HTML>");
         mnuFileSave.addActionListener(new java.awt.event.ActionListener() {
@@ -1548,14 +1699,28 @@ public class ScreenStudio extends javax.swing.JFrame {
 
         menuBar.add(mnuFile);
 
+        mnuEdit.setBackground(new java.awt.Color(0, 0, 0));
+        mnuEdit.setForeground(new java.awt.Color(238, 238, 238));
         mnuEdit.setText(bundle.getString("MAIN_MENU_SOURCES")); // NOI18N
+        mnuEdit.setOpaque(true);
 
+        mnuMainWebcams.setBackground(new java.awt.Color(0, 0, 0));
+        mnuMainWebcams.setForeground(new java.awt.Color(238, 238, 238));
         mnuMainWebcams.setText(bundle.getString("WEBCAMS")); // NOI18N
+        mnuMainWebcams.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        mnuMainWebcams.setOpaque(true);
         mnuEdit.add(mnuMainWebcams);
 
+        mnuMainDestops.setBackground(new java.awt.Color(0, 0, 0));
+        mnuMainDestops.setForeground(new java.awt.Color(238, 238, 238));
         mnuMainDestops.setText(bundle.getString("DESKTOPS")); // NOI18N
+        mnuMainDestops.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        mnuMainDestops.setOpaque(true);
         mnuEdit.add(mnuMainDestops);
 
+        mnuMainAddImage.setBackground(new java.awt.Color(0, 0, 0));
+        mnuMainAddImage.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        mnuMainAddImage.setForeground(new java.awt.Color(238, 238, 238));
         mnuMainAddImage.setText(bundle.getString("MENU_ADD_IMAGES")); // NOI18N
         mnuMainAddImage.setToolTipText("Browse your hard disk to add a source image file");
         mnuMainAddImage.addActionListener(new java.awt.event.ActionListener() {
@@ -1565,6 +1730,9 @@ public class ScreenStudio extends javax.swing.JFrame {
         });
         mnuEdit.add(mnuMainAddImage);
 
+        mnuMainAddLabel.setBackground(new java.awt.Color(0, 0, 0));
+        mnuMainAddLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        mnuMainAddLabel.setForeground(new java.awt.Color(238, 238, 238));
         mnuMainAddLabel.setText(bundle.getString("MENU_ADD_LABEL")); // NOI18N
         mnuMainAddLabel.setToolTipText("<HTML><BODY>\nAdd a new text label.  \n<BR>Double-click on the source to edit the content.\n</BODY></HTML>");
         mnuMainAddLabel.addActionListener(new java.awt.event.ActionListener() {
@@ -1574,6 +1742,9 @@ public class ScreenStudio extends javax.swing.JFrame {
         });
         mnuEdit.add(mnuMainAddLabel);
 
+        mnuMainAddCustom.setBackground(new java.awt.Color(0, 0, 0));
+        mnuMainAddCustom.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        mnuMainAddCustom.setForeground(new java.awt.Color(238, 238, 238));
         mnuMainAddCustom.setText(bundle.getString("ADD_CUSTOM_SOURCE")); // NOI18N
         mnuMainAddCustom.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1582,11 +1753,22 @@ public class ScreenStudio extends javax.swing.JFrame {
         });
         mnuEdit.add(mnuMainAddCustom);
 
+        mnuMainFrames.setBackground(new java.awt.Color(0, 0, 0));
+        mnuMainFrames.setForeground(new java.awt.Color(238, 238, 238));
         mnuMainFrames.setText(bundle.getString("ACTION_ADD_FRAMES")); // NOI18N
+        mnuMainFrames.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        mnuMainFrames.setOpaque(true);
         mnuEdit.add(mnuMainFrames);
+
+        jSeparator3.setBackground(new java.awt.Color(0, 0, 0));
+        jSeparator3.setForeground(new java.awt.Color(255, 51, 0));
+        jSeparator3.setOpaque(true);
         mnuEdit.add(jSeparator3);
 
         mnuMainMoveUp.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_UP, java.awt.event.InputEvent.ALT_MASK));
+        mnuMainMoveUp.setBackground(new java.awt.Color(0, 0, 0));
+        mnuMainMoveUp.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        mnuMainMoveUp.setForeground(new java.awt.Color(238, 238, 238));
         mnuMainMoveUp.setText(bundle.getString("MOVE_UP")); // NOI18N
         mnuMainMoveUp.setToolTipText("Move the currently selected source to a higher layer");
         mnuMainMoveUp.addActionListener(new java.awt.event.ActionListener() {
@@ -1597,6 +1779,9 @@ public class ScreenStudio extends javax.swing.JFrame {
         mnuEdit.add(mnuMainMoveUp);
 
         mnuMainMoveDown.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DOWN, java.awt.event.InputEvent.ALT_MASK));
+        mnuMainMoveDown.setBackground(new java.awt.Color(0, 0, 0));
+        mnuMainMoveDown.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        mnuMainMoveDown.setForeground(new java.awt.Color(238, 238, 238));
         mnuMainMoveDown.setText(bundle.getString("MOVE_DOWN")); // NOI18N
         mnuMainMoveDown.setToolTipText("Move the currently selected source to a lower layer");
         mnuMainMoveDown.addActionListener(new java.awt.event.ActionListener() {
@@ -1605,9 +1790,16 @@ public class ScreenStudio extends javax.swing.JFrame {
             }
         });
         mnuEdit.add(mnuMainMoveDown);
+
+        jSeparator2.setBackground(new java.awt.Color(0, 0, 0));
+        jSeparator2.setForeground(new java.awt.Color(255, 51, 0));
+        jSeparator2.setOpaque(true);
         mnuEdit.add(jSeparator2);
 
         mnuMainRemove.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
+        mnuMainRemove.setBackground(new java.awt.Color(0, 0, 0));
+        mnuMainRemove.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        mnuMainRemove.setForeground(new java.awt.Color(238, 238, 238));
         mnuMainRemove.setText(bundle.getString("REMOVE_SOURCE")); // NOI18N
         mnuMainRemove.setToolTipText("Remove the currently selected source");
         mnuMainRemove.addActionListener(new java.awt.event.ActionListener() {
@@ -2355,31 +2547,42 @@ public class ScreenStudio extends javax.swing.JFrame {
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                System.out.println("LAF: " + info.getName());
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-//            javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ScreenStudio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                System.out.println("LAF: " + info.getName());
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+////            javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
+//        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(ScreenStudio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
         //</editor-fold>
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        UIManager.put("ComboBox.selectionBackground", new ColorUIResource(new Color(255, 51, 0)));
+        UIManager.put("ComboBox.selectionForeground", new ColorUIResource(new Color(0, 0, 0)));
+        UIManager.put("MenuItem.acceleratorForeground", new ColorUIResource(new Color(255, 51, 0)));
+        UIManager.getDefaults().put("TabbedPane.contentBorderInsets", new Insets(0, 0, 0, 0));
+        UIManager.getDefaults().put("TabbedPane.tabsOverlapBorder", true);
+        UIManager.put("MenuItem.selectionBackground", new ColorUIResource(new Color(255, 51, 0)));
+        UIManager.put("MenuItem.selectionForeground", new ColorUIResource(new Color(0, 0, 0)));
+        UIManager.put("MenuItem.background", new ColorUIResource(new Color(0, 0, 0)));
+        UIManager.put("MenuItem.foreground", new ColorUIResource(new Color(238, 238, 238)));
 
-        //</editor-fold>
-        //</editor-fold>
-
+       
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                System.setProperty("sun.java2d.opengl", "True");
-                new ScreenStudio().setVisible(true);
-            }
-        });
+        new ScreenStudio().setVisible(true);
+        System.setProperty("sun.java2d.opengl", "True");
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                
+//                
+//            }
+//        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
