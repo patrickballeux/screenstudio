@@ -153,6 +153,7 @@ public class SourceLabel extends Source {
                         mLabel.paint(g);
                         for (int alpha = 0; alpha < 255; alpha += 5) {
                             mLabel.setForeground(new Color(r, gr, b, alpha));
+                            mLabel.paint(g);
                             try {
                                 Thread.sleep(50);
                             } catch (InterruptedException ex) {
@@ -160,6 +161,7 @@ public class SourceLabel extends Source {
                             }
                         }
                         mLabel.setForeground(new Color(r, gr, b, 255));
+                        mLabel.paint(g);
                     }
                 }).start();
             }
