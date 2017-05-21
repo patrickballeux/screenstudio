@@ -60,7 +60,9 @@ public class TextEditor extends javax.swing.JDialog {
         v.Height = height;
         v.Width = width;
         views.add(v);
+        slideFontSize.setValue(text.getFontSize());
         mSource = new SourceText(views, text);
+        mSource.setFont(new Font(text.getFontName(),Font.PLAIN,text.getFontSize()));
         mTextViewer = new TextViewer(mSource);
         mTextViewer.setOpaque(true);
 
@@ -69,12 +71,12 @@ public class TextEditor extends javax.swing.JDialog {
         panViewer.setSize(r.getSize());
         mTextViewer.setSize(r.getSize());
         mTextViewer.setPreferredSize(r.getSize());
-
+        
         pack();
         setControls();
         txtText.setText(text.getText());
         cboFonts.setSelectedItem(text.getFontName());
-        slideFontSize.setValue(text.getFontSize());
+        
 
         slideFGRed.setValue(new Color(text.getForegroundColor()).getRed());
         slideFGGreen.setValue(new Color(text.getForegroundColor()).getGreen());
@@ -96,7 +98,7 @@ public class TextEditor extends javax.swing.JDialog {
     private void setControls() {
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
         cboFonts.setModel(model);
-        String[] tags = {"@CURRENTDATE", "@CURRENTIME", "@STARTTIME", "@RECORDINGTIME", "@UPDATE 60 SEC@", "@UPDATE 5 MIN@", "@ONCHANGEONLY", "@ONELINER", "@SCROLLVERTICAL", "@SCROLLHORIZONTAL", "", "file:///path/to/file.txt"};
+        String[] tags = {"@CURRENTDATE", "@CURRENTTIME", "@STARTTIME", "@RECORDINGTIME", "@UPDATE 60 SEC@", "@UPDATE 5 MIN@", "@ONCHANGEONLY", "@ONELINER", "@SCROLLVERTICAL", "@SCROLLHORIZONTAL","@TYPEWRITER", "", "file:///path/to/file.txt"};
         for (String t : tags) {
             if (t.length() > 0) {
                 JMenuItem m = new JMenuItem(t);
@@ -105,11 +107,14 @@ public class TextEditor extends javax.swing.JDialog {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         txtText.insert(e.getActionCommand(), txtText.getCaretPosition());
+                        mTextViewer.setText(txtText.getText());
+                        mText.setText(txtText.getText());
                     }
                 });
                 mnuTags.add(m);
-            } else
+            } else {
                 mnuTags.add(new JSeparator());
+            }
 
         }
     }
@@ -418,7 +423,7 @@ public class TextEditor extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtTextKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTextKeyPressed
-        mTextViewer.setText(txtText.getText() + evt.getKeyChar());
+        mTextViewer.setText((txtText.getText() + evt.getKeyChar()).trim());
         mText.setText((txtText.getText() + evt.getKeyChar()).trim());
     }//GEN-LAST:event_txtTextKeyPressed
 

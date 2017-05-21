@@ -58,7 +58,7 @@ public class SourceText extends Source implements Runnable {
     private boolean mScrollHorizontal = false;
     private boolean mTypeWriterMode = false;
     private int mLastLineIndex = 0;
-    private long mLastLineTime =0;
+    private long mLastLineTime = 0;
 
     private final DateFormat formatDate = DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault());
     private final DateFormat formatTime = DateFormat.getTimeInstance(DateFormat.LONG, Locale.getDefault());
@@ -160,6 +160,9 @@ public class SourceText extends Source implements Runnable {
             }
             if (mOneLiner) {
                 String[] temp = content.split("\n");
+                if (mLastLineIndex >= temp.length) {
+                    mLastLineIndex = 0;
+                }
                 content = temp[mLastLineIndex].trim();
                 if (System.currentTimeMillis() - mLastLineTime > 5000) {
                     mLastLineTime = System.currentTimeMillis() + 5000;
@@ -216,7 +219,7 @@ public class SourceText extends Source implements Runnable {
                 g.setColor(new Color(mForeground, true));
                 g.drawString(line, x - 2, y - 2);
                 if (mScrollHorizontal) {
-                    x += size.getWidth() + 5;
+                    x += size.getWidth() + g.getFontMetrics().stringWidth(" ");
                 } else {
                     y += size.getHeight();
                 }
