@@ -57,6 +57,8 @@ public class SourceText extends Source implements Runnable {
     private boolean mScrollVertical = false;
     private boolean mScrollHorizontal = false;
     private boolean mTypeWriterMode = false;
+    private int mLastLineIndex = 0;
+    private long mLastLineTime =0;
 
     private final DateFormat formatDate = DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault());
     private final DateFormat formatTime = DateFormat.getTimeInstance(DateFormat.LONG, Locale.getDefault());
@@ -75,7 +77,8 @@ public class SourceText extends Source implements Runnable {
         mBackgroundArea = areabg.getRGB();
         mFont = f;
     }
-    public SourceText(List<screenstudio.targets.Source.View> views,LabelText text){
+
+    public SourceText(List<screenstudio.targets.Source.View> views, LabelText text) {
         super(views, 0, "", BufferedImage.TYPE_4BYTE_ABGR);
         mImage = new BufferedImage(views.get(0).Width, views.get(0).Height, mImageType);
         mData = ((DataBufferByte) mImage.getRaster().getDataBuffer()).getData();
@@ -86,7 +89,7 @@ public class SourceText extends Source implements Runnable {
         mForeground = text.getForegroundColor();
         mBackground = text.getBackgroundColor();
         mBackgroundArea = text.getBackgroundAreaColor();
-        mFont = new Font(text.getFontName(),Font.PLAIN,text.getFontSize());
+        mFont = new Font(text.getFontName(), Font.PLAIN, text.getFontSize());
     }
 
     @Override
@@ -133,6 +136,7 @@ public class SourceText extends Source implements Runnable {
         int yRelative = 0;
         int lastIndex = 1;
         long lastIndexTime = System.currentTimeMillis();
+        mLastLineTime = System.currentTimeMillis() + 5000;
         while (!mStopMe) {
             g.setFont(mFont);
             if (System.currentTimeMillis() - mLastReloadTime > mReloadTime) {
@@ -153,6 +157,39 @@ public class SourceText extends Source implements Runnable {
                 if (lastIndex > 0) {
                     content = content.substring(0, lastIndex);
                 }
+            }
+            if (mOneLiner) {
+                String[] temp = content.split("\n");
+                content = temp[mLastLineIndex].trim();
+                if (System.currentTimeMillis() - mLastLineTime > 5000) {
+                    mLastLineTime = System.currentTimeMillis() + 5000;
+                    mLastLineIndex++;
+                    if (mLastLineIndex >= temp.length) {
+                        mLastLineIndex = 0;
+                    }
+                    content = temp[mLastLineIndex].trim();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            int originalFG = mForeground;
+                            int originalShadow = mBackground;
+                            mForeground = 0x00FFFFFF & mForeground;
+                            mBackground = 0x00FFFFFF & mBackground;
+                            for (int i = 0; i < 255; i++) {
+                                try {
+                                    mForeground = (i << 24) | (0x00FFFFFF & mForeground);
+                                    mBackground = (i << 24) | (0x00FFFFFF & mBackground);
+                                    Thread.sleep(2000 / 255);
+                                } catch (InterruptedException ex) {
+                                    Logger.getLogger(SourceText.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            }
+                            mForeground = originalFG;
+                            mBackground = originalShadow;
+                        }
+                    }).start();
+                }
+
             }
             java.util.Arrays.fill(mData, (byte) 0);
             String[] lines = content.split("\n");
@@ -242,7 +279,7 @@ public class SourceText extends Source implements Runnable {
                 text = new String(data).trim();
 
             } catch (IOException ex) {
-                Logger.getLogger(SourceLabel.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(SourceText.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return text;
