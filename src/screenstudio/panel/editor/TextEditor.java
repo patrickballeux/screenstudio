@@ -21,8 +21,12 @@ import screenstudio.gui.LabelText;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JMenuItem;
+import javax.swing.JSeparator;
 import screenstudio.sources.SourceText;
 import screenstudio.targets.Source.View;
 
@@ -92,6 +96,22 @@ public class TextEditor extends javax.swing.JDialog {
     private void setControls() {
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
         cboFonts.setModel(model);
+        String[] tags = {"@CURRENTDATE", "@CURRENTIME", "@STARTTIME", "@RECORDINGTIME", "@UPDATE 60 SEC@", "@UPDATE 5 MIN@", "@ONCHANGEONLY", "@ONELINER", "@SCROLLVERTICAL", "@SCROLLHORIZONTAL", "", "file:///path/to/file.txt"};
+        for (String t : tags) {
+            if (t.length() > 0) {
+                JMenuItem m = new JMenuItem(t);
+                m.setActionCommand(t);
+                m.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        txtText.insert(e.getActionCommand(), txtText.getCaretPosition());
+                    }
+                });
+                mnuTags.add(m);
+            } else
+                mnuTags.add(new JSeparator());
+
+        }
     }
 
     /**
@@ -129,17 +149,6 @@ public class TextEditor extends javax.swing.JDialog {
         panViewer = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         mnuTags = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        jMenuItem3 = new javax.swing.JMenuItem();
-        jMenuItem4 = new javax.swing.JMenuItem();
-        jMenuItem5 = new javax.swing.JMenuItem();
-        jMenuItem6 = new javax.swing.JMenuItem();
-        jMenuItem8 = new javax.swing.JMenuItem();
-        jMenuItem10 = new javax.swing.JMenuItem();
-        jMenuItem11 = new javax.swing.JMenuItem();
-        jSeparator2 = new javax.swing.JPopupMenu.Separator();
-        jMenuItem7 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("ScreenStudio Editor");
@@ -401,88 +410,6 @@ public class TextEditor extends javax.swing.JDialog {
         getContentPane().add(splitter, java.awt.BorderLayout.CENTER);
 
         mnuTags.setText("Tags");
-
-        jMenuItem1.setText("@CURRENTDATE");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1menuTagsActionPerformed(evt);
-            }
-        });
-        mnuTags.add(jMenuItem1);
-
-        jMenuItem2.setText("@CURRENTTIME");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2menuTagsActionPerformed(evt);
-            }
-        });
-        mnuTags.add(jMenuItem2);
-
-        jMenuItem3.setText("@STARTTIME");
-        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem3menuTagsActionPerformed(evt);
-            }
-        });
-        mnuTags.add(jMenuItem3);
-
-        jMenuItem4.setText("@RECORDINGTIME");
-        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem4menuTagsActionPerformed(evt);
-            }
-        });
-        mnuTags.add(jMenuItem4);
-
-        jMenuItem5.setText("@UPDATE 60 SEC@");
-        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem5menuTagsActionPerformed(evt);
-            }
-        });
-        mnuTags.add(jMenuItem5);
-
-        jMenuItem6.setText("@UPDATE 5 MIN@");
-        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem6menuTagsActionPerformed(evt);
-            }
-        });
-        mnuTags.add(jMenuItem6);
-
-        jMenuItem8.setText("@ONCHANGEONLY");
-        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem8menuTagsActionPerformed(evt);
-            }
-        });
-        mnuTags.add(jMenuItem8);
-
-        jMenuItem10.setText("@SCROLLVERTICAL");
-        jMenuItem10.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem10ActionPerformed(evt);
-            }
-        });
-        mnuTags.add(jMenuItem10);
-
-        jMenuItem11.setText("@SCROLLHORIZONTAL");
-        jMenuItem11.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem11ActionPerformed(evt);
-            }
-        });
-        mnuTags.add(jMenuItem11);
-        mnuTags.add(jSeparator2);
-
-        jMenuItem7.setText("file:///path/to/file.txt");
-        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem7menuTagsActionPerformed(evt);
-            }
-        });
-        mnuTags.add(jMenuItem7);
-
         jMenuBar1.add(mnuTags);
 
         setJMenuBar(jMenuBar1);
@@ -522,56 +449,6 @@ public class TextEditor extends javax.swing.JDialog {
 
     }//GEN-LAST:event_slideBGAreaColor
 
-    private void jMenuItem1menuTagsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1menuTagsActionPerformed
-        txtText.insert(evt.getActionCommand(), txtText.getCaretPosition());
-        evt.getActionCommand();
-    }//GEN-LAST:event_jMenuItem1menuTagsActionPerformed
-
-    private void jMenuItem2menuTagsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2menuTagsActionPerformed
-        txtText.insert(evt.getActionCommand(), txtText.getCaretPosition());
-        evt.getActionCommand();
-    }//GEN-LAST:event_jMenuItem2menuTagsActionPerformed
-
-    private void jMenuItem3menuTagsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3menuTagsActionPerformed
-        txtText.insert(evt.getActionCommand(), txtText.getCaretPosition());
-        evt.getActionCommand();
-    }//GEN-LAST:event_jMenuItem3menuTagsActionPerformed
-
-    private void jMenuItem4menuTagsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4menuTagsActionPerformed
-        txtText.insert(evt.getActionCommand(), txtText.getCaretPosition());
-        evt.getActionCommand();
-    }//GEN-LAST:event_jMenuItem4menuTagsActionPerformed
-
-    private void jMenuItem5menuTagsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5menuTagsActionPerformed
-        txtText.insert(evt.getActionCommand(), txtText.getCaretPosition());
-        evt.getActionCommand();
-    }//GEN-LAST:event_jMenuItem5menuTagsActionPerformed
-
-    private void jMenuItem6menuTagsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6menuTagsActionPerformed
-        txtText.insert(evt.getActionCommand(), txtText.getCaretPosition());
-        evt.getActionCommand();
-    }//GEN-LAST:event_jMenuItem6menuTagsActionPerformed
-
-    private void jMenuItem8menuTagsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8menuTagsActionPerformed
-        txtText.insert(evt.getActionCommand(), txtText.getCaretPosition());
-        evt.getActionCommand();
-    }//GEN-LAST:event_jMenuItem8menuTagsActionPerformed
-
-    private void jMenuItem7menuTagsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7menuTagsActionPerformed
-        txtText.insert(evt.getActionCommand(), txtText.getCaretPosition());
-        evt.getActionCommand();
-    }//GEN-LAST:event_jMenuItem7menuTagsActionPerformed
-
-    private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
-        txtText.insert(evt.getActionCommand(), txtText.getCaretPosition());
-        evt.getActionCommand();
-    }//GEN-LAST:event_jMenuItem10ActionPerformed
-
-    private void jMenuItem11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem11ActionPerformed
-        txtText.insert(evt.getActionCommand(), txtText.getCaretPosition());
-        evt.getActionCommand();
-    }//GEN-LAST:event_jMenuItem11ActionPerformed
-
     private void setTextForeground() {
         if (mSource != null) {
             int c = (slideFGAlpha.getValue() << 24) + (slideFGRed.getValue() << 16) + (slideFGGreen.getValue() << 8) + slideFGBlue.getValue();
@@ -600,17 +477,6 @@ public class TextEditor extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> cboFonts;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem10;
-    private javax.swing.JMenuItem jMenuItem11;
-    private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem5;
-    private javax.swing.JMenuItem jMenuItem6;
-    private javax.swing.JMenuItem jMenuItem7;
-    private javax.swing.JMenuItem jMenuItem8;
-    private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JMenu mnuTags;
     private javax.swing.JPanel panBGGroup;
     private javax.swing.JPanel panBGGroupArea;
