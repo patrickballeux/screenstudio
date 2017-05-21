@@ -534,6 +534,8 @@ public class ScreenStudio extends javax.swing.JFrame {
                         break;
                     case LabelText:
                         LabelText t = new LabelText(s.getID());
+                        t.setBackgroundAreaColor(s.getBackgroundAreaColor());
+                        t.setFontSize(s.getFontSize());
                         t.setForegroundColor(s.getForegroundColor());
                         t.setBackgroundColor(s.getBackgroundColor());
                         t.setFontName(s.getFontName());

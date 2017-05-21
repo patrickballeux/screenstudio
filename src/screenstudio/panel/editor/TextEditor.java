@@ -61,18 +61,7 @@ public class TextEditor extends javax.swing.JDialog {
         v.Width = width;
         views.add(v);
         slideFontSize.setValue(text.getFontSize());
-        mSource = new SourceText(views, text);
-        mSource.setFont(new Font(text.getFontName(),Font.PLAIN,text.getFontSize()));
-        mTextViewer = new TextViewer(mSource);
-        mTextViewer.setOpaque(true);
 
-        panViewer.add(mTextViewer, java.awt.BorderLayout.CENTER);
-        panViewer.setPreferredSize(r.getSize());
-        panViewer.setSize(r.getSize());
-        mTextViewer.setSize(r.getSize());
-        mTextViewer.setPreferredSize(r.getSize());
-        
-        pack();
         setControls();
         txtText.setText(text.getText());
         cboFonts.setSelectedItem(text.getFontName());
@@ -92,6 +81,17 @@ public class TextEditor extends javax.swing.JDialog {
         slideBGGreenArea.setValue(new Color(text.getBackgroundAreaColor()).getGreen());
         slideBGBlueArea.setValue(new Color(text.getBackgroundAreaColor()).getBlue());
         slideBGAlphaArea.setValue(new Color(text.getBackgroundAreaColor(), true).getAlpha());
+
+        mSource = new SourceText(views, text);
+        mTextViewer = new TextViewer(mSource);
+        mTextViewer.setOpaque(true);
+        panViewer.add(mTextViewer, java.awt.BorderLayout.CENTER);
+        panViewer.setPreferredSize(r.getSize());
+        panViewer.setSize(r.getSize());
+        mTextViewer.setSize(r.getSize());
+        mTextViewer.setPreferredSize(r.getSize());
+        
+        pack();
 
     }
 
