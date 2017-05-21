@@ -22,9 +22,11 @@ package screenstudio.gui;
  */
 public class LabelText {
     private String mText = "";
-    private int mforegroundColor = 0xFF000000;
+    private int mforegroundColor = 0xFFFFFFFF;
     private int mbackgroundColor = 0x88FFFFFF;
+    private int mbackgroundAreaColor = 0x00000000;
     private String mFontName = "Dialog";
+    private int mFontSize = 20;
     public LabelText(String text){
         mText = text;
     }
@@ -52,6 +54,19 @@ public class LabelText {
     public String getFontName() {
         return mFontName;
     }
+    public int getBackgroundAreaColor(){
+        return mbackgroundAreaColor;
+    }
+    public void setBackgroundAreaColor(int c){
+        mbackgroundAreaColor = c;
+    }
+    public int getFontSize(){
+        return mFontSize;
+    }
+    public void setFontSize(int s){
+        mFontSize = s;
+    }
+    @Override
     public String toString(){
         return mText.replaceAll("\\<[^>]*>", "");
     }

@@ -1714,7 +1714,7 @@
                           <Component id="cboThumbnailFont" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="panThumbnailPreview" pref="277" max="32767" attributes="0"/>
+                      <Component id="panThumbnailPreview" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>

@@ -269,7 +269,7 @@ public class Layout {
         Node node = document.createElement(nodeName);
         Node capx = document.createAttribute("capturex");
         Node capy = document.createAttribute("capturey");
-
+        
         //This is for the layouts
         
         for (Source.View v : source.getViews()) {
@@ -314,6 +314,8 @@ public class Layout {
         Node transitionStart = document.createAttribute("transstart");
         Node transitionStop = document.createAttribute("transstop");
         Node effectFilter = document.createAttribute("effect");
+        Node fontSize = document.createAttribute("fontsize");
+        Node backgroundAreaColor = document.createAttribute("bgAreaColor");
 
         capx.setNodeValue("" + source.getCaptureX());
         capy.setNodeValue("" + source.getCaptureY());
@@ -335,7 +337,9 @@ public class Layout {
                 type.setNodeValue("");
                 break;
         }
-
+        fontSize.setNodeValue(""+source.getFontSize());
+        backgroundAreaColor.setNodeValue(""+source.getBackgroundAreaColor());
+        
         node.getAttributes().setNamedItem(capx);
         node.getAttributes().setNamedItem(capy);
         node.getAttributes().setNamedItem(id);
@@ -348,6 +352,8 @@ public class Layout {
         node.getAttributes().setNamedItem(transitionStart);
         node.getAttributes().setNamedItem(transitionStop);
         node.getAttributes().setNamedItem(effectFilter);
+        node.getAttributes().setNamedItem(fontSize);
+        node.getAttributes().setNamedItem(backgroundAreaColor);
         root.appendChild(node);
     }
 
@@ -392,6 +398,17 @@ public class Layout {
             } else {
                 s.setEffect(Effect.eEffects.None);
             }
+            if (n.getAttributes().getNamedItem("fontsize") != null) {
+                s.setFontSize(Integer.parseInt(n.getAttributes().getNamedItem("fontsize").getNodeValue()));
+            } else {
+                s.setFontSize(20);
+            }
+            if (n.getAttributes().getNamedItem("bgAreaColor") != null) {
+                s.setBackgroundColor(Integer.parseInt(n.getAttributes().getNamedItem("bgAreaColor").getNodeValue()));
+            } else {
+                s.setBackgroundColor(0);
+            }
+            
             sources[i] = s;
         }
         return sources;
@@ -437,6 +454,16 @@ public class Layout {
             } else {
                 s.setEffect(Effect.eEffects.None);
             }
+            if (n.getAttributes().getNamedItem("fontsize") != null) {
+                s.setFontSize(Integer.parseInt(n.getAttributes().getNamedItem("fontsize").getNodeValue()));
+            } else {
+                s.setFontSize(20);
+            }
+            if (n.getAttributes().getNamedItem("bgAreaColor") != null) {
+                s.setBackgroundColor(Integer.parseInt(n.getAttributes().getNamedItem("bgAreaColor").getNodeValue()));
+            } else {
+                s.setBackgroundColor(0);
+            }
             sources[i] = s;
         }
         return sources;
@@ -477,6 +504,16 @@ public class Layout {
                 s.setEffect(Effect.eEffects.None);
             }
             sources[i] = s;
+            if (n.getAttributes().getNamedItem("fontsize") != null) {
+                s.setFontSize(Integer.parseInt(n.getAttributes().getNamedItem("fontsize").getNodeValue()));
+            } else {
+                s.setFontSize(20);
+            }
+            if (n.getAttributes().getNamedItem("bgAreaColor") != null) {
+                s.setBackgroundColor(Integer.parseInt(n.getAttributes().getNamedItem("bgAreaColor").getNodeValue()));
+            } else {
+                s.setBackgroundColor(0);
+            }
         }
         return sources;
     }
@@ -543,6 +580,16 @@ public class Layout {
             } else {
                 s.setEffect(Effect.eEffects.None);
             }
+            if (n.getAttributes().getNamedItem("fontsize") != null) {
+                s.setFontSize(Integer.parseInt(n.getAttributes().getNamedItem("fontsize").getNodeValue()));
+            } else {
+                s.setFontSize(20);
+            }
+            if (n.getAttributes().getNamedItem("bgAreaColor") != null) {
+                s.setBackgroundColor(Integer.parseInt(n.getAttributes().getNamedItem("bgAreaColor").getNodeValue()));
+            } else {
+                s.setBackgroundColor(0);
+            }
             sources[i] = s;
         }
         return sources;
@@ -581,6 +628,16 @@ public class Layout {
                 s.setEffect(Effect.eEffects.valueOf(n.getAttributes().getNamedItem("effect").getNodeValue()));
             } else {
                 s.setEffect(Effect.eEffects.None);
+            }
+            if (n.getAttributes().getNamedItem("fontsize") != null) {
+                s.setFontSize(Integer.parseInt(n.getAttributes().getNamedItem("fontsize").getNodeValue()));
+            } else {
+                s.setFontSize(20);
+            }
+            if (n.getAttributes().getNamedItem("bgAreaColor") != null) {
+                s.setBackgroundColor(Integer.parseInt(n.getAttributes().getNamedItem("bgAreaColor").getNodeValue()));
+            } else {
+                s.setBackgroundColor(0);
             }
             sources[i] = s;
         }
@@ -628,6 +685,16 @@ public class Layout {
                 s.setEffect(Effect.eEffects.valueOf(n.getAttributes().getNamedItem("effect").getNodeValue()));
             } else {
                 s.setEffect(Effect.eEffects.None);
+            }
+            if (n.getAttributes().getNamedItem("fontsize") != null) {
+                s.setFontSize(Integer.parseInt(n.getAttributes().getNamedItem("fontsize").getNodeValue()));
+            } else {
+                s.setFontSize(20);
+            }
+            if (n.getAttributes().getNamedItem("bgAreaColor") != null) {
+                s.setBackgroundColor(Integer.parseInt(n.getAttributes().getNamedItem("bgAreaColor").getNodeValue()));
+            } else {
+                s.setBackgroundColor(0);
             }
             sources[i] = s;
         }

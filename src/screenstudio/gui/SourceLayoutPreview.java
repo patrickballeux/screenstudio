@@ -157,17 +157,15 @@ public class SourceLayoutPreview extends javax.swing.JPanel {
                                 }
                                 break;
                             case LabelText:
-                                img = new BufferedImage(sw, sh, BufferedImage.TYPE_INT_ARGB);
                                 LabelText text = (LabelText) source.SourceObject;
-                                JLabel label = new JLabel(text.getText());
-                                label.setFont(new Font(text.getFontName(), Font.PLAIN, sh));
-                                label.setSize(sw, sh);
-                                label.setLocation(0, 0);
-                                label.setOpaque(true);
-                                label.setForeground(new Color(text.getForegroundColor()));
-                                label.setBackground(new Color(text.getBackgroundColor()));
-                                label.paint(img.createGraphics());
-                                g.drawImage(img, sx, sy, null);
+                                g.setColor(new Color(text.getBackgroundAreaColor(),true));
+                                g.fillRect(sx,sy, sw,sh);
+                                g.setFont(new Font(text.getFontName(),Font.PLAIN,(int)(text.getFontSize()*sh/source.getHeight())));
+                                int fh = (int)g.getFontMetrics().getMaxCharBounds(g).getBounds().getHeight();
+                                g.setColor(new Color(text.getBackgroundColor(),true));
+                                g.drawString("Label Text", sx, sy+fh);
+                                g.setColor(new Color(text.getForegroundColor(),true));
+                                g.drawString("Label Text", sx-1, sy+fh-1);
                                 break;
                             case Frame:
                                 Frames.eList frameName = (Frames.eList) source.SourceObject;

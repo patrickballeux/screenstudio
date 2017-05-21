@@ -29,7 +29,10 @@ public class Source {
     public int CaptureY;
     public int foregroundColor;
     public int backgroundColor;
+    public int backgroundAreaColor;
     public String fontName;
+    public int fontSize;
+    
     public long startTime;
     public long endTime;
     public Transition.NAMES transitionStart = Transition.NAMES.None;
@@ -320,6 +323,18 @@ public class Source {
         Views.get(CurrentViewIndex).Order = o;
     }
 
+    public void setFontSize(int s){
+        fontSize = s;
+    }
+    public int getFontSize(){
+        return fontSize;
+    }
+    public void setBackgroundAreaColor(int c){
+        backgroundAreaColor = c;
+    }
+    public int getBackgroundAreaColor(){
+        return backgroundAreaColor;
+    }
     public static class View {
 
         public String ViewName = "View";

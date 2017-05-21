@@ -16,7 +16,6 @@
  */
 package screenstudio.sources;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -193,7 +192,8 @@ public class Compositor implements Runnable {
                 s.setViewIndex(sources.get(i).getCurrentViewIndex());
                 list.add(s);
             } else if (source instanceof LabelText) {
-                SourceLabel s = new SourceLabel(sources.get(i).getViews(), ((LabelText) source));
+                LabelText t = (LabelText)source;
+                SourceText s = new SourceText(sources.get(i).getViews(),t);
                 s.setDisplayTime(timestart, timeend);
                 s.setTransitionStart(transIn);
                 s.setTransitionStop(transOut);

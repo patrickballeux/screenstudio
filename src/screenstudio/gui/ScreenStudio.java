@@ -64,7 +64,7 @@ import org.xml.sax.SAXException;
 import screenstudio.Version;
 import screenstudio.encoder.FFMpeg;
 import screenstudio.gui.images.frames.Frames;
-import screenstudio.panel.editor.Editor;
+import screenstudio.panel.editor.TextEditor;
 import screenstudio.remote.HTTPServer;
 import screenstudio.sources.Compositor;
 import screenstudio.sources.Microphone;
@@ -1828,13 +1828,14 @@ public class ScreenStudio extends javax.swing.JFrame {
             screenstudio.targets.Source source = mSources.get(rowIndex);
             if (source.Type == SourceType.LabelText) {
                 LabelText t = ((LabelText) tableSources.getValueAt(rowIndex, 2));
-                Editor ed = new Editor(t, this);
-                ed.setModal(true);
+                TextEditor ed = new TextEditor(source.getWidth(),source.getHeight(),t, this,true);
                 ed.setVisible(true);
-                tableSources.setValueAt(ed.getLabelText(), rowIndex, 2);
+                //tableSources.setValueAt(t, rowIndex, 2);
                 source.setFontName(t.getFontName());
                 source.setForegroundColor(t.getForegroundColor());
                 source.setBackgroundColor(t.getBackgroundColor());
+                source.setBackgroundAreaColor(t.getBackgroundAreaColor());
+                source.setFontSize(t.getFontSize());
                 tableSources.repaint();
             } else if (source.Type == SourceType.Desktop) {
                 Screen s = (Screen) tableSources.getValueAt(rowIndex, 2);
@@ -2233,7 +2234,7 @@ public class ScreenStudio extends javax.swing.JFrame {
         source.setCurrentViewIndex(cboSourceViews.getSelectedIndex());
         source.Views.get(source.CurrentViewIndex).remoteDisplay = true;
         source.setType(SourceType.LabelText);
-        source.setSourceObject(new LabelText("<HTML><BODY>New Label...</BODY><HTML>"));
+        source.setSourceObject(new LabelText("New Label..."));
         source.Views.get(source.CurrentViewIndex).X = 0;
         source.Views.get(source.CurrentViewIndex).Y = 0;
         source.Views.get(source.CurrentViewIndex).Width = 600;
