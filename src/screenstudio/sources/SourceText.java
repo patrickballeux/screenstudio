@@ -170,7 +170,7 @@ public class SourceText extends Source implements Runnable {
                     if (mLastLineIndex >= temp.length) {
                         mLastLineIndex = 0;
                     }
-                    content = temp[mLastLineIndex].trim();
+                    content = temp[mLastLineIndex];
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
