@@ -58,6 +58,7 @@ public class SourceText extends Source implements Runnable {
     private boolean mTypeWriterMode = false;
     private int mLastLineIndex = 0;
     private long mLastLineTime = 0;
+    private int mRotation = 0;
 
     private final DateFormat formatDate = DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault());
     private final DateFormat formatTime = DateFormat.getTimeInstance(DateFormat.LONG, Locale.getDefault());
@@ -130,7 +131,6 @@ public class SourceText extends Source implements Runnable {
 
     @Override
     public void run() {
-        Graphics2D g = mImage.createGraphics();
         int xRelative = 0;
         int yRelative = 0;
         int lastEndIndex = 1;
@@ -138,7 +138,9 @@ public class SourceText extends Source implements Runnable {
         boolean changeLineIndex = false;
         long lastIndexTime = System.currentTimeMillis();
         mLastLineTime = System.currentTimeMillis() + 5000;
+
         while (!mStopMe) {
+            Graphics2D g = mImage.createGraphics();
             g.setFont(mFont);
             if (System.currentTimeMillis() - mLastReloadTime > mReloadTime) {
                 mText = updateWithTextTags(mRawText);
@@ -248,13 +250,13 @@ public class SourceText extends Source implements Runnable {
             }
             mBuffer = new byte[mData.length];
             System.arraycopy(mData, 0, mBuffer, 0, mBuffer.length);
+            g.dispose();
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ex) {
                 Logger.getLogger(SourceText.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        g.dispose();
     }
 
     private String replaceTags(String text) {
@@ -359,6 +361,17 @@ public class SourceText extends Source implements Runnable {
         if (index != -1) {
             mTypeWriterMode = true;
             retValue = retValue.replaceAll("@TYPEWRITER", "");
+        }
+        mRotation = 0;
+        index = retValue.indexOf("@ROTATE90");
+        if (index != -1) {
+            mRotation = 90;
+            retValue = retValue.replaceAll("@ROTATE90", "");
+        }
+        index = retValue.indexOf("@ROTATE270");
+        if (index != -1) {
+            mRotation = 270;
+            retValue = retValue.replaceAll("@ROTATE270", "");
         }
         return retValue.trim();
     }
