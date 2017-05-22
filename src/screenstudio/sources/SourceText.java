@@ -208,7 +208,9 @@ public class SourceText extends Source implements Runnable {
                         }
                     }
                 }
-                content = content.substring(lastStartIndex, lastEndIndex);
+                if (lastEndIndex < content.length()) {
+                    content = content.substring(lastStartIndex, lastEndIndex);
+                }
             }
             java.util.Arrays.fill(mData, (byte) 0);
             String[] lines = content.split("\n");
@@ -260,7 +262,7 @@ public class SourceText extends Source implements Runnable {
     }
 
     private String replaceTags(String text) {
-        String retValue = text + "";
+        String retValue = text.trim() + "";
 
         int index = retValue.indexOf("file:///");
         while (index != -1) {
