@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static screenstudio.targets.Layout.SourceType.LabelText;
 
 /**
  *
@@ -134,7 +133,9 @@ public class SourceText extends Source implements Runnable {
         Graphics2D g = mImage.createGraphics();
         int xRelative = 0;
         int yRelative = 0;
-        int lastIndex = 1;
+        int lastEndIndex = 1;
+        int lastStartIndex = 0;
+        boolean changeLineIndex = false;
         long lastIndexTime = System.currentTimeMillis();
         mLastLineTime = System.currentTimeMillis() + 5000;
         while (!mStopMe) {
@@ -144,20 +145,6 @@ public class SourceText extends Source implements Runnable {
                 mLastReloadTime = System.currentTimeMillis();
             }
             String content = replaceTags(mText);
-            if (mTypeWriterMode) {
-                if (System.currentTimeMillis() - lastIndexTime > 100) {
-                    lastIndex++;
-                    if (lastIndex >= content.length()) {
-                        lastIndex = 0;
-                        lastIndexTime = System.currentTimeMillis() + 5000;
-                    } else {
-                        lastIndexTime = System.currentTimeMillis();
-                    }
-                }
-                if (lastIndex > 0) {
-                    content = content.substring(0, lastIndex);
-                }
-            }
             if (mOneLiner) {
                 String[] temp = content.split("\n");
                 if (mLastLineIndex >= temp.length) {
@@ -194,41 +181,70 @@ public class SourceText extends Source implements Runnable {
                 }
 
             }
+
+            if (mTypeWriterMode) {
+                if (System.currentTimeMillis() - lastIndexTime > 100) {
+                    if (changeLineIndex) {
+                        if (lastEndIndex >= content.length()) {
+                            lastEndIndex = 1;
+                            lastStartIndex = 0;
+                        } else if (content.charAt(lastEndIndex) == '\n') {
+                            lastStartIndex = lastEndIndex + 1;
+                            lastEndIndex += 1;
+                        }
+                        changeLineIndex = false;
+                    } else {
+                        lastEndIndex++;
+                        if (lastEndIndex >= content.length()) {
+                            changeLineIndex = true;
+                            lastIndexTime = System.currentTimeMillis() + 3000;
+                        } else if (content.charAt(lastEndIndex) == '\n') {
+                            changeLineIndex = true;
+                            lastIndexTime = System.currentTimeMillis() + 3000;
+                        } else {
+                            lastIndexTime = System.currentTimeMillis();
+                        }
+                    }
+                }
+                content = content.substring(lastStartIndex, lastEndIndex);
+            }
             java.util.Arrays.fill(mData, (byte) 0);
             String[] lines = content.split("\n");
-            g.setColor(new Color(mBackgroundArea, true));
-            g.fillRect(0, 0, mImage.getWidth(), mImage.getHeight());
-            if (mScrollHorizontal) {
-                xRelative -= 2;
-            } else {
-                xRelative = 0;
-            }
-            if (mScrollVertical) {
-                yRelative -= 2;
-            } else {
-                yRelative = 0;
-            }
-            int x = xRelative;
-            int y = g.getFontMetrics().getStringBounds(lines[0], g).getBounds().height + yRelative;
-            for (String line : lines) {
-                line = line.trim();
-                Rectangle2D size = g.getFontMetrics().getStringBounds(line, g);
-                g.setColor(new Color(mBackground, true));
-                g.drawString(line, x, y);
-                g.drawString(line, x - 1, y - 1);
-                g.setColor(new Color(mForeground, true));
-                g.drawString(line, x - 2, y - 2);
+            if (lines.length > 0) {
+                g.setColor(new Color(mBackgroundArea, true));
+                g.fillRect(0, 0, mImage.getWidth(), mImage.getHeight());
                 if (mScrollHorizontal) {
-                    x += size.getWidth() + g.getFontMetrics().stringWidth(" ");
+                    xRelative -= 2;
                 } else {
-                    y += size.getHeight();
+                    xRelative = 0;
                 }
-            }
-            if (mScrollVertical && y < 0) {
-                yRelative = mImage.getHeight();
-            }
-            if (mScrollHorizontal && x < 0) {
-                xRelative = mImage.getWidth();
+                if (mScrollVertical) {
+                    yRelative -= 2;
+                } else {
+                    yRelative = 0;
+                }
+                int x = xRelative;
+                int y = g.getFontMetrics().getStringBounds(lines[0], g).getBounds().height + yRelative;
+                for (String line : lines) {
+                    line = line.trim();
+                    Rectangle2D size = g.getFontMetrics().getStringBounds(line, g);
+                    g.setColor(new Color(mBackground, true));
+                    g.drawString(line, x, y);
+                    g.drawString(line, x - 1, y - 1);
+                    g.setColor(new Color(mForeground, true));
+                    g.drawString(line, x - 2, y - 2);
+                    if (mScrollHorizontal) {
+                        x += size.getWidth() + g.getFontMetrics().stringWidth(" ");
+                    } else {
+                        y += size.getHeight();
+                    }
+                }
+                if (mScrollVertical && y < 0) {
+                    yRelative = mImage.getHeight();
+                }
+                if (mScrollHorizontal && x < 0) {
+                    xRelative = mImage.getWidth();
+                }
             }
             mBuffer = new byte[mData.length];
             System.arraycopy(mData, 0, mBuffer, 0, mBuffer.length);
@@ -338,6 +354,7 @@ public class SourceText extends Source implements Runnable {
             mScrollHorizontal = true;
             retValue = retValue.replaceAll("@SCROLLHORIZONTAL", "");
         }
+        mTypeWriterMode = false;
         index = retValue.indexOf("@TYPEWRITER");
         if (index != -1) {
             mTypeWriterMode = true;
