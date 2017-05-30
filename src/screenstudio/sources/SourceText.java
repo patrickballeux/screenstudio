@@ -208,7 +208,7 @@ public class SourceText extends Source implements Runnable {
                         }
                     }
                 }
-                if (lastEndIndex < content.length()) {
+                if (lastEndIndex <= content.length()) {
                     content = content.substring(lastStartIndex, lastEndIndex);
                 }
             }

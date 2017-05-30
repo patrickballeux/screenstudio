@@ -24,6 +24,8 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
@@ -65,7 +67,6 @@ public class TextEditor extends javax.swing.JDialog {
         setControls();
         txtText.setText(text.getText());
         cboFonts.setSelectedItem(text.getFontName());
-        
 
         slideFGRed.setValue(new Color(text.getForegroundColor()).getRed());
         slideFGGreen.setValue(new Color(text.getForegroundColor()).getGreen());
@@ -90,7 +91,7 @@ public class TextEditor extends javax.swing.JDialog {
         panViewer.setSize(r.getSize());
         mTextViewer.setSize(r.getSize());
         mTextViewer.setPreferredSize(r.getSize());
-        
+
         pack();
 
     }
@@ -98,7 +99,7 @@ public class TextEditor extends javax.swing.JDialog {
     private void setControls() {
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
         cboFonts.setModel(model);
-        String[] tags = {"@CURRENTDATE", "@CURRENTTIME", "@STARTTIME", "@RECORDINGTIME", "@UPDATE 60 SEC@", "@UPDATE 5 MIN@", "@ONCHANGEONLY", "@ONELINER", "@SCROLLVERTICAL", "@SCROLLHORIZONTAL","@TYPEWRITER", "", "file:///path/to/file.txt"};
+        String[] tags = {"@CURRENTDATE", "@CURRENTTIME", "@STARTTIME", "@RECORDINGTIME", "@UPDATE 60 SEC@", "@UPDATE 5 MIN@", "@ONCHANGEONLY", "@ONELINER", "@SCROLLVERTICAL", "@SCROLLHORIZONTAL", "@TYPEWRITER", "", "file:///path/to/file.txt"};
         for (String t : tags) {
             if (t.length() > 0) {
                 JMenuItem m = new JMenuItem(t);
@@ -158,6 +159,11 @@ public class TextEditor extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("ScreenStudio Editor");
         setAlwaysOnTop(true);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         splitter.setDividerLocation(300);
 
@@ -453,6 +459,15 @@ public class TextEditor extends javax.swing.JDialog {
         setTextBackgroundArea();
 
     }//GEN-LAST:event_slideBGAreaColor
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        try {
+            mTextViewer.finalize();
+        } catch (Throwable ex) {
+            Logger.getLogger(TextEditor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }//GEN-LAST:event_formWindowClosing
 
     private void setTextForeground() {
         if (mSource != null) {
