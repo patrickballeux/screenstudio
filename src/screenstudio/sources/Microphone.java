@@ -24,11 +24,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Line;
-import javax.sound.sampled.Mixer;
-import javax.sound.sampled.TargetDataLine;
-import javax.sound.sampled.spi.AudioFileReader;
 import screenstudio.encoder.FFMpeg;
 import screenstudio.encoder.ProcessReader;
 
@@ -118,6 +113,10 @@ public class Microphone implements Runnable {
         if (Screen.isWindows()) {
             list = getWINDevices();
         } else {
+            Microphone d = new Microphone();
+            d.description = "Default";
+            d.device = "default";
+            list.add(d);
             Process p = Runtime.getRuntime().exec("pactl list sources");
             InputStream in = p.getInputStream();
             InputStreamReader isr = new InputStreamReader(in);
