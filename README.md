@@ -85,7 +85,7 @@ recording will last...
 ### HTML Text label
 
 HTML file are the best of showing content in your recording/live streaming.  Use any text editor to create your own overlay
-using basic HTML tags.  Javascript is not supported.  For more dynamic content, your can use a URL file to load content
+using basic [HTML tags](https://www.scaler.com/topics/html/html-tags/).  Javascript is not supported.  For more dynamic content, your can use a URL file to load content
 from a web server.
 
 The HTML rendering do support some basic styles CSS but do not expect a full HTML5 support.  Here's an example:
